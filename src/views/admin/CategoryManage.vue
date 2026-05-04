@@ -85,7 +85,12 @@ async function fetchList() {
 }
 
 function openDialog(row?: Category) {
-  form.value = row ? { ...row } : { name: '' }
+  if (row) {
+    const { categoryId, name, slug, description, icon, sort } = row
+    form.value = { categoryId, name, slug, description, icon, sort }
+  } else {
+    form.value = { name: '' }
+  }
   dialogVisible.value = true
 }
 

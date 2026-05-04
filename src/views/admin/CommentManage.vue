@@ -15,7 +15,12 @@
     <el-table :data="list" v-loading="loading" border>
       <el-table-column prop="nickname" label="昵称" width="120" />
       <el-table-column prop="content" label="内容" show-overflow-tooltip />
-      <el-table-column prop="essayId" label="文章ID" width="120" />
+      <el-table-column label="文章" width="180">
+        <template #default="{ row }">
+          <a v-if="row.essayTitle" :href="'/article/' + row.essayId" target="_blank" class="essay-link">{{ row.essayTitle }}</a>
+          <span v-else class="essay-id">{{ row.essayId }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
           <el-tag :type="row.status === 1 ? 'success' : row.status === 2 ? 'danger' : 'warning'">
@@ -54,9 +59,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getCommentPage, auditComment, deleteComment } from '@/api/comment'
+import { getCommentPageWithEssay, auditComment, deleteComment } from '@/api/comment'
 
-const list = ref<Comment[]>([])
+interface CommentWithEssay extends Comment {
+  essayTitle?: string
+}
+
+const list = ref<CommentWithEssay[]>([])
 const total = ref(0)
 const pageNo = ref(1)
 const pageSize = ref(20)
@@ -67,7 +76,7 @@ async function fetchList() {
   loading.value = true
   try {
     const params: PageParams = { pageNo: pageNo.value, pageSize: pageSize.value, status: filterStatus.value }
-    const data = await getCommentPage(params) as unknown as PageResult<Comment>
+    const data = await getCommentPageWithEssay(params) as unknown as PageResult<CommentWithEssay>
     list.value = data.records || []
     total.value = data.total || 0
   } finally {
@@ -114,5 +123,18 @@ onMounted(fetchList)
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+.essay-link {
+  color: #409eff;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.essay-id {
+  color: #909399;
+  font-size: 13px;
 }
 </style>

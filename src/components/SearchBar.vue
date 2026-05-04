@@ -29,5 +29,14 @@ defineEmits<{
 <style lang="scss" scoped>
 .search-bar {
   margin-bottom: 16px;
+
+  :deep(.el-input__wrapper) {
+    background: $glass-bg;
+    backdrop-filter: blur($glass-blur);
+    -webkit-backdrop-filter: blur($glass-blur);
+    border: $glass-border;
+    border-radius: $glass-radius;
+    box-shadow: $glass-shadow;
+  }
 }
 </style>

@@ -8,6 +8,10 @@ export function getCommentPage(params: PageParams) {
   return service.get('/comment/findPage', { params })
 }
 
+export function getCommentPageWithEssay(params: PageParams) {
+  return service.get('/comment/findPageWithEssay', { params })
+}
+
 export function addComment(data: CommentForm) {
   return service.post('/comment/add', data)
 }

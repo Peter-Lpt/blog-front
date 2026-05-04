@@ -95,7 +95,12 @@ async function fetchList() {
 }
 
 function openDialog(row?: FriendLink) {
-  form.value = row ? { ...row } : { name: '', url: '', status: 1 }
+  if (row) {
+    const { linkId, name, url, logo, description, email, status, sort } = row
+    form.value = { linkId, name, url, logo, description, email, status, sort }
+  } else {
+    form.value = { name: '', url: '', status: 1 }
+  }
   dialogVisible.value = true
 }
 

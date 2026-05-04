@@ -13,8 +13,11 @@
 
 <style lang="scss" scoped>
 .app-header {
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-bottom: $glass-border;
+  box-shadow: $glass-shadow;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -33,7 +36,8 @@
 .logo {
   font-size: 20px;
   font-weight: 700;
-  color: $text-color;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 nav {
@@ -41,13 +45,13 @@ nav {
   gap: 24px;
 
   a {
-    color: $text-secondary;
+    color: rgba(255, 255, 255, 0.75);
     font-size: 15px;
     transition: color 0.2s;
 
     &:hover,
     &.router-link-exact-active {
-      color: $primary-color;
+      color: #fff;
     }
   }
 }

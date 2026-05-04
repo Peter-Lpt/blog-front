@@ -99,4 +99,48 @@
     border-top: 1px solid #eaecef;
     margin: 24px 0;
   }
+
+  // 任务列表样式
+  ul:has(input[type="checkbox"]) {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 6px;
+    pointer-events: none;
+  }
+
+  // 锚点链接样式
+  .header-anchor {
+    float: left;
+    margin-left: -1.2em;
+    padding-right: 0.2em;
+    opacity: 0;
+    text-decoration: none;
+    font-size: 0.85em;
+    color: #999;
+
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+
+  h1:hover .header-anchor,
+  h2:hover .header-anchor,
+  h3:hover .header-anchor,
+  h4:hover .header-anchor,
+  h5:hover .header-anchor,
+  h6:hover .header-anchor {
+    opacity: 0.6;
+  }
+
+  // 脚注样式
+  .footnotes {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eaecef;
+    font-size: 13px;
+    color: #666;
+  }
 }

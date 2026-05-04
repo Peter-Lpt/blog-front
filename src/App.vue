@@ -17,16 +17,4 @@ const isAdmin = computed(() => route.path.startsWith('/admin'))
 </script>
 
 <style lang="scss">
-main {
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  width: 100%;
-
-  &.admin-main {
-    max-width: 100%;
-    padding: 0;
-  }
-}
 </style>

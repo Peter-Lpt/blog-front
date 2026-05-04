@@ -26,14 +26,18 @@ defineProps<{ essay: Essay }>()
 
 <style lang="scss" scoped>
 .article-card {
-  background: #fff;
-  border-radius: 8px;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border: $glass-border;
+  border-radius: $glass-radius;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s;
+  box-shadow: $glass-shadow;
+  transition: transform 0.25s, box-shadow 0.25s;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 }
 

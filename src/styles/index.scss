@@ -7,7 +7,9 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   color: $text-color;
-  background-color: $bg-color;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 40%, #2d1b4e 70%, #1a1a3e 100%);
+  background-attachment: fixed;
 }
 
 a {
@@ -19,4 +21,17 @@ a {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  width: 100%;
+
+  &.admin-main {
+    max-width: 100%;
+    padding: 0;
+  }
 }

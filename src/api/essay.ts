@@ -23,3 +23,21 @@ export function editEssay(data: EssayForm) {
 export function deleteEssay(essayId: string) {
   return service.post('/essay/delete', { essayId })
 }
+
+export function importMarkdown(data: {
+  content: string
+  status?: number
+  categoryId?: string
+  tagId?: string
+}) {
+  return service.post('/essay/importMarkdown', data)
+}
+
+export function importMarkdownBatch(data: {
+  files: { filename: string; content: string; status?: number; categoryId?: string; tagId?: string }[]
+  defaultStatus?: number
+  defaultCategoryId?: string
+  defaultTagId?: string
+}) {
+  return service.post('/essay/importMarkdownBatch', data)
+}

@@ -55,10 +55,13 @@ onMounted(() => {
 }
 
 .sidebar-section {
-  background: #fff;
-  border-radius: 8px;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border: $glass-border;
+  border-radius: $glass-radius;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: $glass-shadow;
 }
 
 .section-title {
@@ -66,7 +69,8 @@ onMounted(() => {
   font-weight: 600;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .category-list {
@@ -77,9 +81,9 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    color: $text-color;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
     &:last-child {
       border-bottom: none;
@@ -87,12 +91,12 @@ onMounted(() => {
 
     &:hover,
     &.active {
-      color: $primary-color;
+      color: #fff;
     }
   }
 
   .count {
-    color: $text-secondary;
+    color: rgba(255, 255, 255, 0.5);
     font-size: 12px;
   }
 }

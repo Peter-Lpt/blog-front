@@ -75,7 +75,12 @@ async function fetchList() {
 }
 
 function openDialog(row?: Tag) {
-  form.value = row ? { ...row } : { name: '' }
+  if (row) {
+    const { tagId, name, slug } = row
+    form.value = { tagId, name, slug }
+  } else {
+    form.value = { name: '' }
+  }
   dialogVisible.value = true
 }
 
