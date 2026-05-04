@@ -38,5 +38,20 @@ defineEmits<{
     border-radius: $glass-radius;
     box-shadow: $glass-shadow;
   }
+
+  :deep(.el-input-group__append) {
+    background: $primary-color;
+    border-color: $primary-color;
+    color: #fff;
+    border-radius: 0 $glass-radius $glass-radius 0;
+
+    .el-button {
+      color: #fff;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
 }
 </style>

@@ -69,8 +69,8 @@ onMounted(() => {
   font-weight: 600;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  border-bottom: 1px solid $border-color;
+  color: $text-color;
 }
 
 .category-list {
@@ -81,9 +81,9 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    color: rgba(255, 255, 255, 0.8);
+    color: $text-color;
     font-size: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid $border-color;
 
     &:last-child {
       border-bottom: none;
@@ -91,12 +91,12 @@ onMounted(() => {
 
     &:hover,
     &.active {
-      color: #fff;
+      color: $primary-color;
     }
   }
 
   .count {
-    color: rgba(255, 255, 255, 0.5);
+    color: $text-secondary;
     font-size: 12px;
   }
 }

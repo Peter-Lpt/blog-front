@@ -8,7 +8,7 @@
 .app-footer {
   text-align: center;
   padding: 20px;
-  color: rgba(255, 255, 255, 0.5);
+  color: $text-secondary;
   font-size: 14px;
   border-top: $glass-border;
   background: $glass-bg;

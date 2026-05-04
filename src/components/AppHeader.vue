@@ -36,8 +36,7 @@
 .logo {
   font-size: 20px;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  color: $text-color;
 }
 
 nav {
@@ -45,13 +44,13 @@ nav {
   gap: 24px;
 
   a {
-    color: rgba(255, 255, 255, 0.75);
+    color: $text-secondary;
     font-size: 15px;
     transition: color 0.2s;
 
     &:hover,
     &.router-link-exact-active {
-      color: #fff;
+      color: $primary-color;
     }
   }
 }

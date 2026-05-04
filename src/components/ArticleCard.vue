@@ -37,7 +37,7 @@ defineProps<{ essay: Essay }>()
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
 }
 
