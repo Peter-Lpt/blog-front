@@ -1,0 +1,61 @@
+/* 主题变量系统 - 仅浅色和暗色 */
+:root {
+  /* 浅色主题（默认） */
+  --primary-color: #c9a96e;
+  --bg-gradient: #f8f6f2;
+  --text-color: #1a1a1a;
+  --text-secondary: #888;
+  --border-color: #eae6df;
+
+  --card-bg: #fff;
+  --card-border: 1px solid rgba(201, 169, 110, 0.15);
+  --card-hover-shadow: 0 4px 24px rgba(201, 169, 110, 0.15);
+  --card-radius: 12px;
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-bg-strong: rgba(255, 255, 255, 0.92);
+  --glass-blur: 12px;
+  --glass-border: 1px solid rgba(201, 169, 110, 0.15);
+  --glass-shadow: none;
+  --glass-radius: 12px;
+
+  --el-color-primary: #c9a96e;
+  --el-color-success: #67c23a;
+  --el-color-warning: #e6a23c;
+  --el-color-danger: #f56c6c;
+  --el-color-info: #909399;
+}
+
+/* 暗色主题 */
+[data-theme="dark"] {
+  --primary-color: #d4af37;
+  --bg-gradient: #0a0a0a;
+  --text-color: #e5e5e5;
+  --text-secondary: #999;
+  --border-color: #2a2a2a;
+
+  --card-bg: #1a1a1a;
+  --card-border: 1px solid rgba(212, 175, 55, 0.2);
+  --card-hover-shadow: 0 4px 24px rgba(212, 175, 55, 0.15);
+
+  --glass-bg: rgba(26, 26, 26, 0.85);
+  --glass-bg-strong: rgba(26, 26, 26, 0.92);
+  --glass-border: 1px solid rgba(212, 175, 55, 0.2);
+  --glass-shadow: none;
+
+  --el-color-primary: #d4af37;
+  --el-color-success: #67c23a;
+  --el-color-warning: #e6a23c;
+  --el-color-danger: #f56c6c;
+  --el-color-info: #8d8d8d;
+
+  --el-bg-color: #1a1a1a;
+  --el-bg-color-overlay: #242424;
+  --el-bg-color-page: #111;
+  --el-text-color-primary: #e5e5e5;
+  --el-text-color-regular: #ccc;
+  --el-text-color-secondary: #999;
+  --el-border-color: #333;
+  --el-border-color-light: #2a2a2a;
+  --el-border-color-lighter: #222;
+}

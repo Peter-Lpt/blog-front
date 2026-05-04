@@ -112,8 +112,10 @@ onMounted(fetchList)
 
 <style lang="scss" scoped>
 .manage-page {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--card-bg);
+  
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   padding: 20px;
 }
 

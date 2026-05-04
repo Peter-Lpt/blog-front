@@ -2,6 +2,7 @@
   font-size: 16px;
   line-height: 1.8;
   word-wrap: break-word;
+  color: var(--text-color);
 
   h1, h2, h3, h4, h5, h6 {
     margin-top: 24px;
@@ -11,7 +12,7 @@
   }
 
   h1 { font-size: 28px; }
-  h2 { font-size: 24px; border-bottom: 1px solid #eaecef; padding-bottom: 8px; }
+  h2 { font-size: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
   h3 { font-size: 20px; }
 
   p {
@@ -19,7 +20,7 @@
   }
 
   a {
-    color: #409eff;
+    color: var(--primary-color);
     text-decoration: none;
 
     &:hover {
@@ -28,7 +29,7 @@
   }
 
   code {
-    background: #f5f7fa;
+    background: var(--glass-bg);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.9em;
@@ -39,6 +40,7 @@
     margin: 16px 0;
     border-radius: 6px;
     overflow-x: auto;
+    background: var(--glass-bg-strong);
 
     code {
       background: none;
@@ -50,9 +52,9 @@
   blockquote {
     margin: 16px 0;
     padding: 12px 20px;
-    border-left: 4px solid #409eff;
-    background: #f5f7fa;
-    color: #666;
+    border-left: 4px solid var(--primary-color);
+    background: var(--glass-bg);
+    color: var(--text-secondary);
 
     p:last-child {
       margin-bottom: 0;
@@ -79,24 +81,24 @@
     margin: 16px 0;
 
     th, td {
-      border: 1px solid #eaecef;
+      border: 1px solid var(--border-color);
       padding: 8px 12px;
       text-align: left;
     }
 
     th {
-      background: #f5f7fa;
+      background: var(--glass-bg-strong);
       font-weight: 600;
     }
 
     tr:nth-child(even) {
-      background: #fafafa;
+      background: var(--glass-bg);
     }
   }
 
   hr {
     border: none;
-    border-top: 1px solid #eaecef;
+    border-top: 1px solid var(--border-color);
     margin: 24px 0;
   }
 
@@ -119,7 +121,7 @@
     opacity: 0;
     text-decoration: none;
     font-size: 0.85em;
-    color: #999;
+    color: var(--text-secondary);
 
     &:hover {
       opacity: 1 !important;
@@ -139,8 +141,8 @@
   .footnotes {
     margin-top: 24px;
     padding-top: 16px;
-    border-top: 1px solid #eaecef;
+    border-top: 1px solid var(--border-color);
     font-size: 13px;
-    color: #666;
+    color: var(--text-secondary);
   }
 }

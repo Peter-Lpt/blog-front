@@ -1,30 +1,29 @@
 <template>
   <div class="sidebar">
     <div class="sidebar-section">
-      <h3 class="section-title">分类</h3>
+      <h3 class="section-title">分门别类</h3>
       <ul class="category-list">
         <li v-for="cat in configStore.categories" :key="cat.categoryId">
           <router-link
             :to="{ path: '/', query: { categoryId: cat.categoryId } }"
             :class="{ active: currentCategoryId === cat.categoryId }"
           >
-            {{ cat.name }}
-            <span class="count">{{ cat.articleCount }}</span>
+            <span class="cat-icon">{{ cat.name[0] }}</span>
+            <span class="cat-name">{{ cat.name }}</span>
           </router-link>
         </li>
       </ul>
     </div>
     <div class="sidebar-section">
-      <h3 class="section-title">标签</h3>
+      <h3 class="section-title">标签云</h3>
       <div class="tag-cloud">
         <router-link
           v-for="tag in configStore.tags"
           :key="tag.tagId"
           :to="{ path: '/', query: { tagId: tag.tagId } }"
+          :class="{ active: currentTagId === tag.tagId }"
         >
-          <el-tag :type="currentTagId === tag.tagId ? 'primary' : 'info'" size="small">
-            {{ tag.name }}
-          </el-tag>
+          {{ tag.name }}
         </router-link>
       </div>
     </div>
@@ -51,54 +50,60 @@ onMounted(() => {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 32px;
 }
 
 .sidebar-section {
-  background: $glass-bg;
-  backdrop-filter: blur($glass-blur);
-  -webkit-backdrop-filter: blur($glass-blur);
-  border: $glass-border;
-  border-radius: $glass-radius;
-  padding: 16px;
-  box-shadow: $glass-shadow;
+  padding: 0;
 }
 
 .section-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid $border-color;
-  color: $text-color;
+  margin-bottom: 16px;
+  color: var(--text-color);
 }
 
 .category-list {
   list-style: none;
 
-  li a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    color: $text-color;
-    font-size: 14px;
-    border-bottom: 1px solid $border-color;
+  li {
+    margin-bottom: 4px;
+  }
 
-    &:last-child {
-      border-bottom: none;
-    }
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    color: var(--text-color);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s;
 
     &:hover,
     &.active {
-      color: $primary-color;
+      color: var(--primary-color);
     }
   }
+}
 
-  .count {
-    color: $text-secondary;
-    font-size: 12px;
-  }
+.cat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.cat-name {
+  flex: 1;
 }
 
 .tag-cloud {
@@ -107,7 +112,18 @@ onMounted(() => {
   gap: 8px;
 
   a {
+    padding: 4px 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
     text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s;
+
+    &:hover,
+    &.active {
+      color: var(--primary-color);
+      background: rgba(201, 169, 110, 0.1);
+    }
   }
 }
 </style>

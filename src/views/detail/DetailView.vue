@@ -54,6 +54,10 @@ onMounted(async () => {
 .detail-view {
   max-width: 800px;
   margin: 0 auto;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  padding: 32px;
 }
 
 .detail-title {
@@ -67,7 +71,7 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 14px;
   margin-bottom: 20px;
 
@@ -78,7 +82,7 @@ onMounted(async () => {
   }
 
   a {
-    color: $primary-color;
+    color: var(--primary-color);
   }
 }
 
@@ -99,14 +103,14 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   padding: 20px 0;
-  border-top: 1px solid $border-color;
-  border-bottom: 1px solid $border-color;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 30px;
 }
 
 .loading {
   text-align: center;
   padding: 60px;
-  color: $text-secondary;
+  color: var(--text-secondary);
 }
 </style>

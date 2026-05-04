@@ -7,12 +7,9 @@
 <style lang="scss" scoped>
 .app-footer {
   text-align: center;
-  padding: 20px;
-  color: $text-secondary;
-  font-size: 14px;
-  border-top: $glass-border;
-  background: $glass-bg;
-  backdrop-filter: blur($glass-blur);
-  -webkit-backdrop-filter: blur($glass-blur);
+  padding: 24px 20px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  border-top: 1px solid var(--border-color);
 }
 </style>

@@ -39,12 +39,12 @@ const tagName = computed(() => configStore.tags.find(t => t.tagId === props.tagI
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
 .filter-label {
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 </style>

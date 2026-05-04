@@ -28,28 +28,32 @@ defineEmits<{
 
 <style lang="scss" scoped>
 .search-bar {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+
+  :deep(.el-input-group) {
+    border-radius: 20px;
+    overflow: hidden;
+  }
 
   :deep(.el-input__wrapper) {
-    background: $glass-bg;
-    backdrop-filter: blur($glass-blur);
-    -webkit-backdrop-filter: blur($glass-blur);
-    border: $glass-border;
-    border-radius: $glass-radius;
-    box-shadow: $glass-shadow;
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+    border-radius: 20px 0 0 20px;
   }
 
   :deep(.el-input-group__append) {
-    background: $primary-color;
-    border-color: $primary-color;
-    color: #fff;
-    border-radius: 0 $glass-radius $glass-radius 0;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-left: none;
+    color: var(--text-secondary);
+    border-radius: 0 20px 20px 0;
 
     .el-button {
-      color: #fff;
+      color: var(--text-secondary);
 
       &:hover {
-        color: #fff;
+        color: var(--primary-color);
       }
     }
   }

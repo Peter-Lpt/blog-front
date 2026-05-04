@@ -1,7 +1,6 @@
 <template>
   <div class="home-view">
     <div class="home-main">
-      <SearchBar v-model:keyword="keyword" @search="handleSearch" />
       <ActiveFilters
         :keyword="keyword"
         :category-id="categoryId"
@@ -17,12 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getEssayPage } from '@/api/essay'
 import ArticleList from '@/components/ArticleList.vue'
 import Sidebar from '@/components/Sidebar.vue'
-import SearchBar from '@/components/SearchBar.vue'
 import ActiveFilters from '@/components/ActiveFilters.vue'
 
 const route = useRoute()
@@ -49,45 +47,43 @@ async function fetchEssays() {
   total.value = data.total || 0
 }
 
-function handleSearch(kw: string) {
-  keyword.value = kw
-  pageNo.value = 1
-  fetchEssays()
-}
-
 function handlePageChange(page: number) {
   pageNo.value = page
   fetchEssays()
 }
 
 function handleRemoveFilter(type: string) {
-  if (type === 'keyword') keyword.value = ''
+  const query = { ...route.query }
+  if (type === 'keyword') {
+    keyword.value = ''
+    delete query.keyword
+  }
   if (type === 'categoryId') {
     categoryId.value = undefined
-    router.replace({ query: { ...route.query, categoryId: undefined } })
+    delete query.categoryId
   }
   if (type === 'tagId') {
     tagId.value = undefined
-    router.replace({ query: { ...route.query, tagId: undefined } })
+    delete query.tagId
   }
+  router.replace({ query })
   pageNo.value = 1
   fetchEssays()
 }
 
 watch(() => route.query, (q) => {
+  keyword.value = (q.keyword as string) || ''
   categoryId.value = q.categoryId as string | undefined
   tagId.value = q.tagId as string | undefined
   pageNo.value = 1
   fetchEssays()
 }, { immediate: true })
-
-// immediate watch 已处理初始化加载，无需 onMounted
 </script>
 
 <style lang="scss" scoped>
 .home-view {
   display: flex;
-  gap: 20px;
+  gap: 40px;
 }
 
 .home-main {
@@ -96,7 +92,7 @@ watch(() => route.query, (q) => {
 }
 
 .home-sidebar {
-  width: 280px;
+  width: 260px;
   flex-shrink: 0;
 }
 

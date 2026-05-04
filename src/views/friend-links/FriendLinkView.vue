@@ -104,20 +104,22 @@ async function handleApply() {
 }
 
 .link-card {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+    border-color: var(--primary-color);
   }
 
   a {
     display: block;
     text-align: center;
-    color: $text-color;
+    color: var(--text-color);
   }
 
   h3 {
@@ -126,7 +128,7 @@ async function handleApply() {
   }
 
   p {
-    color: $text-secondary;
+    color: var(--text-secondary);
     font-size: 13px;
     line-height: 1.5;
   }
@@ -143,7 +145,7 @@ async function handleApply() {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: $primary-color;
+  background: var(--primary-color);
   color: #fff;
   display: flex;
   align-items: center;
@@ -158,7 +160,7 @@ async function handleApply() {
   text-align: center;
 
   .apply-tip {
-    color: $text-secondary;
+    color: var(--text-secondary);
     font-size: 13px;
     margin-top: 12px;
   }

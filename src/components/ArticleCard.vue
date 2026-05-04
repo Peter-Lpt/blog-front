@@ -1,24 +1,22 @@
 <template>
-  <div class="article-card">
+  <article class="article-card">
     <router-link :to="`/article/${essay.essayId}`" class="card-link">
-      <div v-if="essay.coverImage" class="card-cover">
-        <img :src="essay.coverImage" :alt="essay.title" />
-      </div>
-      <div class="card-body">
+      <div class="card-content">
         <h2 class="card-title">{{ essay.title }}</h2>
         <p v-if="essay.summary" class="card-summary">{{ essay.summary }}</p>
         <div class="card-meta">
-          <span><el-icon><Calendar /></el-icon> {{ formatDate(essay.createTime) }}</span>
-          <span><el-icon><View /></el-icon> {{ essay.viewCount || 0 }}</span>
-          <span><el-icon><Pointer /></el-icon> {{ Math.max(0, essay.likeCount || 0) }}</span>
+          <span v-if="essay.categories?.length" class="meta-category">{{ essay.categories[0].name }}</span>
+          <span class="meta-date">发布于 {{ formatDate(essay.createTime) }}</span>
         </div>
       </div>
+      <div v-if="essay.coverImage" class="card-cover">
+        <img :src="essay.coverImage" :alt="essay.title" />
+      </div>
     </router-link>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">
-import { Calendar, View, Pointer } from '@element-plus/icons-vue'
 import { formatDate } from '@/utils/format'
 
 defineProps<{ essay: Essay }>()
@@ -26,56 +24,52 @@ defineProps<{ essay: Essay }>()
 
 <style lang="scss" scoped>
 .article-card {
-  background: $glass-bg;
-  backdrop-filter: blur($glass-blur);
-  -webkit-backdrop-filter: blur($glass-blur);
-  border: $glass-border;
-  border-radius: $glass-radius;
-  overflow: hidden;
-  box-shadow: $glass-shadow;
-  transition: transform 0.25s, box-shadow 0.25s;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 12px rgba(201, 169, 110, 0.1);
   }
 }
 
 .card-link {
   display: flex;
-  color: $text-color;
-}
+  gap: 24px;
+  color: var(--text-color);
+  text-decoration: none;
 
-.card-cover {
-  width: 240px;
-  flex-shrink: 0;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  &:hover {
+    .card-title {
+      color: var(--primary-color);
+    }
   }
 }
 
-.card-body {
+.card-content {
   flex: 1;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
 }
 
 .card-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
   line-height: 1.4;
+  color: var(--text-color);
+  transition: color 0.2s;
 }
 
 .card-summary {
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.8;
   margin-bottom: 12px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -85,24 +79,38 @@ defineProps<{ essay: Essay }>()
 
 .card-meta {
   display: flex;
-  gap: 16px;
-  color: $text-secondary;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
   font-size: 13px;
+}
 
-  span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.meta-category {
+  color: var(--primary-color);
+}
+
+.card-cover {
+  width: 180px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
 @media (max-width: 768px) {
+  .card-link {
+    flex-direction: column-reverse;
+  }
+
   .card-cover {
     width: 100%;
-    height: 160px;
-  }
-  .card-link {
-    flex-direction: column;
+    height: 180px;
   }
 }
 </style>

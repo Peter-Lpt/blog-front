@@ -33,11 +33,10 @@ defineEmits<{
 .article-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .pagination {
-  margin-top: 20px;
+  margin-top: 24px;
   display: flex;
   justify-content: center;
 }

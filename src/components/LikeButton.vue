@@ -45,23 +45,23 @@ async function handleToggle() {
   align-items: center;
   gap: 6px;
   padding: 8px 20px;
-  border: 2px solid $border-color;
+  border: var(--card-border);
   border-radius: 20px;
-  background: #fff;
+  background: var(--card-bg);
   cursor: pointer;
   font-size: 15px;
-  color: $text-secondary;
-  transition: all 0.2s;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
 
   &:hover {
-    border-color: #f56c6c;
-    color: #f56c6c;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: var(--card-hover-shadow);
   }
 
   &.liked {
-    border-color: #f56c6c;
-    color: #f56c6c;
-    background: #fef0f0;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
   }
 }
 </style>

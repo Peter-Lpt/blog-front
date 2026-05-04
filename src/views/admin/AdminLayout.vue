@@ -5,9 +5,7 @@
       <el-menu
         :default-active="route.path"
         router
-        background-color="#001529"
-        text-color="#ffffffa6"
-        active-text-color="#fff"
+        background-color="transparent"
       >
         <el-menu-item index="/admin/essays">
           <el-icon><Document /></el-icon>
@@ -31,7 +29,7 @@
         </el-menu-item>
       </el-menu>
       <div class="admin-back">
-        <router-link to="/">返回前台</router-link>
+        <router-link to="/"><el-icon><Back /></el-icon> 返回前台</router-link>
       </div>
     </aside>
     <main class="admin-content">
@@ -42,7 +40,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { Document, Folder, PriceTag, ChatDotRound, Link } from '@element-plus/icons-vue'
+import { Document, Folder, PriceTag, ChatDotRound, Link, Back } from '@element-plus/icons-vue'
 
 const route = useRoute()
 </script>
@@ -55,10 +53,30 @@ const route = useRoute()
 
 .admin-sidebar {
   width: 220px;
-  background: #001529;
-  color: #fff;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
+  border-right: var(--glass-border);
+
+  :deep(.el-menu) {
+    --el-menu-text-color: var(--text-color);
+    --el-menu-active-color: var(--primary-color);
+
+    .el-menu-item {
+      color: var(--text-color);
+
+      &:hover {
+        background: var(--glass-bg);
+      }
+
+      &.is-active {
+        background: var(--primary-color);
+        color: #fff !important;
+      }
+    }
+  }
 }
 
 .admin-title {
@@ -67,20 +85,25 @@ const route = useRoute()
   text-align: center;
   font-size: 18px;
   font-weight: 700;
-  border-bottom: 1px solid #ffffff1a;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 .admin-back {
   padding: 16px;
-  border-top: 1px solid #ffffff1a;
+  border-top: 1px solid var(--border-color);
   margin-top: auto;
 
   a {
-    color: #ffffffa6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
     font-size: 14px;
+    transition: color 0.2s;
 
     &:hover {
-      color: #fff;
+      color: var(--primary-color);
     }
   }
 }
@@ -88,7 +111,7 @@ const route = useRoute()
 .admin-content {
   flex: 1;
   padding: 20px;
-  background: #f0f2f5;
+  background: transparent;
   overflow: auto;
 }
 </style>

@@ -150,14 +150,19 @@ onMounted(fetchComments)
 }
 
 .comment-item {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--card-hover-shadow);
+    border-color: var(--primary-color);
+  }
 
   &.child {
     margin-left: 24px;
-    background: #fafafa;
   }
 }
 
@@ -174,19 +179,19 @@ onMounted(fetchComments)
 }
 
 .reply-to {
-  color: $primary-color;
+  color: var(--primary-color);
   font-size: 13px;
 }
 
 .comment-time {
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 12px;
 }
 
 .comment-content {
   font-size: 14px;
   line-height: 1.6;
-  color: $text-color;
+  color: var(--text-color);
 }
 
 .comment-actions {
