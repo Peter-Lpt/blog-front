@@ -2,23 +2,23 @@
   <div class="home-view">
     <div class="home-main">
       <ActiveFilters
-        :keyword="keyword"
-        :category-id="categoryId"
-        :tag-id="tagId"
-        @remove="handleRemoveFilter"
+          :keyword="keyword"
+          :category-id="categoryId"
+          :tag-id="tagId"
+          @remove="handleRemoveFilter"
       />
-      <ArticleList :essays="essays" :total="total" :page-no="pageNo" :page-size="pageSize" @page-change="handlePageChange" />
+      <ArticleList :essays="essays" :total="total" :page-no="pageNo" :page-size="pageSize" @page-change="handlePageChange"/>
     </div>
     <aside class="home-sidebar">
-      <Sidebar />
+      <Sidebar/>
     </aside>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getEssayPage } from '@/api/essay'
+import {ref, watch} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import {getEssayPage} from '@/api/essay'
 import ArticleList from '@/components/ArticleList.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import ActiveFilters from '@/components/ActiveFilters.vue'
@@ -53,7 +53,7 @@ function handlePageChange(page: number) {
 }
 
 function handleRemoveFilter(type: string) {
-  const query = { ...route.query }
+  const query = {...route.query}
   if (type === 'keyword') {
     keyword.value = ''
     delete query.keyword
@@ -66,9 +66,8 @@ function handleRemoveFilter(type: string) {
     tagId.value = undefined
     delete query.tagId
   }
-  router.replace({ query })
   pageNo.value = 1
-  fetchEssays()
+  router.replace({query})
 }
 
 watch(() => route.query, (q) => {
@@ -77,7 +76,7 @@ watch(() => route.query, (q) => {
   tagId.value = q.tagId as string | undefined
   pageNo.value = 1
   fetchEssays()
-}, { immediate: true })
+}, {immediate: true})
 </script>
 
 <style lang="scss" scoped>

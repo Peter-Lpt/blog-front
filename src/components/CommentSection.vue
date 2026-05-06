@@ -3,9 +3,9 @@
     <h3 class="section-title">评论</h3>
 
     <div class="comment-form">
-      <el-input v-model="form.nickname" placeholder="昵称 *" maxlength="50" />
-      <el-input v-model="form.email" placeholder="邮箱（选填）" maxlength="100" />
-      <el-input v-model="form.content" type="textarea" :rows="3" placeholder="写下你的评论..." maxlength="1000" />
+      <el-input v-model="form.nickname" placeholder="昵称 *" maxlength="50"/>
+      <el-input v-model="form.email" placeholder="邮箱（选填）" maxlength="100"/>
+      <el-input v-model="form.content" type="textarea" :rows="3" placeholder="写下你的评论..." maxlength="1000"/>
       <el-button type="primary" @click="handleSubmit" :loading="submitting" :disabled="!form.nickname || !form.content">
         发表评论
       </el-button>
@@ -23,7 +23,7 @@
         </div>
 
         <div v-if="replyTo?.commentId === comment.commentId" class="reply-form">
-          <el-input v-model="replyContent" type="textarea" :rows="2" placeholder="回复..." maxlength="1000" />
+          <el-input v-model="replyContent" type="textarea" :rows="2" placeholder="回复..." maxlength="1000"/>
           <div class="reply-actions">
             <el-button size="small" @click="cancelReply">取消</el-button>
             <el-button type="primary" size="small" @click="submitReply(comment)" :loading="submitting">回复</el-button>
@@ -41,22 +41,22 @@
           </div>
         </div>
       </div>
-      <el-empty v-if="!comments.length" description="暂无评论" />
+      <el-empty v-if="!comments.length" description="暂无评论"/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getCommentByEssayId, addComment } from '@/api/comment'
-import { formatDate } from '@/utils/format'
+import {onMounted, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {addComment, getCommentByEssayId} from '@/api/comment'
+import {formatDate} from '@/utils/format'
 
 const props = defineProps<{ essayId: string }>()
 
 const comments = ref<Comment[]>([])
 const submitting = ref(false)
-const form = ref({ nickname: '', email: '', content: '' })
+const form = ref({nickname: '', email: '', content: ''})
 const replyTo = ref<Comment | null>(null)
 const replyContent = ref('')
 
@@ -65,7 +65,7 @@ async function fetchComments() {
   comments.value = data || []
 }
 
-function findNickname(userId: number): string {
+function findNickname(userId: string): string {
   for (const c of comments.value) {
     if (c.commentId === userId) return c.nickname
     if (c.children) {
