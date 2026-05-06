@@ -10,21 +10,21 @@
 
     <div class="filter-bar">
       <el-select v-model="filterStatus" placeholder="状态筛选" clearable @change="fetchList">
-        <el-option label="暂存" :value="1" />
-        <el-option label="已发布" :value="2" />
+        <el-option label="暂存" :value="1"/>
+        <el-option label="已发布" :value="2"/>
       </el-select>
     </div>
 
     <el-table :data="list" v-loading="loading" border>
-      <el-table-column prop="title" label="标题" min-width="200" />
+      <el-table-column prop="title" label="标题" min-width="200"/>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
           <el-tag :type="row.status === 2 ? 'success' : 'info'">{{ row.status === 2 ? '已发布' : '暂存' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="viewCount" label="阅读" width="80" />
-      <el-table-column prop="likeCount" label="点赞" width="80" />
-      <el-table-column prop="createTime" label="创建时间" width="170" />
+      <el-table-column prop="viewCount" label="阅读" width="80"/>
+      <el-table-column prop="likeCount" label="点赞" width="80"/>
+      <el-table-column prop="createTime" label="创建时间" width="170"/>
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
           <el-button text size="small" @click="openDialog(row)">编辑</el-button>
@@ -38,53 +38,53 @@
     </el-table>
 
     <el-pagination
-      v-if="total > pageSize"
-      :current-page="pageNo"
-      :page-size="pageSize"
-      :total="total"
-      layout="total, prev, pager, next"
-      @current-change="(p: number) => { pageNo = p; fetchList() }"
-      class="pagination"
+        v-if="total > pageSize"
+        :current-page="pageNo"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="(p: number) => { pageNo = p; fetchList() }"
+        class="pagination"
     />
 
     <el-dialog v-model="dialogVisible" :title="form.essayId ? '编辑文章' : '新增文章'" width="700px" destroy-on-close>
       <el-form :model="form" label-width="80px">
         <el-form-item label="标题" required>
-          <el-input v-model="form.title" maxlength="200" />
+          <el-input v-model="form.title" maxlength="200"/>
         </el-form-item>
         <el-form-item label="摘要">
-          <el-input v-model="form.summary" type="textarea" maxlength="500" />
+          <el-input v-model="form.summary" type="textarea" maxlength="500"/>
         </el-form-item>
         <el-form-item label="内容">
-          <el-input v-model="form.content" type="textarea" :rows="12" placeholder="Markdown 格式" />
+          <el-input v-model="form.content" type="textarea" :rows="12" placeholder="Markdown 格式"/>
         </el-form-item>
         <el-form-item label="封面图">
-          <el-input v-model="form.coverImage" placeholder="图片 URL" />
+          <el-input v-model="form.coverImage" placeholder="图片 URL"/>
         </el-form-item>
         <el-form-item label="状态" required>
           <el-select v-model="form.status">
-            <el-option label="暂存" :value="1" />
-            <el-option label="发布" :value="2" />
+            <el-option label="暂存" :value="1"/>
+            <el-option label="发布" :value="2"/>
           </el-select>
         </el-form-item>
         <el-form-item label="分类">
           <div style="display: flex; gap: 8px; align-items: center">
             <el-select v-model="form.categoryId" clearable placeholder="选择分类" style="flex: 1">
-              <el-option v-for="cat in categories" :key="cat.categoryId" :label="cat.name" :value="cat.categoryId" />
+              <el-option v-for="cat in categories" :key="cat.categoryId" :label="cat.name" :value="cat.categoryId"/>
             </el-select>
-            <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true" />
+            <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true"/>
           </div>
         </el-form-item>
         <el-form-item label="标签">
           <div style="display: flex; gap: 8px; align-items: center">
             <el-select v-model="form.tagId" clearable placeholder="选择标签" style="flex: 1">
-              <el-option v-for="tag in tags" :key="tag.tagId" :label="tag.name" :value="tag.tagId" />
+              <el-option v-for="tag in tags" :key="tag.tagId" :label="tag.name" :value="tag.tagId"/>
             </el-select>
-            <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true" />
+            <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true"/>
           </div>
         </el-form-item>
         <el-form-item label="排序">
-          <el-input-number v-model="form.sort" :min="0" :precision="2" />
+          <el-input-number v-model="form.sort" :min="0" :precision="2"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -94,43 +94,45 @@
     </el-dialog>
 
     <el-dialog v-model="showImportDialog" title="导入 Markdown 文件" width="700px" destroy-on-close>
-      <el-alert title="支持上传多个 .md 文件，自动解析 Frontmatter 元数据" type="info" :closable="false" style="margin-bottom: 16px" />
+      <el-alert title="支持上传多个 .md 文件，自动解析 Frontmatter 元数据" type="info" :closable="false" style="margin-bottom: 16px"/>
 
       <el-form :model="importDefaults" label-width="80px" style="margin-bottom: 16px">
         <el-form-item label="默认状态">
           <el-select v-model="importDefaults.status" style="width: 120px">
-            <el-option :value="1" label="暂存" />
-            <el-option :value="2" label="发布" />
+            <el-option :value="1" label="暂存"/>
+            <el-option :value="2" label="发布"/>
           </el-select>
         </el-form-item>
         <el-form-item label="默认分类">
           <div style="display: flex; gap: 8px; align-items: center">
             <el-select v-model="importDefaults.categoryId" clearable placeholder="不指定" style="flex: 1">
-              <el-option v-for="c in categories" :key="c.categoryId" :label="c.name" :value="c.categoryId" />
+              <el-option v-for="c in categories" :key="c.categoryId" :label="c.name" :value="c.categoryId"/>
             </el-select>
-            <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true" />
+            <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true"/>
           </div>
         </el-form-item>
         <el-form-item label="默认标签">
           <div style="display: flex; gap: 8px; align-items: center">
             <el-select v-model="importDefaults.tagId" clearable placeholder="不指定" style="flex: 1">
-              <el-option v-for="t in tags" :key="t.tagId" :label="t.name" :value="t.tagId" />
+              <el-option v-for="t in tags" :key="t.tagId" :label="t.name" :value="t.tagId"/>
             </el-select>
-            <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true" />
+            <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true"/>
           </div>
         </el-form-item>
       </el-form>
 
       <el-upload
-        ref="uploadRef"
-        :auto-upload="false"
-        :on-change="handleFileSelect"
-        :file-list="selectedFiles"
-        accept=".md,.markdown"
-        multiple
-        drag
+          ref="uploadRef"
+          :auto-upload="false"
+          :on-change="handleFileSelect"
+          :file-list="selectedFiles"
+          accept=".md,.markdown"
+          multiple
+          drag
       >
-        <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+        <el-icon class="el-icon--upload">
+          <UploadFilled/>
+        </el-icon>
         <div class="el-upload__text">拖拽文件到此处，或 <em>点击选择</em></div>
         <template #tip>
           <div class="el-upload__tip">支持 .md / .markdown 文件，可多选或拖拽</div>
@@ -139,11 +141,11 @@
 
       <div v-if="selectedFiles.length" style="margin-top: 12px">
         <el-tag
-          v-for="file in selectedFiles"
-          :key="file.name"
-          closable
-          @close="removeFile(file)"
-          style="margin: 4px"
+            v-for="file in selectedFiles"
+            :key="file.name"
+            closable
+            @close="removeFile(file)"
+            style="margin: 4px"
         >
           {{ file.name }}
         </el-tag>
@@ -160,7 +162,7 @@
     <el-dialog v-model="showCatDialog" title="新建分类" width="400px" destroy-on-close @close="newCatName = ''">
       <el-form label-width="60px">
         <el-form-item label="名称" required>
-          <el-input v-model="newCatName" maxlength="50" placeholder="输入分类名称" @keyup.enter="handleCreateCategory" />
+          <el-input v-model="newCatName" maxlength="50" placeholder="输入分类名称" @keyup.enter="handleCreateCategory"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -172,7 +174,7 @@
     <el-dialog v-model="showTagDialog" title="新建标签" width="400px" destroy-on-close @close="newTagName = ''">
       <el-form label-width="60px">
         <el-form-item label="名称" required>
-          <el-input v-model="newTagName" maxlength="50" placeholder="输入标签名称" @keyup.enter="handleCreateTag" />
+          <el-input v-model="newTagName" maxlength="50" placeholder="输入标签名称" @keyup.enter="handleCreateTag"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -184,12 +186,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { UploadFilled, Plus } from '@element-plus/icons-vue'
-import { getEssayPage, addEssay, editEssay, deleteEssay, importMarkdown } from '@/api/essay'
-import { getCategoryList, addCategory } from '@/api/category'
-import { getTagList, addTag } from '@/api/tag'
+import {onMounted, reactive, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {Plus, UploadFilled} from '@element-plus/icons-vue'
+import {addEssay, deleteEssay, editEssay, getEssayPage, importMarkdown} from '@/api/essay'
+import {addCategory, getCategoryList} from '@/api/category'
+import {addTag, getTagList} from '@/api/tag'
 
 const list = ref<Essay[]>([])
 const total = ref(0)
@@ -202,7 +204,7 @@ const tags = ref<Tag[]>([])
 
 const dialogVisible = ref(false)
 const saving = ref(false)
-const form = ref<EssayForm>({ title: '', status: 1 })
+const form = ref<EssayForm>({title: '', status: 1})
 
 const showImportDialog = ref(false)
 const uploadRef = ref()
@@ -226,7 +228,7 @@ async function handleCreateCategory() {
   if (!newCatName.value.trim()) return ElMessage.warning('请输入分类名称')
   creatingCat.value = true
   try {
-    const res = await addCategory({ name: newCatName.value.trim() }) as any
+    const res = await addCategory({name: newCatName.value.trim()}) as any
     const catData = await getCategoryList()
     categories.value = (catData || []) as unknown as Category[]
     form.value.categoryId = res?.categoryId || res
@@ -242,7 +244,7 @@ async function handleCreateTag() {
   if (!newTagName.value.trim()) return ElMessage.warning('请输入标签名称')
   creatingTag.value = true
   try {
-    const res = await addTag({ name: newTagName.value.trim() }) as any
+    const res = await addTag({name: newTagName.value.trim()}) as any
     const tagData = await getTagList()
     tags.value = (tagData || []) as unknown as Tag[]
     form.value.tagId = res?.tagId || res
@@ -257,7 +259,7 @@ async function handleCreateTag() {
 async function fetchList() {
   loading.value = true
   try {
-    const params: PageParams = { pageNo: pageNo.value, pageSize: pageSize.value, status: filterStatus.value }
+    const params: PageParams = {pageNo: pageNo.value, pageSize: pageSize.value, status: filterStatus.value}
     const data = await getEssayPage(params) as unknown as PageResult<Essay>
     list.value = data.records || []
     total.value = data.total || 0
@@ -268,10 +270,10 @@ async function fetchList() {
 
 function openDialog(row?: Essay) {
   if (row) {
-    const { essayId, title, summary, content, coverImage, status, sort } = row
-    form.value = { essayId, title, summary, content, coverImage, status, sort }
+    const {essayId, title, summary, content, coverImage, status, sort} = row
+    form.value = {essayId, title, summary, content, coverImage, status, sort}
   } else {
-    form.value = { title: '', status: 1 }
+    form.value = {title: '', status: 1}
   }
   dialogVisible.value = true
 }
@@ -346,7 +348,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .manage-page {
   background: var(--card-bg);
-  
+
   border: var(--card-border);
   border-radius: var(--card-radius);
   padding: 20px;

@@ -9,16 +9,18 @@
       <div class="nav-right">
         <div class="search-wrapper" :class="{ expanded: searchExpanded }">
           <input
-            v-if="searchExpanded"
-            ref="searchInputRef"
-            v-model="searchKeyword"
-            type="text"
-            placeholder="搜索文章..."
-            @keyup.enter="handleSearch"
-            @blur="handleBlur"
+              v-if="searchExpanded"
+              ref="searchInputRef"
+              v-model="searchKeyword"
+              type="text"
+              placeholder="搜索文章..."
+              @keyup.enter="handleSearch"
+              @blur="handleBlur"
           />
           <button class="search-btn" @click="toggleSearch">
-            <el-icon><Search /></el-icon>
+            <el-icon>
+              <Search/>
+            </el-icon>
           </button>
         </div>
       </div>
@@ -27,9 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import { Search } from '@element-plus/icons-vue'
+import {nextTick, ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {Search} from '@element-plus/icons-vue'
 
 const router = useRouter()
 const searchExpanded = ref(false)
@@ -48,7 +50,7 @@ async function toggleSearch() {
 
 function handleSearch() {
   if (searchKeyword.value.trim()) {
-    router.push({ path: '/', query: { keyword: searchKeyword.value.trim() } })
+    router.push({path: '/', query: {keyword: searchKeyword.value.trim()}})
   }
   searchExpanded.value = false
 }

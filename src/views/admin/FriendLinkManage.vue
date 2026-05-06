@@ -6,15 +6,15 @@
     </div>
 
     <el-table :data="list" v-loading="loading" border>
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="url" label="链接" show-overflow-tooltip />
-      <el-table-column prop="description" label="描述" show-overflow-tooltip />
+      <el-table-column prop="name" label="名称"/>
+      <el-table-column prop="url" label="链接" show-overflow-tooltip/>
+      <el-table-column prop="description" label="描述" show-overflow-tooltip/>
       <el-table-column prop="status" label="状态" width="90">
         <template #default="{ row }">
           <el-tag :type="row.status === 1 ? 'success' : 'info'">{{ row.status === 1 ? '可见' : '隐藏' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="170" />
+      <el-table-column prop="createTime" label="创建时间" width="170"/>
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
           <el-button text size="small" @click="openDialog(row)">编辑</el-button>
@@ -28,37 +28,37 @@
     </el-table>
 
     <el-pagination
-      v-if="total > pageSize"
-      :current-page="pageNo"
-      :page-size="pageSize"
-      :total="total"
-      layout="total, prev, pager, next"
-      @current-change="(p: number) => { pageNo = p; fetchList() }"
-      class="pagination"
+        v-if="total > pageSize"
+        :current-page="pageNo"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="(p: number) => { pageNo = p; fetchList() }"
+        class="pagination"
     />
 
     <el-dialog v-model="dialogVisible" :title="form.linkId ? '编辑友链' : '新增友链'" width="500px" destroy-on-close>
       <el-form :model="form" label-width="80px">
         <el-form-item label="名称" required>
-          <el-input v-model="form.name" maxlength="100" />
+          <el-input v-model="form.name" maxlength="100"/>
         </el-form-item>
         <el-form-item label="链接" required>
-          <el-input v-model="form.url" maxlength="200" />
+          <el-input v-model="form.url" maxlength="200"/>
         </el-form-item>
         <el-form-item label="Logo">
-          <el-input v-model="form.logo" maxlength="500" placeholder="图片 URL" />
+          <el-input v-model="form.logo" maxlength="500" placeholder="图片 URL"/>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="form.description" type="textarea" maxlength="200" />
+          <el-input v-model="form.description" type="textarea" maxlength="200"/>
         </el-form-item>
         <el-form-item label="邮箱">
-          <el-input v-model="form.email" maxlength="100" />
+          <el-input v-model="form.email" maxlength="100"/>
         </el-form-item>
         <el-form-item label="状态">
-          <el-switch v-model="form.status" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="form.status" :active-value="1" :inactive-value="0"/>
         </el-form-item>
         <el-form-item label="排序">
-          <el-input-number v-model="form.sort" :min="0" :precision="2" />
+          <el-input-number v-model="form.sort" :min="0" :precision="2"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -70,9 +70,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getFriendLinkPage, addFriendLink, editFriendLink, deleteFriendLink } from '@/api/friendLink'
+import {onMounted, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {addFriendLink, deleteFriendLink, editFriendLink, getFriendLinkPage} from '@/api/friendLink'
 
 const list = ref<FriendLink[]>([])
 const total = ref(0)
@@ -81,12 +81,12 @@ const pageSize = ref(20)
 const loading = ref(false)
 const dialogVisible = ref(false)
 const saving = ref(false)
-const form = ref<FriendLinkForm>({ name: '', url: '', status: 1 })
+const form = ref<FriendLinkForm>({name: '', url: '', status: 1})
 
 async function fetchList() {
   loading.value = true
   try {
-    const data = await getFriendLinkPage({ pageNo: pageNo.value, pageSize: pageSize.value }) as unknown as PageResult<FriendLink>
+    const data = await getFriendLinkPage({pageNo: pageNo.value, pageSize: pageSize.value}) as unknown as PageResult<FriendLink>
     list.value = data.records || []
     total.value = data.total || 0
   } finally {
@@ -96,10 +96,10 @@ async function fetchList() {
 
 function openDialog(row?: FriendLink) {
   if (row) {
-    const { linkId, name, url, logo, description, email, status, sort } = row
-    form.value = { linkId, name, url, logo, description, email, status, sort }
+    const {linkId, name, url, logo, description, email, status, sort} = row
+    form.value = {linkId, name, url, logo, description, email, status, sort}
   } else {
-    form.value = { name: '', url: '', status: 1 }
+    form.value = {name: '', url: '', status: 1}
   }
   dialogVisible.value = true
 }
@@ -133,7 +133,7 @@ onMounted(fetchList)
 <style lang="scss" scoped>
 .manage-page {
   background: var(--card-bg);
-  
+
   border: var(--card-border);
   border-radius: var(--card-radius);
   padding: 20px;
@@ -145,7 +145,9 @@ onMounted(fetchList)
   align-items: center;
   margin-bottom: 16px;
 
-  h2 { font-size: 18px; }
+  h2 {
+    font-size: 18px;
+  }
 }
 
 .pagination {

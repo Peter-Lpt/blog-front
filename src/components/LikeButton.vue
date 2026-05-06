@@ -1,15 +1,17 @@
 <template>
   <button class="like-button" :class="{ liked }" @click="handleToggle">
-    <el-icon :size="20"><Pointer /></el-icon>
+    <el-icon :size="20">
+      <Pointer/>
+    </el-icon>
     <span>{{ Math.max(0, likeCount) }}</span>
   </button>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Pointer } from '@element-plus/icons-vue'
-import { toggleLike } from '@/api/like'
-import { getUserKey } from '@/utils/userKey'
+import {onMounted, ref} from 'vue'
+import {Pointer} from '@element-plus/icons-vue'
+import {toggleLike} from '@/api/like'
+import {getUserKey} from '@/utils/userKey'
 
 const props = defineProps<{
   essayId: string

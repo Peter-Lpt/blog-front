@@ -3,44 +3,59 @@
     <aside class="admin-sidebar">
       <div class="admin-title">后台管理</div>
       <el-menu
-        :default-active="route.path"
-        router
-        background-color="transparent"
+          :default-active="route.path"
+          router
+          background-color="transparent"
       >
         <el-menu-item index="/admin/essays">
-          <el-icon><Document /></el-icon>
+          <el-icon>
+            <Document/>
+          </el-icon>
           <span>文章管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/categories">
-          <el-icon><Folder /></el-icon>
+          <el-icon>
+            <Folder/>
+          </el-icon>
           <span>分类管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/tags">
-          <el-icon><PriceTag /></el-icon>
+          <el-icon>
+            <PriceTag/>
+          </el-icon>
           <span>标签管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/comments">
-          <el-icon><ChatDotRound /></el-icon>
+          <el-icon>
+            <ChatDotRound/>
+          </el-icon>
           <span>评论审核</span>
         </el-menu-item>
         <el-menu-item index="/admin/friend-links">
-          <el-icon><Link /></el-icon>
+          <el-icon>
+            <Link/>
+          </el-icon>
           <span>友链管理</span>
         </el-menu-item>
       </el-menu>
       <div class="admin-back">
-        <router-link to="/"><el-icon><Back /></el-icon> 返回前台</router-link>
+        <router-link to="/">
+          <el-icon>
+            <Back/>
+          </el-icon>
+          返回前台
+        </router-link>
       </div>
     </aside>
     <main class="admin-content">
-      <router-view />
+      <router-view/>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { Document, Folder, PriceTag, ChatDotRound, Link, Back } from '@element-plus/icons-vue'
+import {useRoute} from 'vue-router'
+import {Back, ChatDotRound, Document, Folder, Link, PriceTag} from '@element-plus/icons-vue'
 
 const route = useRoute()
 </script>

@@ -3,11 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import {computed} from 'vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import markdownItTaskLists from 'markdown-it-task-lists'
-import { full as markdownItEmoji } from 'markdown-it-emoji'
+import {full as markdownItEmoji} from 'markdown-it-emoji'
 import markdownItFootnote from 'markdown-it-footnote'
 import markdownItAnchor from 'markdown-it-anchor'
 import markdownItTocDoneRight from 'markdown-it-toc-done-right'
@@ -21,8 +21,9 @@ const md = new MarkdownIt({
   highlight(str: string, lang: string) {
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang }).value}</code></pre>`
-      } catch {}
+        return `<pre class="hljs"><code>${hljs.highlight(str, {language: lang}).value}</code></pre>`
+      } catch {
+      }
     }
     return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
   },

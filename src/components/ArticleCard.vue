@@ -10,14 +10,14 @@
         </div>
       </div>
       <div v-if="essay.coverImage" class="card-cover">
-        <img :src="essay.coverImage" :alt="essay.title" />
+        <img :src="essay.coverImage" :alt="essay.title"/>
       </div>
     </router-link>
   </article>
 </template>
 
 <script setup lang="ts">
-import { formatDate } from '@/utils/format'
+import {formatDate} from '@/utils/format'
 
 defineProps<{ essay: Essay }>()
 </script>

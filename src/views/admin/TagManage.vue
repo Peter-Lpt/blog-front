@@ -6,10 +6,10 @@
     </div>
 
     <el-table :data="list" v-loading="loading" border>
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="slug" label="Slug" />
-      <el-table-column prop="articleCount" label="文章数" width="90" />
-      <el-table-column prop="createTime" label="创建时间" width="170" />
+      <el-table-column prop="name" label="名称"/>
+      <el-table-column prop="slug" label="Slug"/>
+      <el-table-column prop="articleCount" label="文章数" width="90"/>
+      <el-table-column prop="createTime" label="创建时间" width="170"/>
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
           <el-button text size="small" @click="openDialog(row)">编辑</el-button>
@@ -23,22 +23,22 @@
     </el-table>
 
     <el-pagination
-      v-if="total > pageSize"
-      :current-page="pageNo"
-      :page-size="pageSize"
-      :total="total"
-      layout="total, prev, pager, next"
-      @current-change="(p: number) => { pageNo = p; fetchList() }"
-      class="pagination"
+        v-if="total > pageSize"
+        :current-page="pageNo"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="(p: number) => { pageNo = p; fetchList() }"
+        class="pagination"
     />
 
     <el-dialog v-model="dialogVisible" :title="form.tagId ? '编辑标签' : '新增标签'" width="400px" destroy-on-close>
       <el-form :model="form" label-width="60px">
         <el-form-item label="名称" required>
-          <el-input v-model="form.name" maxlength="50" />
+          <el-input v-model="form.name" maxlength="50"/>
         </el-form-item>
         <el-form-item label="Slug">
-          <el-input v-model="form.slug" maxlength="50" />
+          <el-input v-model="form.slug" maxlength="50"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -50,9 +50,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getTagPage, addTag, editTag, deleteTag } from '@/api/tag'
+import {onMounted, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {addTag, deleteTag, editTag, getTagPage} from '@/api/tag'
 
 const list = ref<Tag[]>([])
 const total = ref(0)
@@ -61,12 +61,12 @@ const pageSize = ref(20)
 const loading = ref(false)
 const dialogVisible = ref(false)
 const saving = ref(false)
-const form = ref<TagForm>({ name: '' })
+const form = ref<TagForm>({name: ''})
 
 async function fetchList() {
   loading.value = true
   try {
-    const data = await getTagPage({ pageNo: pageNo.value, pageSize: pageSize.value }) as unknown as PageResult<Tag>
+    const data = await getTagPage({pageNo: pageNo.value, pageSize: pageSize.value}) as unknown as PageResult<Tag>
     list.value = data.records || []
     total.value = data.total || 0
   } finally {
@@ -76,10 +76,10 @@ async function fetchList() {
 
 function openDialog(row?: Tag) {
   if (row) {
-    const { tagId, name, slug } = row
-    form.value = { tagId, name, slug }
+    const {tagId, name, slug} = row
+    form.value = {tagId, name, slug}
   } else {
-    form.value = { name: '' }
+    form.value = {name: ''}
   }
   dialogVisible.value = true
 }
@@ -113,7 +113,7 @@ onMounted(fetchList)
 <style lang="scss" scoped>
 .manage-page {
   background: var(--card-bg);
-  
+
   border: var(--card-border);
   border-radius: var(--card-radius);
   padding: 20px;
@@ -125,7 +125,9 @@ onMounted(fetchList)
   align-items: center;
   margin-bottom: 16px;
 
-  h2 { font-size: 18px; }
+  h2 {
+    font-size: 18px;
+  }
 }
 
 .pagination {

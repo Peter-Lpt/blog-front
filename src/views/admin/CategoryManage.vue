@@ -6,11 +6,11 @@
     </div>
 
     <el-table :data="list" v-loading="loading" border>
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="slug" label="Slug" />
-      <el-table-column prop="description" label="描述" show-overflow-tooltip />
-      <el-table-column prop="articleCount" label="文章数" width="90" />
-      <el-table-column prop="createTime" label="创建时间" width="170" />
+      <el-table-column prop="name" label="名称"/>
+      <el-table-column prop="slug" label="Slug"/>
+      <el-table-column prop="description" label="描述" show-overflow-tooltip/>
+      <el-table-column prop="articleCount" label="文章数" width="90"/>
+      <el-table-column prop="createTime" label="创建时间" width="170"/>
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
           <el-button text size="small" @click="openDialog(row)">编辑</el-button>
@@ -24,31 +24,31 @@
     </el-table>
 
     <el-pagination
-      v-if="total > pageSize"
-      :current-page="pageNo"
-      :page-size="pageSize"
-      :total="total"
-      layout="total, prev, pager, next"
-      @current-change="(p: number) => { pageNo = p; fetchList() }"
-      class="pagination"
+        v-if="total > pageSize"
+        :current-page="pageNo"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="(p: number) => { pageNo = p; fetchList() }"
+        class="pagination"
     />
 
     <el-dialog v-model="dialogVisible" :title="form.categoryId ? '编辑分类' : '新增分类'" width="500px" destroy-on-close>
       <el-form :model="form" label-width="80px">
         <el-form-item label="名称" required>
-          <el-input v-model="form.name" maxlength="50" />
+          <el-input v-model="form.name" maxlength="50"/>
         </el-form-item>
         <el-form-item label="Slug">
-          <el-input v-model="form.slug" maxlength="50" />
+          <el-input v-model="form.slug" maxlength="50"/>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="form.description" type="textarea" maxlength="200" />
+          <el-input v-model="form.description" type="textarea" maxlength="200"/>
         </el-form-item>
         <el-form-item label="图标">
-          <el-input v-model="form.icon" maxlength="100" />
+          <el-input v-model="form.icon" maxlength="100"/>
         </el-form-item>
         <el-form-item label="排序">
-          <el-input-number v-model="form.sort" :min="0" :precision="2" />
+          <el-input-number v-model="form.sort" :min="0" :precision="2"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -60,9 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getCategoryPage, addCategory, editCategory, deleteCategory } from '@/api/category'
+import {onMounted, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {addCategory, deleteCategory, editCategory, getCategoryPage} from '@/api/category'
 
 const list = ref<Category[]>([])
 const total = ref(0)
@@ -71,12 +71,12 @@ const pageSize = ref(20)
 const loading = ref(false)
 const dialogVisible = ref(false)
 const saving = ref(false)
-const form = ref<CategoryForm>({ name: '' })
+const form = ref<CategoryForm>({name: ''})
 
 async function fetchList() {
   loading.value = true
   try {
-    const data = await getCategoryPage({ pageNo: pageNo.value, pageSize: pageSize.value }) as unknown as PageResult<Category>
+    const data = await getCategoryPage({pageNo: pageNo.value, pageSize: pageSize.value}) as unknown as PageResult<Category>
     list.value = data.records || []
     total.value = data.total || 0
   } finally {
@@ -86,10 +86,10 @@ async function fetchList() {
 
 function openDialog(row?: Category) {
   if (row) {
-    const { categoryId, name, slug, description, icon, sort } = row
-    form.value = { categoryId, name, slug, description, icon, sort }
+    const {categoryId, name, slug, description, icon, sort} = row
+    form.value = {categoryId, name, slug, description, icon, sort}
   } else {
-    form.value = { name: '' }
+    form.value = {name: ''}
   }
   dialogVisible.value = true
 }
@@ -123,7 +123,7 @@ onMounted(fetchList)
 <style lang="scss" scoped>
 .manage-page {
   background: var(--card-bg);
-  
+
   border: var(--card-border);
   border-radius: var(--card-radius);
   padding: 20px;
@@ -135,7 +135,9 @@ onMounted(fetchList)
   align-items: center;
   margin-bottom: 16px;
 
-  h2 { font-size: 18px; }
+  h2 {
+    font-size: 18px;
+  }
 }
 
 .pagination {

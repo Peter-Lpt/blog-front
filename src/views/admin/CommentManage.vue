@@ -6,15 +6,15 @@
 
     <div class="filter-bar">
       <el-select v-model="filterStatus" placeholder="审核状态" clearable @change="fetchList">
-        <el-option label="待审核" :value="0" />
-        <el-option label="已通过" :value="1" />
-        <el-option label="已拒绝" :value="2" />
+        <el-option label="待审核" :value="0"/>
+        <el-option label="已通过" :value="1"/>
+        <el-option label="已拒绝" :value="2"/>
       </el-select>
     </div>
 
     <el-table :data="list" v-loading="loading" border>
-      <el-table-column prop="nickname" label="昵称" width="120" />
-      <el-table-column prop="content" label="内容" show-overflow-tooltip />
+      <el-table-column prop="nickname" label="昵称" width="120"/>
+      <el-table-column prop="content" label="内容" show-overflow-tooltip/>
       <el-table-column label="文章" width="180">
         <template #default="{ row }">
           <a v-if="row.essayTitle" :href="'/article/' + row.essayId" target="_blank" class="essay-link">{{ row.essayTitle }}</a>
@@ -28,7 +28,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="时间" width="170" />
+      <el-table-column prop="createTime" label="时间" width="170"/>
       <el-table-column label="操作" width="180" fixed="right">
         <template #default="{ row }">
           <template v-if="row.status === 0">
@@ -45,21 +45,21 @@
     </el-table>
 
     <el-pagination
-      v-if="total > pageSize"
-      :current-page="pageNo"
-      :page-size="pageSize"
-      :total="total"
-      layout="total, prev, pager, next"
-      @current-change="(p: number) => { pageNo = p; fetchList() }"
-      class="pagination"
+        v-if="total > pageSize"
+        :current-page="pageNo"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="(p: number) => { pageNo = p; fetchList() }"
+        class="pagination"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getCommentPageWithEssay, auditComment, deleteComment } from '@/api/comment'
+import {onMounted, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {auditComment, deleteComment, getCommentPageWithEssay} from '@/api/comment'
 
 interface CommentWithEssay extends Comment {
   essayTitle?: string
@@ -75,7 +75,7 @@ const filterStatus = ref<number | undefined>()
 async function fetchList() {
   loading.value = true
   try {
-    const params: PageParams = { pageNo: pageNo.value, pageSize: pageSize.value, status: filterStatus.value }
+    const params: PageParams = {pageNo: pageNo.value, pageSize: pageSize.value, status: filterStatus.value}
     const data = await getCommentPageWithEssay(params) as unknown as PageResult<CommentWithEssay>
     list.value = data.records || []
     total.value = data.total || 0
@@ -85,7 +85,7 @@ async function fetchList() {
 }
 
 async function handleAudit(commentId: string, status: number) {
-  await auditComment({ commentId, status })
+  await auditComment({commentId, status})
   ElMessage.success(status === 1 ? '已通过' : '已拒绝')
   fetchList()
 }
@@ -102,7 +102,7 @@ onMounted(fetchList)
 <style lang="scss" scoped>
 .manage-page {
   background: var(--card-bg);
-  
+
   border: var(--card-border);
   border-radius: var(--card-radius);
   padding: 20px;
@@ -114,7 +114,9 @@ onMounted(fetchList)
   align-items: center;
   margin-bottom: 16px;
 
-  h2 { font-size: 18px; }
+  h2 {
+    font-size: 18px;
+  }
 }
 
 .filter-bar {
@@ -130,6 +132,7 @@ onMounted(fetchList)
 .essay-link {
   color: #409eff;
   text-decoration: none;
+
   &:hover {
     text-decoration: underline;
   }

@@ -5,8 +5,8 @@
       <ul class="category-list">
         <li v-for="cat in configStore.categories" :key="cat.categoryId">
           <router-link
-            :to="{ path: '/', query: { categoryId: cat.categoryId } }"
-            :class="{ active: currentCategoryId === cat.categoryId }"
+              :to="{ path: '/', query: { categoryId: cat.categoryId } }"
+              :class="{ active: currentCategoryId === cat.categoryId }"
           >
             <span class="cat-icon">{{ cat.name[0] }}</span>
             <span class="cat-name">{{ cat.name }}</span>
@@ -18,10 +18,10 @@
       <h3 class="section-title">标签云</h3>
       <div class="tag-cloud">
         <router-link
-          v-for="tag in configStore.tags"
-          :key="tag.tagId"
-          :to="{ path: '/', query: { tagId: tag.tagId } }"
-          :class="{ active: currentTagId === tag.tagId }"
+            v-for="tag in configStore.tags"
+            :key="tag.tagId"
+            :to="{ path: '/', query: { tagId: tag.tagId } }"
+            :class="{ active: currentTagId === tag.tagId }"
         >
           {{ tag.name }}
         </router-link>
@@ -31,9 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useConfigStore } from '@/stores/config'
+import {computed, onMounted} from 'vue'
+import {useRoute} from 'vue-router'
+import {useConfigStore} from '@/stores/config'
 
 const route = useRoute()
 const configStore = useConfigStore()

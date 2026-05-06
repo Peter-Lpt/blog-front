@@ -4,17 +4,17 @@
     <div class="link-grid">
       <div v-for="link in links" :key="link.linkId" class="link-card">
         <a :href="link.url" target="_blank" rel="noopener noreferrer">
-          <img v-if="link.logo" :src="link.logo" :alt="link.name" class="link-logo" />
+          <img v-if="link.logo" :src="link.logo" :alt="link.name" class="link-logo"/>
           <div v-else class="link-logo-placeholder">{{ link.name[0] }}</div>
           <h3>{{ link.name }}</h3>
           <p>{{ link.description }}</p>
         </a>
       </div>
     </div>
-    <el-empty v-if="!links.length" description="暂无友链" />
+    <el-empty v-if="!links.length" description="暂无友链"/>
 
     <div class="apply-section">
-      <el-divider />
+      <el-divider/>
       <el-button type="primary" @click="showApplyDialog = true">申请友链</el-button>
       <p class="apply-tip">交换友链请先将本站加入您的友情链接，然后填写以下信息提交申请。</p>
     </div>
@@ -22,19 +22,19 @@
     <el-dialog v-model="showApplyDialog" title="申请友链" width="500px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" placeholder="网站/博客名称" />
+          <el-input v-model="form.name" placeholder="网站/博客名称"/>
         </el-form-item>
         <el-form-item label="地址" prop="url">
-          <el-input v-model="form.url" placeholder="https://example.com" />
+          <el-input v-model="form.url" placeholder="https://example.com"/>
         </el-form-item>
         <el-form-item label="Logo">
-          <el-input v-model="form.logo" placeholder="Logo 图片链接（选填）" />
+          <el-input v-model="form.logo" placeholder="Logo 图片链接（选填）"/>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="form.description" type="textarea" :rows="2" placeholder="简短描述（选填）" />
+          <el-input v-model="form.description" type="textarea" :rows="2" placeholder="简短描述（选填）"/>
         </el-form-item>
         <el-form-item label="邮箱">
-          <el-input v-model="form.email" placeholder="联系邮箱（选填）" />
+          <el-input v-model="form.email" placeholder="联系邮箱（选填）"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -46,15 +46,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import type { FormInstance, FormRules } from 'element-plus'
-import { getFriendLinkList, applyFriendLink } from '@/api/friendLink'
+import {onMounted, reactive, ref} from 'vue'
+import type {FormInstance, FormRules} from 'element-plus'
+import {ElMessage} from 'element-plus'
+import {applyFriendLink, getFriendLinkList} from '@/api/friendLink'
 
 const links = ref<FriendLink[]>([])
 
 onMounted(async () => {
-  const data = await getFriendLinkList({ status: 1 }) as unknown as FriendLink[]
+  const data = await getFriendLinkList({status: 1}) as unknown as FriendLink[]
   links.value = data || []
 })
 
@@ -69,10 +69,10 @@ const form = reactive<FriendLinkForm>({
 })
 
 const rules: FormRules = {
-  name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+  name: [{required: true, message: '请输入名称', trigger: 'blur'}],
   url: [
-    { required: true, message: '请输入地址', trigger: 'blur' },
-    { pattern: /^https?:\/\/.+/, message: '请输入有效的网址', trigger: 'blur' },
+    {required: true, message: '请输入地址', trigger: 'blur'},
+    {pattern: /^https?:\/\/.+/, message: '请输入有效的网址', trigger: 'blur'},
   ],
 }
 
