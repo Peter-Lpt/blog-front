@@ -208,6 +208,7 @@ const form = ref<EssayForm>({title: '', status: 1})
 
 const showImportDialog = ref(false)
 const uploadRef = ref()
+void uploadRef
 const selectedFiles = ref<File[]>([])
 const importing = ref(false)
 
@@ -301,7 +302,7 @@ async function handleDelete(essayId: string) {
   fetchList()
 }
 
-function handleFileSelect(file: any, fileList: any[]) {
+function handleFileSelect(_file: any, fileList: any[]) {
   selectedFiles.value = fileList.map(f => f.raw).filter(Boolean)
 }
 
