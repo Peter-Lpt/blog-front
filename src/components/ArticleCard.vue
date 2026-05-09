@@ -24,15 +24,35 @@ defineProps<{ essay: Essay }>()
 
 <style lang="scss" scoped>
 .article-card {
-  padding: 24px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  margin-bottom: 16px;
-  transition: all 0.3s ease;
+  padding: 28px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  margin-bottom: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--card-bg);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
 
   &:hover {
     border-color: var(--primary-color);
-    box-shadow: 0 2px 12px rgba(201, 169, 110, 0.1);
+    box-shadow: var(--card-hover-shadow);
+    transform: translateY(-2px);
+
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
@@ -58,21 +78,22 @@ defineProps<{ essay: Essay }>()
 }
 
 .card-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
   line-height: 1.4;
   color: var(--text-color);
   transition: color 0.2s;
+  letter-spacing: -0.01em;
 }
 
 .card-summary {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.8;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -90,16 +111,22 @@ defineProps<{ essay: Essay }>()
 }
 
 .card-cover {
-  width: 180px;
-  height: 120px;
+  width: 200px;
+  height: 140px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: var(--card-radius);
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
   }
 }
 

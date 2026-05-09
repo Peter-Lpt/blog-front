@@ -2,7 +2,19 @@
   <div class="manage-page">
     <div class="page-header">
       <h2>文章管理</h2>
-      <div>
+      <div class="header-actions">
+        <el-input
+            v-model="searchKeyword"
+            placeholder="搜索文章标题..."
+            clearable
+            class="search-input"
+            @clear="handleSearch"
+            @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
         <el-button type="success" @click="showImportDialog = true">导入 Markdown</el-button>
         <el-button type="primary" @click="openDialog()">新增文章</el-button>
       </div>
@@ -188,7 +200,7 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import {Plus, UploadFilled} from '@element-plus/icons-vue'
+import {Plus, UploadFilled, Search} from '@element-plus/icons-vue'
 import {addEssay, deleteEssay, editEssay, getEssayPage, importMarkdown} from '@/api/essay'
 import {addCategory, getCategoryList} from '@/api/category'
 import {addTag, getTagList} from '@/api/tag'
@@ -199,6 +211,7 @@ const pageNo = ref(1)
 const pageSize = ref(20)
 const loading = ref(false)
 const filterStatus = ref<number | undefined>()
+const searchKeyword = ref('')
 const categories = ref<Category[]>([])
 const tags = ref<Tag[]>([])
 
@@ -260,13 +273,23 @@ async function handleCreateTag() {
 async function fetchList() {
   loading.value = true
   try {
-    const params: PageParams = {pageNo: pageNo.value, pageSize: pageSize.value, status: filterStatus.value}
+    const params: PageParams = {
+      pageNo: pageNo.value,
+      pageSize: pageSize.value,
+      status: filterStatus.value,
+      keyword: searchKeyword.value || undefined
+    }
     const data = await getEssayPage(params) as unknown as PageResult<Essay>
     list.value = data.records || []
     total.value = data.total || 0
   } finally {
     loading.value = false
   }
+}
+
+function handleSearch() {
+  pageNo.value = 1
+  fetchList()
 }
 
 function openDialog(row?: Essay) {
@@ -349,29 +372,82 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .manage-page {
   background: var(--card-bg);
-
   border: var(--card-border);
   border-radius: var(--card-radius);
-  padding: 20px;
+  padding: 24px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
 
   h2 {
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  width: 280px;
+
+  :deep(.el-input__wrapper) {
+    background: var(--glass-bg) !important;
+    box-shadow: 0 0 0 1px var(--border-color) inset !important;
+    border-radius: 8px;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+      background: var(--card-bg) !important;
+    }
+  }
+
+  :deep(.el-input__inner) {
+    color: var(--text-color);
+
+    &::placeholder {
+      color: var(--text-secondary);
+    }
+  }
+
+  :deep(.el-input__prefix-inner) {
+    color: var(--text-secondary);
   }
 }
 
 .filter-bar {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+
+  .el-select {
+    :deep(.el-select__wrapper) {
+      background: var(--glass-bg);
+      box-shadow: 0 0 0 1px var(--border-color) inset;
+
+      &:hover {
+        box-shadow: 0 0 0 1px var(--primary-color) inset;
+      }
+    }
+  }
 }
 
 .pagination {
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }

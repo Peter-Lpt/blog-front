@@ -82,7 +82,10 @@ watch(() => route.query, (q) => {
 <style lang="scss" scoped>
 .home-view {
   display: flex;
-  gap: 40px;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 0;
 }
 
 .home-main {
@@ -91,16 +94,22 @@ watch(() => route.query, (q) => {
 }
 
 .home-sidebar {
-  width: 260px;
+  width: 280px;
   flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+  height: fit-content;
 }
 
 @media (max-width: 768px) {
   .home-view {
     flex-direction: column;
+    gap: 24px;
+    padding: 20px 0;
   }
   .home-sidebar {
     width: 100%;
+    position: static;
   }
 }
 </style>

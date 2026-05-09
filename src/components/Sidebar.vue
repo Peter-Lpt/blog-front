@@ -50,18 +50,37 @@ onMounted(() => {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 36px;
 }
 
 .sidebar-section {
-  padding: 0;
+  padding: 24px;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: var(--card-hover-shadow);
+  }
 }
 
 .section-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
   color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--primary-color);
+    border-radius: 2px;
+  }
 }
 
 .category-list {
@@ -109,20 +128,22 @@ onMounted(() => {
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 
   a {
-    padding: 4px 12px;
+    padding: 6px 14px;
     font-size: 13px;
     color: var(--text-secondary);
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 20px;
     transition: all 0.2s;
+    border: 1px solid transparent;
 
     &:hover,
     &.active {
       color: var(--primary-color);
       background: rgba(201, 169, 110, 0.1);
+      border-color: var(--primary-color);
     }
   }
 }

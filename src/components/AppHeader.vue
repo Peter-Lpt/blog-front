@@ -128,11 +128,20 @@ function handleBlur() {
   }
 
   &.expanded input {
-    width: 200px;
-    padding: 6px 12px;
+    width: 220px;
+    padding: 8px 12px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--card-bg);
+
+    &:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(201, 169, 110, 0.2);
+    }
+
+    &::placeholder {
+      color: var(--text-secondary);
+    }
   }
 }
 
