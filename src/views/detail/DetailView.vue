@@ -52,7 +52,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .detail-view {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   background: var(--card-bg);
   border: var(--card-border);
@@ -112,5 +112,19 @@ onMounted(async () => {
   text-align: center;
   padding: 60px;
   color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .detail-view {
+    max-width: 100%;
+    padding: 20px 16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .detail-title {
+    font-size: 22px;
+  }
 }
 </style>

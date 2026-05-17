@@ -1,7 +1,11 @@
 <template>
   <AppHeader v-if="!isAdmin"/>
   <main :class="{ 'admin-main': isAdmin }">
-    <router-view/>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </main>
   <AppFooter v-if="!isAdmin"/>
   <ThemeToggle/>

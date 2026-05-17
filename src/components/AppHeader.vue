@@ -1,12 +1,12 @@
 <template>
   <header class="app-header">
     <div class="header-content">
-      <router-link to="/" class="logo">Qs Blog</router-link>
-      <nav class="nav-center">
-        <router-link to="/">所有文章</router-link>
-        <router-link to="/friend-links">友情链接</router-link>
-      </nav>
-      <div class="nav-right">
+      <router-link to="/" class="logo">PeterQs' Blog</router-link>
+      <div class="nav-group">
+        <nav class="nav-center">
+          <router-link to="/">所有文章</router-link>
+          <router-link to="/friend-links">友情链接</router-link>
+        </nav>
         <div class="search-wrapper" :class="{ expanded: searchExpanded }">
           <input
               v-if="searchExpanded"
@@ -64,51 +64,76 @@ function handleBlur() {
 
 <style lang="scss" scoped>
 .app-header {
-  background: transparent;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
 .header-content {
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
-  height: 64px;
+  padding: 0 40px;
+  height: 72px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .logo {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: var(--text-color);
   text-decoration: none;
-  flex-shrink: 0;
+  letter-spacing: -0.02em;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--primary-color);
+  }
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .nav-center {
-  flex: 1;
   display: flex;
-  justify-content: center;
-  gap: 32px;
+  gap: 28px;
 
   a {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 15px;
     text-decoration: none;
     transition: color 0.2s;
-    padding: 4px 0;
+    padding: 6px 0;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      transition: width 0.3s;
+    }
 
     &:hover,
     &.router-link-exact-active {
       color: var(--text-color);
+
+      &::after {
+        width: 100%;
+      }
     }
   }
-}
-
-.nav-right {
-  flex-shrink: 0;
 }
 
 .search-wrapper {
@@ -128,15 +153,15 @@ function handleBlur() {
   }
 
   &.expanded input {
-    width: 220px;
-    padding: 8px 12px;
+    width: 240px;
+    padding: 10px 16px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--card-bg);
 
     &:focus {
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(201, 169, 110, 0.2);
+      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
     }
 
     &::placeholder {
@@ -146,9 +171,9 @@ function handleBlur() {
 }
 
 .search-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -161,6 +186,43 @@ function handleBlur() {
   &:hover {
     color: var(--text-color);
     background: var(--glass-bg);
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0 20px;
+    height: 64px;
+  }
+
+  .nav-group {
+    gap: 6px;
+  }
+
+  .nav-center {
+    gap: 16px;
+
+    a {
+      font-size: 14px;
+    }
+  }
+
+  .search-wrapper.expanded input {
+    width: 160px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-center {
+    gap: 12px;
+  }
+
+  .search-wrapper.expanded input {
+    width: 120px;
   }
 }
 </style>

@@ -72,4 +72,14 @@ onMounted(() => {
     transform: scale(0.95);
   }
 }
+
+@media (max-width: 768px) {
+  .theme-toggle {
+    top: auto;
+    bottom: 24px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+}
 </style>

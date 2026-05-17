@@ -72,7 +72,7 @@ const rules: FormRules = {
   name: [{required: true, message: '请输入名称', trigger: 'blur'}],
   url: [
     {required: true, message: '请输入地址', trigger: 'blur'},
-    {pattern: /^https?:\/\/.+/, message: '请输入有效的网址', trigger: 'blur'},
+    {pattern: /^https?:\/\//, message: '请输入有效的网址', trigger: 'blur'},
   ],
 }
 
@@ -163,6 +163,12 @@ async function handleApply() {
     color: var(--text-secondary);
     font-size: 13px;
     margin-top: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .link-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
   <div class="home-view">
+    <aside class="home-sidebar">
+      <Sidebar/>
+    </aside>
     <div class="home-main">
       <ActiveFilters
           :keyword="keyword"
@@ -9,9 +12,6 @@
       />
       <ArticleList :essays="essays" :total="total" :page-no="pageNo" :page-size="pageSize" @page-change="handlePageChange"/>
     </div>
-    <aside class="home-sidebar">
-      <Sidebar/>
-    </aside>
   </div>
 </template>
 
@@ -83,22 +83,22 @@ watch(() => route.query, (q) => {
 .home-view {
   display: flex;
   gap: 48px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 0;
-}
-
-.home-main {
-  flex: 1;
-  min-width: 0;
+  padding: 40px 0;
 }
 
 .home-sidebar {
   width: 280px;
   flex-shrink: 0;
   position: sticky;
-  top: 80px;
+  top: 96px;
   height: fit-content;
+}
+
+.home-main {
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 768px) {
@@ -107,6 +107,7 @@ watch(() => route.query, (q) => {
     gap: 24px;
     padding: 20px 0;
   }
+
   .home-sidebar {
     width: 100%;
     position: static;

@@ -29,9 +29,9 @@ a {
 
 main {
   flex: 1;
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
   width: 100%;
 
   &.admin-main {
@@ -225,4 +225,28 @@ main {
 .el-message-box {
   --el-messagebox-title-color: var(--text-color);
   border-radius: var(--glass-radius);
+}
+
+/* 路由过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 移动端基础样式 */
+@media (max-width: 768px) {
+  main {
+    padding: 0 16px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 0 12px;
+  }
 }

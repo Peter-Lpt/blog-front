@@ -2,22 +2,22 @@
 :root {
 	/* 浅色主题（默认） */
 	--primary-color: #c9a96e;
-	--bg-gradient: #f8f6f2;
+	--bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
 	--text-color: #1a1a1a;
-	--text-secondary: #888;
-	--border-color: #eae6df;
+	--text-secondary: #666;
+	--border-color: #e8e8e8;
 
-	--card-bg: #fff;
-	--card-border: 1px solid rgba(201, 169, 110, 0.15);
-	--card-hover-shadow: 0 4px 24px rgba(201, 169, 110, 0.15);
-	--card-radius: 12px;
+	--card-bg: #ffffff;
+	--card-border: 1px solid rgba(0, 0, 0, 0.06);
+	--card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+	--card-radius: 16px;
 
-	--glass-bg: rgba(255, 255, 255, 0.85);
-	--glass-bg-strong: rgba(255, 255, 255, 0.92);
-	--glass-blur: 12px;
-	--glass-border: 1px solid rgba(201, 169, 110, 0.15);
-	--glass-shadow: none;
-	--glass-radius: 12px;
+	--glass-bg: rgba(255, 255, 255, 0.9);
+	--glass-bg-strong: rgba(255, 255, 255, 0.95);
+	--glass-blur: 20px;
+	--glass-border: 1px solid rgba(0, 0, 0, 0.05);
+	--glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+	--glass-radius: 16px;
 
 	--el-color-primary: #c9a96e;
 	--el-color-success: #67c23a;
@@ -29,19 +29,21 @@
 /* 暗色主题 */
 [data-theme="dark"] {
 	--primary-color: #d4af37;
-	--bg-gradient: #0a0a0a;
+	--bg-gradient: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
 	--text-color: #e5e5e5;
 	--text-secondary: #999;
 	--border-color: #2a2a2a;
 
 	--card-bg: #1a1a1a;
-	--card-border: 1px solid rgba(212, 175, 55, 0.2);
-	--card-hover-shadow: 0 4px 24px rgba(212, 175, 55, 0.15);
+	--card-border: 1px solid rgba(212, 175, 55, 0.15);
+	--card-hover-shadow: 0 8px 30px rgba(212, 175, 55, 0.1);
+	--card-radius: 16px;
 
-	--glass-bg: rgba(26, 26, 26, 0.85);
-	--glass-bg-strong: rgba(26, 26, 26, 0.92);
-	--glass-border: 1px solid rgba(212, 175, 55, 0.2);
-	--glass-shadow: none;
+	--glass-bg: rgba(26, 26, 26, 0.9);
+	--glass-bg-strong: rgba(26, 26, 26, 0.95);
+	--glass-blur: 20px;
+	--glass-border: 1px solid rgba(212, 175, 55, 0.15);
+	--glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 
 	--el-color-primary: #d4af37;
 	--el-color-success: #67c23a;
