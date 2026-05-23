@@ -237,6 +237,88 @@ main {
   opacity: 0;
 }
 
+/* Element Plus 暗色模式覆盖 */
+[data-theme="dark"] {
+  // 弹窗背景
+  .el-dialog {
+    --el-dialog-bg-color: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  // 输入框背景 - 提亮
+  .el-input__wrapper,
+  .el-textarea__inner {
+    background: rgba(38, 38, 38, 0.9) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  }
+
+  .el-input__wrapper:hover,
+  .el-textarea__inner:hover {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset !important;
+  }
+
+  .el-input__wrapper.is-focus,
+  .el-textarea__inner:focus {
+    box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+  }
+
+  // 表头背景
+  .el-table th.el-table__cell {
+    background: rgba(40, 40, 40, 0.95) !important;
+  }
+
+  // 表格 hover 效果增强
+  .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+  }
+
+  // 当前行背景
+  .el-table__body tr.current-row > td.el-table__cell {
+    background: rgba(212, 175, 55, 0.08) !important;
+  }
+
+  // 空状态文字
+  .el-empty__description p {
+    color: #999;
+  }
+
+  // input-number 按钮
+  .el-input-number {
+    --el-input-number-bg-color: rgba(38, 38, 38, 0.9);
+  }
+
+  // 按钮 text hover 增强
+  .el-button--text:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  // 弹窗按钮区域背景
+  .el-dialog__footer {
+    background: rgba(30, 30, 30, 0.5);
+  }
+
+  // 分页器
+  .el-pagination {
+    --el-pagination-button-bg-color: rgba(38, 38, 38, 0.9);
+  }
+
+  // 下拉菜单
+  .el-select-dropdown {
+    background-color: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  // 表格边框
+  .el-table--border {
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  // el-tag 在暗色模式下的边框
+  .el-tag--dark {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
 /* 移动端基础样式 */
 @media (max-width: 768px) {
   main {

@@ -1,63 +1,112 @@
 /* 主题变量系统 - 仅浅色和暗色 */
 :root {
-	/* 浅色主题（默认） */
-	--primary-color: #c9a96e;
-	--bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
-	--text-color: #1a1a1a;
-	--text-secondary: #666;
-	--border-color: #e8e8e8;
+  /* 浅色主题（默认） */
+  --primary-color: #c9a96e;
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+  --text-color: #1a1a1a;
+  --text-secondary: #666;
+  --border-color: #e8e8e8;
 
-	--card-bg: #ffffff;
-	--card-border: 1px solid rgba(0, 0, 0, 0.06);
-	--card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-	--card-radius: 16px;
+  --card-bg: #ffffff;
+  --card-border: 1px solid rgba(0, 0, 0, 0.06);
+  --card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --card-radius: 16px;
 
-	--glass-bg: rgba(255, 255, 255, 0.9);
-	--glass-bg-strong: rgba(255, 255, 255, 0.95);
-	--glass-blur: 20px;
-	--glass-border: 1px solid rgba(0, 0, 0, 0.05);
-	--glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-	--glass-radius: 16px;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-bg-strong: rgba(255, 255, 255, 0.95);
+  --glass-blur: 20px;
+  --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --glass-radius: 16px;
 
-	--el-color-primary: #c9a96e;
-	--el-color-success: #67c23a;
-	--el-color-warning: #e6a23c;
-	--el-color-danger: #f56c6c;
-	--el-color-info: #909399;
+  /* Element Plus 浅色主题色 */
+  --el-color-primary: #c9a96e;
+  --el-color-primary-light-3: #d4bb8e;
+  --el-color-primary-light-5: #dfd0b0;
+  --el-color-primary-light-7: #eae4d0;
+  --el-color-primary-light-8: #f0ead9;
+  --el-color-primary-light-9: #f7f3eb;
+  --el-color-primary-dark-2: #a88a54;
 }
 
-/* 暗色主题 */
+/* 暗色主题 - 自定义变量 */
 [data-theme="dark"] {
-	--primary-color: #d4af37;
-	--bg-gradient: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
-	--text-color: #e5e5e5;
-	--text-secondary: #999;
-	--border-color: #2a2a2a;
+  --primary-color: #d4af37;
+  --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+  --text-color: #e5e5e5;
+  --text-secondary: #999;
+  --border-color: #333;
 
-	--card-bg: #1a1a1a;
-	--card-border: 1px solid rgba(212, 175, 55, 0.15);
-	--card-hover-shadow: 0 8px 30px rgba(212, 175, 55, 0.1);
-	--card-radius: 16px;
+  --card-bg: #2a2a2a;
+  --card-border: 1px solid rgba(212, 175, 55, 0.15);
+  --card-hover-shadow: 0 8px 30px rgba(212, 175, 55, 0.08);
+  --card-radius: 16px;
 
-	--glass-bg: rgba(26, 26, 26, 0.9);
-	--glass-bg-strong: rgba(26, 26, 26, 0.95);
-	--glass-blur: 20px;
-	--glass-border: 1px solid rgba(212, 175, 55, 0.15);
-	--glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --glass-bg: rgba(42, 42, 42, 0.85);
+  --glass-bg-strong: rgba(48, 48, 48, 0.95);
+  --glass-blur: 20px;
+  --glass-border: 1px solid rgba(212, 175, 55, 0.15);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
 
-	--el-color-primary: #d4af37;
-	--el-color-success: #67c23a;
-	--el-color-warning: #e6a23c;
-	--el-color-danger: #f56c6c;
-	--el-color-info: #8d8d8d;
+/* 暗色主题 - Element Plus 变量（用 html.dark 覆盖 EP 默认暗色） */
+html.dark {
+  /* 主题色统一为金色 */
+  --el-color-primary: #d4af37;
+  --el-color-primary-light-3: #ddb65e;
+  --el-color-primary-light-5: #e6c683;
+  --el-color-primary-light-7: #efd7a8;
+  --el-color-primary-light-8: #f3e0bd;
+  --el-color-primary-light-9: #f9efd6;
+  --el-color-primary-dark-2: #b89526;
 
-	--el-bg-color: #1a1a1a;
-	--el-bg-color-overlay: #242424;
-	--el-bg-color-page: #111;
-	--el-text-color-primary: #e5e5e5;
-	--el-text-color-regular: #ccc;
-	--el-text-color-secondary: #999;
-	--el-border-color: #333;
-	--el-border-color-light: #2a2a2a;
-	--el-border-color-lighter: #222;
+  /* 背景 & 文字 */
+  --el-bg-color: #2a2a2a;
+  --el-bg-color-page: #242424;
+  --el-bg-color-overlay: #333;
+  --el-text-color-primary: #e5e5e5;
+  --el-text-color-regular: #ccc;
+  --el-text-color-secondary: #999;
+
+  /* 边框 */
+  --el-border-color: #444;
+  --el-border-color-light: #3a3a3a;
+  --el-border-color-lighter: #333;
+  --el-border-color-hover: #d4af37;
+
+  /* 填充色（输入框、选中态背景） */
+  --el-fill-color-blank: #333;
+  --el-fill-color: #3a3a3a;
+  --el-fill-color-light: #404040;
+  --el-fill-color-lighter: #353535;
+  --el-fill-color-dark: #2e2e2e;
+
+  /* 对话框 */
+  --el-dialog-bg-color: #333;
+
+  /* 下拉框 */
+  --el-select-dropdown-bg-color: #333;
+  --el-select-border-color-hover: #d4af37;
+
+  /* 表格 */
+  --el-table-header-bg-color: #333;
+  --el-table-header-text-color: #e5e5e5;
+  --el-table-row-hover-bg-color: #3a3a3a;
+  --el-table-border-color: #444;
+  --el-table-current-row-bg-color: rgba(212, 175, 55, 0.12);
+
+  /* 分页器 */
+  --el-pagination-bg-color: transparent;
+  --el-pagination-hover-color: #d4af37;
+
+  /* 空状态 */
+  --el-empty-description-color: #999;
+
+  /* 菜单 */
+  --el-menu-bg-color: transparent;
+  --el-menu-text-color: #ccc;
+  --el-menu-active-color: #d4af37;
+
+  /* 选中态高亮 */
+  --el-menu-hover-bg-color: rgba(212, 175, 55, 0.1);
 }

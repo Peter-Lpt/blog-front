@@ -18,7 +18,9 @@ const STORAGE_KEY = 'blog-theme'
 
 function applyTheme(dark: boolean) {
   isDark.value = dark
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+  const el = document.documentElement
+  el.setAttribute('data-theme', dark ? 'dark' : 'light')
+  el.classList.toggle('dark', dark)
   localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light')
 }
 
@@ -48,12 +50,13 @@ onMounted(() => {
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: #1a1a1a;
+  background: var(--card-bg);
+  border: var(--card-border);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #d4af37;
+  color: var(--primary-color);
   transition: all 0.3s ease;
   z-index: 1000;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);

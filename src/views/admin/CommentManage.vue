@@ -130,7 +130,7 @@ onMounted(fetchList)
 }
 
 .essay-link {
-  color: #409eff;
+  color: var(--primary-color);
   text-decoration: none;
 
   &:hover {
@@ -139,7 +139,7 @@ onMounted(fetchList)
 }
 
 .essay-id {
-  color: #909399;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 </style>
