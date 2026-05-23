@@ -12,5 +12,6 @@ interface PageParams {
     keyword?: string
     categoryId?: string
     tagId?: string
+    date?: string
     status?: number
 }

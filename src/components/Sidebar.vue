@@ -15,6 +15,16 @@
       </a>
     </div>
 
+    <!-- 日历面板 -->
+    <div class="sidebar-section">
+      <h3 class="section-title">日历归档</h3>
+      <CalendarPanel
+        :article-dates="articleDates || {}"
+        :selected-date="selectedDate"
+        @select="handleDateSelect"
+      />
+    </div>
+
     <div class="sidebar-section">
       <h3 class="section-title">分门别类</h3>
       <ul class="category-list">
@@ -46,15 +56,37 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted} from 'vue'
-import {useRoute} from 'vue-router'
-import {useConfigStore} from '@/stores/config'
+import { computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useConfigStore } from '@/stores/config'
+import CalendarPanel from '@/components/CalendarPanel.vue'
+
+const props = defineProps<{
+  articleDates?: Record<string, number>
+  selectedDate?: string | null
+}>()
+
+const emit = defineEmits<{
+  dateSelect: [date: string | null]
+}>()
 
 const route = useRoute()
+const router = useRouter()
 const configStore = useConfigStore()
 
 const currentCategoryId = computed(() => route.query.categoryId as string | undefined)
 const currentTagId = computed(() => route.query.tagId as string | undefined)
+
+function handleDateSelect(date: string | null) {
+  const query = { ...route.query }
+  if (date) {
+    query.date = date
+  } else {
+    delete query.date
+  }
+  router.replace({ query })
+  emit('dateSelect', date)
+}
 
 onMounted(() => {
   configStore.loadAll()

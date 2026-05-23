@@ -10,6 +10,9 @@
     <el-tag v-if="tagId" closable @close="$emit('remove', 'tagId')">
       标签: {{ tagName }}
     </el-tag>
+    <el-tag v-if="date" closable @close="$emit('remove', 'date')">
+      日期: {{ date }}
+    </el-tag>
   </div>
 </template>
 
@@ -21,6 +24,7 @@ const props = defineProps<{
   keyword: string
   categoryId?: string
   tagId?: string
+  date?: string
 }>()
 
 defineEmits<{
@@ -29,7 +33,7 @@ defineEmits<{
 
 const configStore = useConfigStore()
 
-const hasFilters = computed(() => props.keyword || props.categoryId || props.tagId)
+const hasFilters = computed(() => props.keyword || props.categoryId || props.tagId || props.date)
 const categoryName = computed(() => configStore.categories.find(c => c.categoryId === props.categoryId)?.name || '')
 const tagName = computed(() => configStore.tags.find(t => t.tagId === props.tagId)?.name || '')
 </script>

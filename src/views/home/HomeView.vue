@@ -1,13 +1,17 @@
 <template>
   <div class="home-view">
     <aside class="home-sidebar">
-      <Sidebar/>
+      <Sidebar
+        :article-dates="articleDates"
+        :selected-date="date"
+      />
     </aside>
     <div class="home-main">
       <ActiveFilters
           :keyword="keyword"
           :category-id="categoryId"
           :tag-id="tagId"
+          :date="date"
           @remove="handleRemoveFilter"
       />
       <ArticleList :essays="essays" :total="total" :page-no="pageNo" :page-size="pageSize" @page-change="handlePageChange"/>
@@ -18,7 +22,7 @@
 <script setup lang="ts">
 import {ref, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {getEssayPage} from '@/api/essay'
+import {getEssayPage, getEssayDates} from '@/api/essay'
 import ArticleList from '@/components/ArticleList.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import ActiveFilters from '@/components/ActiveFilters.vue'
@@ -33,6 +37,8 @@ const pageSize = ref(10)
 const keyword = ref('')
 const categoryId = ref<string | undefined>()
 const tagId = ref<string | undefined>()
+const date = ref<string | undefined>()
+const articleDates = ref<Record<string, number>>({})
 
 async function fetchEssays() {
   const params: PageParams = {
@@ -41,10 +47,19 @@ async function fetchEssays() {
     keyword: keyword.value || undefined,
     categoryId: categoryId.value,
     tagId: tagId.value,
+    date: date.value,
   }
   const data = await getEssayPage(params) as unknown as PageResult<Essay>
   essays.value = data.records || []
   total.value = data.total || 0
+}
+
+async function fetchArticleDates() {
+  try {
+    articleDates.value = await getEssayDates()
+  } catch {
+    articleDates.value = {}
+  }
 }
 
 function handlePageChange(page: number) {
@@ -66,6 +81,10 @@ function handleRemoveFilter(type: string) {
     tagId.value = undefined
     delete query.tagId
   }
+  if (type === 'date') {
+    date.value = undefined
+    delete query.date
+  }
   pageNo.value = 1
   router.replace({query})
 }
@@ -74,9 +93,13 @@ watch(() => route.query, (q) => {
   keyword.value = (q.keyword as string) || ''
   categoryId.value = q.categoryId as string | undefined
   tagId.value = q.tagId as string | undefined
+  date.value = q.date as string | undefined
   pageNo.value = 1
   fetchEssays()
 }, {immediate: true})
+
+// 页面加载时获取日历数据
+fetchArticleDates()
 </script>
 
 <style lang="scss" scoped>
