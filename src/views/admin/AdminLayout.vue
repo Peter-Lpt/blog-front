@@ -38,13 +38,23 @@
           <span>友链管理</span>
         </el-menu-item>
       </el-menu>
-      <div class="admin-back">
-        <router-link to="/">
-          <el-icon>
-            <Back/>
-          </el-icon>
-          返回前台
-        </router-link>
+      <div class="admin-actions">
+        <div class="admin-back">
+          <router-link to="/">
+            <el-icon>
+              <Back/>
+            </el-icon>
+            返回前台
+          </router-link>
+        </div>
+        <div class="admin-logout">
+          <a href="javascript:;" @click="handleLogout">
+            <el-icon>
+              <SwitchButton/>
+            </el-icon>
+            退出登录
+          </a>
+        </div>
       </div>
     </aside>
     <main class="admin-content">
@@ -54,10 +64,18 @@
 </template>
 
 <script setup lang="ts">
-import {useRoute} from 'vue-router'
-import {Back, ChatDotRound, Document, Folder, Link, PriceTag} from '@element-plus/icons-vue'
+import {useRoute, useRouter} from 'vue-router'
+import {Back, ChatDotRound, Document, Folder, Link, PriceTag, SwitchButton} from '@element-plus/icons-vue'
+import {useAuthStore} from '@/stores/auth'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+function handleLogout() {
+  authStore.logout()
+  router.push('/admin/login')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -104,10 +122,14 @@ const route = useRoute()
   color: var(--text-color);
 }
 
-.admin-back {
-  padding: 16px;
-  border-top: 1px solid var(--border-color);
+.admin-actions {
   margin-top: auto;
+  border-top: 1px solid var(--border-color);
+}
+
+.admin-back,
+.admin-logout {
+  padding: 12px 16px;
 
   a {
     display: flex;
@@ -116,6 +138,7 @@ const route = useRoute()
     color: var(--text-secondary);
     font-size: 14px;
     transition: color 0.2s;
+    cursor: pointer;
 
     &:hover {
       color: var(--primary-color);

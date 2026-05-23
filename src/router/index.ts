@@ -1,4 +1,5 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,8 +20,14 @@ const router = createRouter({
             component: () => import('@/views/friend-links/FriendLinkView.vue'),
         },
         {
+            path: '/admin/login',
+            name: 'adminLogin',
+            component: () => import('@/views/admin/LoginView.vue'),
+        },
+        {
             path: '/admin',
             component: () => import('@/views/admin/AdminLayout.vue'),
+            meta: { requiresAuth: true },
             children: [
                 {
                     path: '',
@@ -58,6 +65,15 @@ const router = createRouter({
             redirect: '/',
         },
     ],
+})
+
+router.beforeEach((to, _from) => {
+    if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
+        const authStore = useAuthStore()
+        if (!authStore.isLoggedIn) {
+            return '/admin/login'
+        }
+    }
 })
 
 export default router
