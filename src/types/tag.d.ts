@@ -1,7 +1,7 @@
 interface Tag {
     tagId: string
     name: string
-    slug: string
+    routeName: string
     articleCount: number
     createTime: string
 }
@@ -9,5 +9,5 @@ interface Tag {
 interface TagForm {
     tagId?: string
     name: string
-    slug?: string
+    routeName?: string
 }

@@ -1,7 +1,7 @@
 interface Category {
     categoryId: string
     name: string
-    slug: string
+    routeName: string
     description: string
     icon: string
     sort: number
@@ -12,7 +12,7 @@ interface Category {
 interface CategoryForm {
     categoryId?: string
     name: string
-    slug?: string
+    routeName?: string
     description?: string
     icon?: string
     sort?: number

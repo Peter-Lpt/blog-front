@@ -7,7 +7,7 @@
 
     <el-table :data="list" v-loading="loading" border>
       <el-table-column prop="name" label="名称"/>
-      <el-table-column prop="slug" label="Slug"/>
+      <el-table-column prop="routeName" label="路由名"/>
       <el-table-column prop="description" label="描述" show-overflow-tooltip/>
       <el-table-column prop="articleCount" label="文章数" width="90"/>
       <el-table-column prop="createTime" label="创建时间" width="170"/>
@@ -38,8 +38,8 @@
         <el-form-item label="名称" required>
           <el-input v-model="form.name" maxlength="50"/>
         </el-form-item>
-        <el-form-item label="Slug">
-          <el-input v-model="form.slug" maxlength="50"/>
+        <el-form-item label="路由名">
+          <el-input v-model="form.routeName" maxlength="50"/>
         </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="form.description" type="textarea" maxlength="200"/>
@@ -86,8 +86,8 @@ async function fetchList() {
 
 function openDialog(row?: Category) {
   if (row) {
-    const {categoryId, name, slug, description, icon, sort} = row
-    form.value = {categoryId, name, slug, description, icon, sort}
+    const {categoryId, name, routeName, description, icon, sort} = row
+    form.value = {categoryId, name, routeName, description, icon, sort}
   } else {
     form.value = {name: ''}
   }
