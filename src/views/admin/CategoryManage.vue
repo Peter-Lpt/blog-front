@@ -45,7 +45,7 @@
           <el-input v-model="form.description" type="textarea" maxlength="200"/>
         </el-form-item>
         <el-form-item label="图标">
-          <el-input v-model="form.icon" maxlength="100"/>
+          <IconPicker v-model="form.icon"/>
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="form.sort" :min="0" :precision="2"/>
@@ -63,6 +63,7 @@
 import {onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {addCategory, deleteCategory, editCategory, getCategoryPage} from '@/api/category'
+import IconPicker from '@/components/IconPicker.vue'
 
 const list = ref<Category[]>([])
 const total = ref(0)

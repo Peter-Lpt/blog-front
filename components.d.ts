@@ -40,6 +40,7 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    IconPicker: typeof import('./src/components/IconPicker.vue')['default']
     LikeButton: typeof import('./src/components/LikeButton.vue')['default']
     MarkdownRender: typeof import('./src/components/MarkdownRender.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
