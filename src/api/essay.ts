@@ -8,6 +8,10 @@ export function getEssayDetail(essayId: string) {
     return service.get('/essay/detail', {params: {essayId}})
 }
 
+export function getEssayEditInfo(essayId: string) {
+    return service.get('/essay/editInfo', {params: {essayId}})
+}
+
 export function addEssay(data: EssayForm) {
     return service.post('/essay/add', data)
 }

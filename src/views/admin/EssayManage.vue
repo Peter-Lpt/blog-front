@@ -201,7 +201,7 @@
 import {onMounted, reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Plus, UploadFilled, Search} from '@element-plus/icons-vue'
-import {addEssay, deleteEssay, editEssay, getEssayPage, importMarkdown} from '@/api/essay'
+import {addEssay, deleteEssay, editEssay, getEssayEditInfo, getEssayPage, importMarkdown} from '@/api/essay'
 import {addCategory, getCategoryList} from '@/api/category'
 import {addTag, getTagList} from '@/api/tag'
 
@@ -292,10 +292,21 @@ function handleSearch() {
   fetchList()
 }
 
-function openDialog(row?: Essay) {
+async function openDialog(row?: Essay) {
   if (row) {
-    const {essayId, title, summary, content, coverImage, status, sort} = row
-    form.value = {essayId, title, summary, content, coverImage, status, sort}
+    // 编辑时调用专用接口获取完整数据（含分类/标签回显）
+    const info = await getEssayEditInfo(row.essayId) as any
+    form.value = {
+      essayId: info.essayId,
+      title: info.title,
+      summary: info.summary,
+      content: info.content,
+      coverImage: info.coverImage,
+      status: info.status,
+      sort: info.sort,
+      categoryId: info.categoryId,
+      tagId: info.tagId,
+    }
   } else {
     form.value = {title: '', status: 1}
   }
@@ -308,12 +319,16 @@ async function handleSave() {
   try {
     if (form.value.essayId) {
       await editEssay(form.value)
+      // 更新列表中的对应项，避免整页 loading
+      const idx = list.value.findIndex(item => item.essayId === form.value.essayId)
+      if (idx >= 0) list.value[idx] = {...list.value[idx], ...form.value}
     } else {
       await addEssay(form.value)
+      // 新增项直接插到列表顶部
+      list.value.unshift({...form.value, essayId: Date.now().toString(), viewCount: 0, likeCount: 0, commentCount: 0, createTime: new Date().toISOString()} as Essay)
     }
     ElMessage.success('保存成功')
     dialogVisible.value = false
-    fetchList()
   } finally {
     saving.value = false
   }

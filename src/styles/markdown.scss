@@ -48,15 +48,25 @@
 
   pre {
     margin: 16px 0;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow-x: auto;
-    background: var(--glass-bg-strong);
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    padding: 16px;
+    position: relative;
 
     code {
       background: none;
       padding: 0;
       font-size: 14px;
+      line-height: 1.6;
     }
+  }
+
+  // 暗色模式代码块覆盖
+  [data-theme="dark"] pre {
+    background: #1e1e2e;
+    border-color: #444;
   }
 
   blockquote {

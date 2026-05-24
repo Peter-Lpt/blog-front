@@ -142,6 +142,9 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .icon-item {

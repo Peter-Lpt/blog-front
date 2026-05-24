@@ -42,9 +42,8 @@ hljs.registerLanguage('c', c)
 hljs.registerLanguage('cpp', cpp)
 hljs.registerLanguage('rust', rust)
 
-// Theme imports
+// Theme: light github, dark gets overrides in markdown.scss
 import 'highlight.js/styles/github.css'
-import 'highlight.js/styles/github-dark.css'
 
 const md = new MarkdownIt({
   html: true,
