@@ -59,45 +59,54 @@
         class="pagination"
     />
 
-    <el-dialog v-model="dialogVisible" :title="form.essayId ? '编辑文章' : '新增文章'" width="700px" destroy-on-close>
+    <el-dialog v-model="dialogVisible" :title="form.essayId ? '编辑文章' : '新增文章'" width="90vw" top="5vh" destroy-on-close class="essay-editor-dialog">
       <el-form :model="form" label-width="80px">
         <el-form-item label="标题" required>
           <el-input v-model="form.title" maxlength="200"/>
         </el-form-item>
         <el-form-item label="摘要">
-          <el-input v-model="form.summary" type="textarea" maxlength="500"/>
+          <el-input v-model="form.summary" type="textarea" maxlength="500" :rows="2"/>
         </el-form-item>
-        <el-form-item label="内容">
-          <el-input v-model="form.content" type="textarea" :rows="12" placeholder="Markdown 格式"/>
+        <el-form-item label="内容" class="content-form-item">
+          <MdEditor
+              v-model="form.content"
+              :theme="editorTheme"
+              language="zh-CN"
+              style="height: 60vh"
+              previewTheme="github"
+              codeTheme="atom"
+          />
         </el-form-item>
         <el-form-item label="封面图">
           <el-input v-model="form.coverImage" placeholder="图片 URL"/>
         </el-form-item>
-        <el-form-item label="状态" required>
-          <el-select v-model="form.status">
-            <el-option label="暂存" :value="1"/>
-            <el-option label="发布" :value="2"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="分类">
-          <div style="display: flex; gap: 8px; align-items: center">
-            <el-select v-model="form.categoryId" clearable placeholder="选择分类" style="flex: 1">
-              <el-option v-for="cat in categories" :key="cat.categoryId" :label="cat.name" :value="cat.categoryId"/>
+        <div style="display: flex; gap: 24px;">
+          <el-form-item label="状态" required>
+            <el-select v-model="form.status">
+              <el-option label="暂存" :value="1"/>
+              <el-option label="发布" :value="2"/>
             </el-select>
-            <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true"/>
-          </div>
-        </el-form-item>
-        <el-form-item label="标签">
-          <div style="display: flex; gap: 8px; align-items: center">
-            <el-select v-model="form.tagId" clearable placeholder="选择标签" style="flex: 1">
-              <el-option v-for="tag in tags" :key="tag.tagId" :label="tag.name" :value="tag.tagId"/>
-            </el-select>
-            <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true"/>
-          </div>
-        </el-form-item>
-        <el-form-item label="排序">
-          <el-input-number v-model="form.sort" :min="0" :precision="2"/>
-        </el-form-item>
+          </el-form-item>
+          <el-form-item label="分类">
+            <div style="display: flex; gap: 8px; align-items: center">
+              <el-select v-model="form.categoryId" clearable placeholder="选择分类" style="width: 160px">
+                <el-option v-for="cat in categories" :key="cat.categoryId" :label="cat.name" :value="cat.categoryId"/>
+              </el-select>
+              <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true"/>
+            </div>
+          </el-form-item>
+          <el-form-item label="标签">
+            <div style="display: flex; gap: 8px; align-items: center">
+              <el-select v-model="form.tagId" clearable placeholder="选择标签" style="width: 160px">
+                <el-option v-for="tag in tags" :key="tag.tagId" :label="tag.name" :value="tag.tagId"/>
+              </el-select>
+              <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true"/>
+            </div>
+          </el-form-item>
+          <el-form-item label="排序">
+            <el-input-number v-model="form.sort" :min="0" :precision="2"/>
+          </el-form-item>
+        </div>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -198,12 +207,19 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Plus, UploadFilled, Search} from '@element-plus/icons-vue'
+import {MdEditor} from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
 import {addEssay, deleteEssay, editEssay, getEssayEditInfo, getEssayPage, importMarkdown} from '@/api/essay'
 import {addCategory, getCategoryList} from '@/api/category'
 import {addTag, getTagList} from '@/api/tag'
+
+// 编辑器主题跟随系统
+const editorTheme = computed(() => {
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+})
 
 const list = ref<Essay[]>([])
 const total = ref(0)
@@ -465,5 +481,19 @@ onMounted(async () => {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+:deep(.essay-editor-dialog) {
+  .el-dialog__body {
+    padding: 16px 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .content-form-item {
+    .el-form-item__content {
+      flex-direction: column;
+    }
+  }
 }
 </style>
