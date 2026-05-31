@@ -67,11 +67,29 @@ const router = createRouter({
     ],
 })
 
-router.beforeEach((to, _from) => {
+// 标记是否正在验证 token，避免并发请求重复验证
+let isVerifying = false
+
+router.beforeEach(async (to, _from) => {
     if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
         const authStore = useAuthStore()
+
+        // 无 token 直接跳转登录
         if (!authStore.isLoggedIn) {
             return '/admin/login'
+        }
+
+        // 验证 token 有效性（避免并发重复验证）
+        if (!isVerifying) {
+            isVerifying = true
+            try {
+                const valid = await authStore.verifyToken()
+                if (!valid) {
+                    return '/admin/login'
+                }
+            } finally {
+                isVerifying = false
+            }
         }
     }
 })

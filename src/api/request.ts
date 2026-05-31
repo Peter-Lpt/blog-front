@@ -29,7 +29,25 @@ service.interceptors.response.use(
         return data
     },
     (error) => {
-        ElMessage.error(error.message || '网络异常')
+        const status = error.response?.status
+        const message = error.response?.data?.message || error.message
+
+        if (status === 401) {
+            // token 失效，清除登录状态并跳转登录页
+            localStorage.removeItem(TOKEN_KEY)
+            localStorage.removeItem('blog_admin_user')
+            // 避免在登录页重复跳转
+            if (!window.location.pathname.includes('/admin/login')) {
+                ElMessage.error(message || '登录已过期，请重新登录')
+                window.location.href = '/admin/login'
+            }
+        } else if (status === 403) {
+            ElMessage.error(message || '权限不足')
+        } else if (status === 429) {
+            ElMessage.error(message || '请求过于频繁，请稍后再试')
+        } else {
+            ElMessage.error(message || '网络异常')
+        }
         return Promise.reject(error)
     }
 )

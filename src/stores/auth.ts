@@ -11,6 +11,7 @@ interface UserInfo {
   username: string
   nickname?: string
   avatar?: string
+  role?: string
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -20,6 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
   )
 
   const isLoggedIn = computed(() => !!token.value)
+  const isAdmin = computed(() => user.value?.role === 'admin')
 
   async function login(username: string, password: string) {
     try {
@@ -29,7 +31,8 @@ export const useAuthStore = defineStore('auth', () => {
         userId: data.userId,
         username: data.username,
         nickname: data.nickname,
-        avatar: data.avatar
+        avatar: data.avatar,
+        role: data.role
       }
       localStorage.setItem(TOKEN_KEY, data.token)
       localStorage.setItem(USER_KEY, JSON.stringify(user.value))
@@ -42,6 +45,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    // 调用后端 logout 接口将 token 加入黑名单
+    const currentToken = token.value
+    if (currentToken) {
+      service.post('/user/logout').catch(() => {})
+    }
     token.value = null
     user.value = null
     localStorage.removeItem(TOKEN_KEY)
@@ -49,9 +57,29 @@ export const useAuthStore = defineStore('auth', () => {
     ElMessage.success('已退出登录')
   }
 
+  async function verifyToken(): Promise<boolean> {
+    if (!token.value) return false
+    try {
+      const data = await service.get('/user/verify') as any
+      // 更新 role（以防 token 中的 role 与后端不一致）
+      if (user.value && data.role) {
+        user.value.role = data.role
+        localStorage.setItem(USER_KEY, JSON.stringify(user.value))
+      }
+      return true
+    } catch {
+      // token 无效，清除登录状态
+      token.value = null
+      user.value = null
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+      return false
+    }
+  }
+
   function getToken(): string | null {
     return token.value
   }
 
-  return { token, user, isLoggedIn, login, logout, getToken }
+  return { token, user, isLoggedIn, isAdmin, login, logout, verifyToken, getToken }
 })
