@@ -26,7 +26,7 @@
     <div class="detail-actions">
       <LikeButton :essay-id="essay.essayId" v-model:like-count="essay.likeCount"/>
     </div>
-    <!-- 评论功能已屏蔽，后续恢复时取消注释即可 -->
+    <CommentSection :essay-id="essay.essayId"/>
   </div>
   <div v-else class="loading">加载中...</div>
 </template>
@@ -38,6 +38,7 @@ import {Calendar, Folder, PriceTag, View} from '@element-plus/icons-vue'
 import {getEssayDetail} from '@/api/essay'
 import MarkdownRender from '@/components/MarkdownRender.vue'
 import LikeButton from '@/components/LikeButton.vue'
+import CommentSection from '@/components/CommentSection.vue'
 import {formatDate} from '@/utils/format'
 
 const route = useRoute()
