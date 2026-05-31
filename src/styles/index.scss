@@ -317,6 +317,46 @@ main {
   .el-tag--dark {
     border-color: rgba(255, 255, 255, 0.1);
   }
+
+  // el-switch 暗色模式
+  .el-switch.is-checked .el-switch__core {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  // el-upload 拖拽区域
+  .el-upload-dragger {
+    background: var(--glass-bg);
+    border-color: var(--border-color);
+
+    &:hover {
+      border-color: var(--primary-color);
+    }
+  }
+
+  // el-form-item 标签
+  .el-form-item__label {
+    color: var(--text-color);
+  }
+
+  // el-popconfirm 弹窗
+  .el-popconfirm {
+    --el-popconfirm-bg-color: var(--glass-bg-strong);
+  }
+
+  // el-alert
+  .el-alert {
+    --el-alert-bg-color: var(--glass-bg);
+  }
+
+  // md-editor-v3 暗色模式
+  .md-editor {
+    --md-bk-color: rgba(38, 38, 38, 0.9);
+    --md-bk-color-outside: rgba(30, 30, 30, 0.8);
+    --md-color: #e5e5e5;
+    --md-color-secondary: #999;
+    --md-border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* 移动端基础样式 */
@@ -324,6 +364,16 @@ main {
   main {
     padding: 0 16px;
     max-width: 100%;
+  }
+
+  // 弹窗移动端适配
+  .el-dialog {
+    --el-dialog-width: 92vw !important;
+    margin: 8px auto !important;
+  }
+
+  .el-dialog__body {
+    padding: 12px !important;
   }
 }
 

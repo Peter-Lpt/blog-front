@@ -401,68 +401,28 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/admin-mixins.scss' as *;
+
 .manage-page {
-  background: var(--card-bg);
-  border: var(--card-border);
-  border-radius: var(--card-radius);
+  @include manage-page-container;
   padding: 24px;
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include page-header-row;
   margin-bottom: 20px;
-  gap: 16px;
-  flex-wrap: wrap;
-
-  h2 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-color);
-  }
 }
 
 .header-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+  @include header-actions;
 }
 
 .search-input {
-  width: 280px;
-
-  :deep(.el-input__wrapper) {
-    background: var(--glass-bg) !important;
-    box-shadow: 0 0 0 1px var(--border-color) inset !important;
-    border-radius: 8px;
-    transition: all 0.3s;
-
-    &:hover {
-      box-shadow: 0 0 0 1px var(--primary-color) inset !important;
-    }
-
-    &.is-focus {
-      box-shadow: 0 0 0 1px var(--primary-color) inset !important;
-      background: var(--card-bg) !important;
-    }
-  }
-
-  :deep(.el-input__inner) {
-    color: var(--text-color);
-
-    &::placeholder {
-      color: var(--text-secondary);
-    }
-  }
-
-  :deep(.el-input__prefix-inner) {
-    color: var(--text-secondary);
-  }
+  @include search-input;
 }
 
 .filter-bar {
+  @include filter-bar;
   margin-bottom: 20px;
 
   .el-select {
@@ -478,9 +438,7 @@ onMounted(async () => {
 }
 
 .pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+  @include pagination;
 }
 
 :deep(.essay-editor-dialog) {

@@ -111,28 +111,17 @@ onMounted(fetchList)
 </script>
 
 <style lang="scss" scoped>
-.manage-page {
-  background: var(--card-bg);
+@use '@/styles/admin-mixins.scss' as *;
 
-  border: var(--card-border);
-  border-radius: var(--card-radius);
-  padding: 20px;
+.manage-page {
+  @include manage-page-container;
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-
-  h2 {
-    font-size: 18px;
-  }
+  @include page-header-row;
 }
 
 .pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
+  @include pagination;
 }
 </style>
