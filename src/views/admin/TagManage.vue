@@ -32,7 +32,7 @@
         class="pagination"
     />
 
-    <el-dialog v-model="dialogVisible" :title="form.tagId ? '编辑标签' : '新增标签'" width="500px" destroy-on-close>
+    <el-dialog v-model="dialogVisible" :title="form.tagId ? '编辑标签' : '新增标签'" width="500px" destroy-on-close append-to-body>
       <el-form :model="form" label-width="60px">
         <el-form-item label="名称" required>
           <el-input v-model="form.name" maxlength="50"/>

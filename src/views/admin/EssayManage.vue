@@ -59,7 +59,7 @@
         class="pagination"
     />
 
-    <el-dialog v-model="dialogVisible" :title="form.essayId ? '编辑文章' : '新增文章'" width="90vw" top="5vh" destroy-on-close class="essay-editor-dialog">
+    <el-dialog v-model="dialogVisible" :title="form.essayId ? '编辑文章' : '新增文章'" width="90vw" top="5vh" destroy-on-close append-to-body class="essay-editor-dialog">
       <el-form :model="form" label-width="80px">
         <el-form-item label="标题" required>
           <el-input v-model="form.title" maxlength="200"/>
@@ -82,7 +82,7 @@
         </el-form-item>
         <div style="display: flex; gap: 24px;">
           <el-form-item label="状态" required>
-            <el-select v-model="form.status">
+            <el-select v-model="form.status" style="width: 160px">
               <el-option label="暂存" :value="1"/>
               <el-option label="发布" :value="2"/>
             </el-select>
@@ -114,7 +114,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="showImportDialog" title="导入 Markdown 文件" width="700px" destroy-on-close>
+    <el-dialog v-model="showImportDialog" title="导入 Markdown 文件" width="700px" destroy-on-close append-to-body @open="selectedFiles = []">
       <el-alert title="支持上传多个 .md 文件，自动解析 Frontmatter 元数据" type="info" :closable="false" style="margin-bottom: 16px"/>
 
       <el-form :model="importDefaults" label-width="80px" style="margin-bottom: 16px">
@@ -126,7 +126,7 @@
         </el-form-item>
         <el-form-item label="默认分类">
           <div style="display: flex; gap: 8px; align-items: center">
-            <el-select v-model="importDefaults.categoryId" clearable placeholder="不指定" style="flex: 1">
+            <el-select v-model="importDefaults.categoryId" clearable placeholder="不指定" style="width: 240px">
               <el-option v-for="c in categories" :key="c.categoryId" :label="c.name" :value="c.categoryId"/>
             </el-select>
             <el-button type="primary" :icon="Plus" circle size="small" @click="showCatDialog = true"/>
@@ -134,7 +134,7 @@
         </el-form-item>
         <el-form-item label="默认标签">
           <div style="display: flex; gap: 8px; align-items: center">
-            <el-select v-model="importDefaults.tagId" clearable placeholder="不指定" style="flex: 1">
+            <el-select v-model="importDefaults.tagId" clearable placeholder="不指定" style="width: 240px">
               <el-option v-for="t in tags" :key="t.tagId" :label="t.name" :value="t.tagId"/>
             </el-select>
             <el-button type="primary" :icon="Plus" circle size="small" @click="showTagDialog = true"/>
@@ -180,7 +180,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="showCatDialog" title="新建分类" width="400px" destroy-on-close @close="newCatName = ''">
+    <el-dialog v-model="showCatDialog" title="新建分类" width="400px" destroy-on-close append-to-body @close="newCatName = ''">
       <el-form label-width="60px">
         <el-form-item label="名称" required>
           <el-input v-model="newCatName" maxlength="50" placeholder="输入分类名称" @keyup.enter="handleCreateCategory"/>
@@ -192,7 +192,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="showTagDialog" title="新建标签" width="400px" destroy-on-close @close="newTagName = ''">
+    <el-dialog v-model="showTagDialog" title="新建标签" width="400px" destroy-on-close append-to-body @close="newTagName = ''">
       <el-form label-width="60px">
         <el-form-item label="名称" required>
           <el-input v-model="newTagName" maxlength="50" placeholder="输入标签名称" @keyup.enter="handleCreateTag"/>

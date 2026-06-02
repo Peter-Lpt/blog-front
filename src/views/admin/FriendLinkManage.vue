@@ -37,7 +37,7 @@
         class="pagination"
     />
 
-    <el-dialog v-model="dialogVisible" :title="form.linkId ? '编辑友链' : '新增友链'" width="500px" destroy-on-close>
+    <el-dialog v-model="dialogVisible" :title="form.linkId ? '编辑友链' : '新增友链'" width="500px" destroy-on-close append-to-body>
       <el-form :model="form" label-width="80px">
         <el-form-item label="名称" required>
           <el-input v-model="form.name" maxlength="100"/>
