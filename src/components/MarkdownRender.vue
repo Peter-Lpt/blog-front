@@ -3,14 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from 'vue'
+import {computed, watch} from 'vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js/lib/core'
 import markdownItTaskLists from 'markdown-it-task-lists'
 import {full as markdownItEmoji} from 'markdown-it-emoji'
 import markdownItFootnote from 'markdown-it-footnote'
 import markdownItAnchor from 'markdown-it-anchor'
-import markdownItTocDoneRight from 'markdown-it-toc-done-right'
 
 // Selectively register common languages
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -45,6 +44,12 @@ hljs.registerLanguage('rust', rust)
 // Theme: light github, dark gets overrides in markdown.scss
 import 'highlight.js/styles/github.css'
 
+export interface TocItem {
+  id: string
+  text: string
+  level: number
+}
+
 const md = new MarkdownIt({
   html: true,
   linkify: true,
@@ -70,11 +75,34 @@ md.use(markdownItAnchor, {
   permalinkSymbol: '#',
   level: [1, 2, 3, 4, 5, 6],
 })
-md.use(markdownItTocDoneRight)
 
 const props = defineProps<{ content: string }>()
 
+const emit = defineEmits<{
+  toc: [items: TocItem[]]
+}>()
+
 const rendered = computed(() => md.render(props.content || ''))
+
+// Extract headings from rendered HTML for TOC
+function extractHeadings(html: string): TocItem[] {
+  const items: TocItem[] = []
+  const regex = /<h([1-6])\s+id="([^"]*)"[^>]*>(.*?)<\/h\1>/g
+  let match
+  while ((match = regex.exec(html)) !== null) {
+    const level = parseInt(match[1])
+    const id = match[2]
+    // Strip HTML tags and permalink symbol from heading text
+    const text = match[3].replace(/<[^>]*>/g, '').replace(/#$/g, '').trim()
+    items.push({id, text, level})
+  }
+  return items
+}
+
+watch(rendered, (html) => {
+  const toc = extractHeadings(html)
+  emit('toc', toc)
+}, {immediate: true})
 </script>
 
 <style lang="scss">
