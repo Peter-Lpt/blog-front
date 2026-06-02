@@ -30,8 +30,8 @@
       <ul class="category-list">
         <li v-for="cat in configStore.categories" :key="cat.categoryId">
           <router-link
-              :to="{ path: '/', query: { categoryId: cat.categoryId } }"
-              :class="{ active: currentCategoryId === cat.categoryId }"
+              :to="{ path: '/category/' + cat.routeName }"
+              :class="{ active: currentRouteName === cat.routeName }"
           >
             <span class="cat-icon">{{ cat.name[0] }}</span>
             <span class="cat-name">{{ cat.name }}</span>
@@ -45,8 +45,8 @@
         <router-link
             v-for="tag in configStore.tags"
             :key="tag.tagId"
-            :to="{ path: '/', query: { tagId: tag.tagId } }"
-            :class="{ active: currentTagId === tag.tagId }"
+            :to="{ path: '/tag/' + tag.routeName }"
+            :class="{ active: currentRouteName === tag.routeName }"
         >
           {{ tag.name }}
         </router-link>
@@ -74,8 +74,7 @@ const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
 
-const currentCategoryId = computed(() => route.query.categoryId as string | undefined)
-const currentTagId = computed(() => route.query.tagId as string | undefined)
+const currentRouteName = computed(() => route.params.routeName as string | undefined)
 
 function handleDateSelect(date: string | null) {
   const query = { ...route.query }
@@ -84,7 +83,7 @@ function handleDateSelect(date: string | null) {
   } else {
     delete query.date
   }
-  router.replace({ query })
+  router.replace({ path: route.path, query })
   emit('dateSelect', date)
 }
 

@@ -4,10 +4,10 @@
     <el-tag v-if="keyword" closable @close="$emit('remove', 'keyword')">
       关键词: {{ keyword }}
     </el-tag>
-    <el-tag v-if="categoryId" closable @close="$emit('remove', 'categoryId')">
+    <el-tag v-if="categoryName" closable @close="$emit('remove', 'categoryId')">
       分类: {{ categoryName }}
     </el-tag>
-    <el-tag v-if="tagId" closable @close="$emit('remove', 'tagId')">
+    <el-tag v-if="tagName" closable @close="$emit('remove', 'tagId')">
       标签: {{ tagName }}
     </el-tag>
     <el-tag v-if="date" closable @close="$emit('remove', 'date')">
@@ -18,12 +18,11 @@
 
 <script setup lang="ts">
 import {computed} from 'vue'
-import {useConfigStore} from '@/stores/config'
 
 const props = defineProps<{
   keyword: string
-  categoryId?: string
-  tagId?: string
+  categoryName?: string
+  tagName?: string
   date?: string
 }>()
 
@@ -31,11 +30,7 @@ defineEmits<{
   remove: [type: string]
 }>()
 
-const configStore = useConfigStore()
-
-const hasFilters = computed(() => props.keyword || props.categoryId || props.tagId || props.date)
-const categoryName = computed(() => configStore.categories.find(c => c.categoryId === props.categoryId)?.name || '')
-const tagName = computed(() => configStore.tags.find(t => t.tagId === props.tagId)?.name || '')
+const hasFilters = computed(() => props.keyword || props.categoryName || props.tagName || props.date)
 </script>
 
 <style lang="scss" scoped>

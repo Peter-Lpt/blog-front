@@ -10,6 +10,16 @@ const router = createRouter({
             component: () => import('@/views/home/HomeView.vue'),
         },
         {
+            path: '/category/:routeName',
+            name: 'category',
+            component: () => import('@/views/home/HomeView.vue'),
+        },
+        {
+            path: '/tag/:routeName',
+            name: 'tag',
+            component: () => import('@/views/home/HomeView.vue'),
+        },
+        {
             path: '/article/:essayId',
             name: 'detail',
             component: () => import('@/views/detail/DetailView.vue'),

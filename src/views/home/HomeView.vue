@@ -9,8 +9,8 @@
     <div class="home-main">
       <ActiveFilters
           :keyword="keyword"
-          :category-id="categoryId"
-          :tag-id="tagId"
+          :category-name="currentFilterType === 'category' ? configStore.categories.find(c => c.routeName === currentRouteName)?.name : undefined"
+          :tag-name="currentFilterType === 'tag' ? configStore.tags.find(t => t.routeName === currentRouteName)?.name : undefined"
           :date="date"
           @remove="handleRemoveFilter"
       />
@@ -26,9 +26,11 @@ import {getEssayPage, getEssayDates} from '@/api/essay'
 import ArticleList from '@/components/ArticleList.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import ActiveFilters from '@/components/ActiveFilters.vue'
+import {useConfigStore} from '@/stores/config'
 
 const route = useRoute()
 const router = useRouter()
+const configStore = useConfigStore()
 
 const essays = ref<Essay[]>([])
 const total = ref(0)
@@ -39,6 +41,8 @@ const categoryId = ref<string | undefined>()
 const tagId = ref<string | undefined>()
 const date = ref<string | undefined>()
 const articleDates = ref<Record<string, number>>({})
+const currentRouteName = ref<string | undefined>()
+const currentFilterType = ref<'category' | 'tag' | undefined>()
 
 async function fetchEssays() {
   const params: PageParams = {
@@ -68,33 +72,51 @@ function handlePageChange(page: number) {
 }
 
 function handleRemoveFilter(type: string) {
-  const query = {...route.query}
   if (type === 'keyword') {
     keyword.value = ''
-    delete query.keyword
+    router.replace({query: {...route.query, keyword: undefined}})
   }
-  if (type === 'categoryId') {
+  if (type === 'categoryId' || type === 'tagId') {
     categoryId.value = undefined
-    delete query.categoryId
-  }
-  if (type === 'tagId') {
     tagId.value = undefined
-    delete query.tagId
+    currentRouteName.value = undefined
+    currentFilterType.value = undefined
+    router.push('/')
   }
   if (type === 'date') {
     date.value = undefined
+    const query = {...route.query}
     delete query.date
+    router.replace({query})
   }
   pageNo.value = 1
-  router.replace({query})
 }
 
-watch(() => route.query, (q) => {
+watch(() => [route.params, route.query], ([params, q]) => {
+  const routeName = params.routeName as string | undefined
+  const routeNameStr = route.name as string
+
+  currentRouteName.value = routeName
   keyword.value = (q.keyword as string) || ''
-  categoryId.value = q.categoryId as string | undefined
-  tagId.value = q.tagId as string | undefined
   date.value = q.date as string | undefined
   pageNo.value = 1
+
+  if (routeNameStr === 'category' && routeName) {
+    currentFilterType.value = 'category'
+    const cat = configStore.categories.find(c => c.routeName === routeName)
+    categoryId.value = cat?.categoryId
+    tagId.value = undefined
+  } else if (routeNameStr === 'tag' && routeName) {
+    currentFilterType.value = 'tag'
+    const tag = configStore.tags.find(t => t.routeName === routeName)
+    tagId.value = tag?.tagId
+    categoryId.value = undefined
+  } else {
+    currentFilterType.value = undefined
+    categoryId.value = undefined
+    tagId.value = undefined
+  }
+
   fetchEssays()
 }, {immediate: true})
 
