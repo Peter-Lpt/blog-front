@@ -1,4 +1,4 @@
-﻿.markdown-body {
+.markdown-body {
   font-size: 16px;
   line-height: 1.8;
   word-wrap: break-word;
@@ -64,11 +64,6 @@
     }
   }
 
-  // 鏆楄壊妯″紡浠ｇ爜鍧楄鐩?
-  [data-theme="dark"] pre {
-    background: #1e1e2e;
-    border-color: #444;
-  }
 
   blockquote {
     margin: 16px 0;
@@ -166,5 +161,52 @@
     font-size: 13px;
     color: var(--text-secondary);
   }
+}
+
+// ====== Dark mode code block ======
+html[data-theme="dark"] .markdown-body pre,
+html[data-theme="dark"] .markdown-body .hljs {
+  background: #16161e;
+  border-color: #333;
+  color: #c0caf5;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-keyword,
+html[data-theme="dark"] .markdown-body .hljs-selector-tag,
+html[data-theme="dark"] .markdown-body .hljs-type {
+  color: #bb9af7;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-title,
+html[data-theme="dark"] .markdown-body .hljs-title.function_ {
+  color: #7aa2f7;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-string,
+html[data-theme="dark"] .markdown-body .hljs-template-tag,
+html[data-theme="dark"] .markdown-body .hljs-template-variable {
+  color: #9ece6a;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-number,
+html[data-theme="dark"] .markdown-body .hljs-literal,
+html[data-theme="dark"] .markdown-body .hljs-attr {
+  color: #ff9e64;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-comment,
+html[data-theme="dark"] .markdown-body .hljs-doctag {
+  color: #565f89;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-built_in,
+html[data-theme="dark"] .markdown-body .hljs-symbol {
+  color: #e0af68;
+}
+
+html[data-theme="dark"] .markdown-body .hljs-name,
+html[data-theme="dark"] .markdown-body .hljs-selector-id,
+html[data-theme="dark"] .markdown-body .hljs-selector-class {
+  color: #2ac3de;
 }
 
