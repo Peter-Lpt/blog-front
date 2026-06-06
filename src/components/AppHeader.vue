@@ -23,6 +23,29 @@
             </el-icon>
           </button>
         </div>
+        <div class="user-area">
+          <template v-if="authStore.isLoggedIn">
+            <el-dropdown trigger="click" @command="handleUserCommand">
+              <div class="user-info">
+                <el-avatar :size="30" v-if="authStore.user?.avatar">
+                  <img :src="authStore.user.avatar" alt="avatar"/>
+                </el-avatar>
+                <el-avatar :size="30" v-else>{{ (authStore.user?.nickname || authStore.user?.username || '').charAt(0) }}</el-avatar>
+                <span class="user-name">{{ authStore.user?.nickname || authStore.user?.username }}</span>
+              </div>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </template>
+          <template v-else>
+            <button class="login-btn" @click="authStore.showLoginDialog = true" title="登录">
+              <el-icon :size="18"><User /></el-icon>
+            </button>
+          </template>
+        </div>
       </div>
     </div>
   </header>
@@ -31,9 +54,11 @@
 <script setup lang="ts">
 import {nextTick, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {Search} from '@element-plus/icons-vue'
+import {Search, User} from '@element-plus/icons-vue'
+import {useAuthStore} from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const searchExpanded = ref(false)
 const searchKeyword = ref('')
 const searchInputRef = ref<HTMLInputElement>()
@@ -59,6 +84,12 @@ function handleBlur() {
   setTimeout(() => {
     searchExpanded.value = false
   }, 200)
+}
+
+function handleUserCommand(command: string) {
+  if (command === 'logout') {
+    authStore.logout()
+  }
 }
 </script>
 
@@ -170,7 +201,8 @@ function handleBlur() {
   }
 }
 
-.search-btn {
+.search-btn,
+.login-btn {
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -187,6 +219,33 @@ function handleBlur() {
     color: var(--text-color);
     background: var(--glass-bg);
   }
+}
+
+.user-area {
+  margin-left: 4px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--glass-bg);
+  }
+}
+
+.user-name {
+  font-size: 14px;
+  color: var(--text-color);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {

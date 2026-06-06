@@ -10,6 +10,7 @@
     </main>
     <AppFooter v-if="!isAdmin"/>
     <ThemeToggle/>
+    <LoginDialog/>
   </el-config-provider>
 </template>
 
@@ -20,6 +21,7 @@ import {useRoute} from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 import ThemeToggle from './components/ThemeToggle.vue'
+import LoginDialog from './components/LoginDialog.vue'
 
 const route = useRoute()
 const isAdmin = computed(() => route.path.startsWith('/admin'))
