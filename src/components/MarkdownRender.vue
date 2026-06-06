@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="markdown-body" v-html="rendered"></div>
 </template>
 
@@ -93,7 +93,7 @@ function extractHeadings(html: string): TocItem[] {
     const level = parseInt(match[1])
     const id = match[2]
     // Strip HTML tags and permalink symbol from heading text
-    const text = match[3].replace(/<[^>]*>/g, '').replace(/#$/g, '').trim()
+    const text = match[3].replace(/<[^>]*>/g, '').replace(/^#+\s*/, '').replace(/#+\s*$/, '').trim()
     items.push({id, text, level})
   }
   return items
@@ -108,3 +108,4 @@ watch(rendered, (html) => {
 <style lang="scss">
 @import '../styles/markdown.scss';
 </style>
+

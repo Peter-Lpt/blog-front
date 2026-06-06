@@ -1,4 +1,4 @@
-.markdown-body {
+﻿.markdown-body {
   font-size: 16px;
   line-height: 1.8;
   word-wrap: break-word;
@@ -9,6 +9,7 @@
     margin-bottom: 16px;
     font-weight: 600;
     line-height: 1.4;
+    scroll-margin-top: 88px;
   }
 
   h1 {
@@ -63,7 +64,7 @@
     }
   }
 
-  // 暗色模式代码块覆盖
+  // 鏆楄壊妯″紡浠ｇ爜鍧楄鐩?
   [data-theme="dark"] pre {
     background: #1e1e2e;
     border-color: #444;
@@ -122,7 +123,7 @@
     margin: 24px 0;
   }
 
-  // 任务列表样式
+  // 浠诲姟鍒楄〃鏍峰紡
   ul:has(input[type="checkbox"]) {
     list-style: none;
     padding-left: 0;
@@ -133,7 +134,7 @@
     pointer-events: none;
   }
 
-  // 锚点链接样式
+  // 閿氱偣閾炬帴鏍峰紡
   .header-anchor {
     float: left;
     margin-left: -1.2em;
@@ -157,7 +158,7 @@
     opacity: 0.6;
   }
 
-  // 脚注样式
+  // 鑴氭敞鏍峰紡
   .footnotes {
     margin-top: 24px;
     padding-top: 16px;
@@ -166,3 +167,4 @@
     color: var(--text-secondary);
   }
 }
+
