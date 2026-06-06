@@ -101,6 +101,11 @@ router.beforeEach(async (to, _from) => {
                 isVerifying = false
             }
         }
+
+        // 普通用户不允许进入后台
+        if (!authStore.isAdmin) {
+            return '/'
+        }
     }
 })
 

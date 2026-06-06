@@ -5,6 +5,8 @@ interface Comment {
     parentId: string | null
     replyUserId: string | null
     nickname: string
+    userId?: number
+    avatar?: string
     email: string
     website: string
     status: number
@@ -17,7 +19,4 @@ interface CommentForm {
     content: string
     parentId?: string | null
     replyUserId?: string | null
-    nickname: string
-    email?: string
-    website?: string
 }
