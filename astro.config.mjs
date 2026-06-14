@@ -15,7 +15,9 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/admin/'),
     }),
-    vue(),
+    vue({
+      appEntrypoint: '/src/admin-vue-setup.ts',
+    }),
   ],
   markdown: {
     syntaxHighlight: 'shiki',
