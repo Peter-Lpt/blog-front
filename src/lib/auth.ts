@@ -141,6 +141,31 @@ export async function logout() {
 }
 
 /**
+ * 上传用户头像
+ * POST /user/avatar  multipart/form-data
+ */
+export async function uploadAvatar(file: File): Promise<{ ok: boolean; avatarUrl?: string }> {
+  const token = getToken();
+  if (!token) return { ok: false };
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch(`${SITE.apiBaseUrl}/user/avatar`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: fd,
+    });
+    const data = await res.json();
+    if (data.success && data.data?.avatar) {
+      return { ok: true, avatarUrl: data.data.avatar };
+    }
+    return { ok: false };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/**
  * 校验 token 有效性 + 刷新 role（防止本地缓存的 role 过期）
  */
 export async function verifyToken(): Promise<boolean> {

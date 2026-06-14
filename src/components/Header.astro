@@ -2,6 +2,7 @@
 import { SITE } from '@/lib/config';
 import ThemeToggle from '@/components/islands/ThemeToggle.vue';
 import UserMenu from '@/components/islands/UserMenu.vue';
+import SearchDialog from '@/components/islands/SearchDialog.vue';
 
 const navItems = [
   { href: '/', label: '所有文章' },
@@ -30,7 +31,8 @@ const current = pathname.replace(/\/$/, '') || '/';
       }
     </nav>
     <div class="header-actions">
-      <UserMenu client:idle />
+      <SearchDialog client:idle />
+      <UserMenu client:only="vue" />
       <ThemeToggle client:load />
     </div>
   </div>

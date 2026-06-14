@@ -1,3 +1,6 @@
+/* 引入 Markdown 渲染样式 */
+@import "./markdown.css";
+
 /* ============================================
    主题变量系统（迁移自 Vue 版 themes.css）
    统一用 [data-theme="dark"]，不再使用 html.dark 双轨（见 ADR-002 4.1）
@@ -125,5 +128,8 @@ code, pre {
   }
 }
 
-/* 引入 Markdown 渲染样式 */
-@import "./markdown.css";
+/* 防登录按钮闪烁：已登录时 SSR 的登录按钮隐藏，Vue hydration 后移除此规则 */
+:root.has-auth .login-trigger {
+  visibility: hidden;
+  pointer-events: none;
+}

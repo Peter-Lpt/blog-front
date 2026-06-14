@@ -4,15 +4,15 @@
     <div v-if="loggedIn" class="user-menu" @click="toggleDropdown">
       <img :src="avatarUrl" :alt="displayName" class="avatar" v-if="!avatarError" @error="avatarError = true" />
       <div class="avatar fallback" v-else>{{ displayName.charAt(0).toUpperCase() }}</div>
-      <span class="username">{{ displayName }}</span>
 
       <div v-if="dropdownOpen" class="dropdown" @click.stop>
-        <a href="/admin/" class="dropdown-item admin-link" v-if="isAdmin">
+        <a v-if="isAdmin" :href="adminUrl" class="dropdown-item admin-link">
           ⚙️ 进入后台
         </a>
-        <a href="/admin/" class="dropdown-item" v-else>
-          个人中心
-        </a>
+        <label class="dropdown-item avatar-upload-item">
+          📷 更换头像
+          <input type="file" accept="image/*" class="hidden-input" @change="handleAvatarUpload" />
+        </label>
         <button class="dropdown-item" @click="handleLogout">退出登录</button>
       </div>
     </div>
@@ -36,10 +36,11 @@ import { getAvatar } from '@/lib/avatar';
 import {
   getUser,
   isLoggedIn,
-  isAdmin,
+  isAdmin as checkAdmin,
   logout,
   verifyToken,
   onAuthChange,
+  uploadAvatar,
 } from '@/lib/auth';
 import LoginDialog from './LoginDialog.vue';
 
@@ -51,6 +52,7 @@ const showLogin = ref(false);
 
 const displayName = computed(() => user.value?.nickname || user.value?.username || '用户');
 const isAdmin = computed(() => user.value?.role === 'admin');
+const adminUrl = '/admin/';
 const avatarUrl = computed(() =>
   getAvatar(user.value?.username || 'anonymous', user.value?.avatar)
 );
@@ -69,7 +71,7 @@ onMounted(() => {
   if (isLoggedIn()) {
     verifyToken().then(refresh);
   }
-  // 点击外部关闭下拉（document 只在浏览器存在）
+  // 点击外部关闭下拉
   document.addEventListener('click', (e) => {
     if (dropdownOpen.value && !(e.target as HTMLElement).closest('.user-menu')) {
       dropdownOpen.value = false;
@@ -79,6 +81,38 @@ onMounted(() => {
 
 function toggleDropdown() {
   dropdownOpen.value = !dropdownOpen.value;
+}
+
+async function handleAvatarUpload(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  // 预览：本地生成 data URL
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result as string;
+    // 乐观更新本地头像
+    if (user.value) {
+      user.value.avatar = dataUrl;
+      localStorage.setItem('blog_user', JSON.stringify(user.value));
+      refresh();
+    }
+  };
+  reader.readAsDataURL(file);
+
+  // 上传到后端
+  const result = await uploadAvatar(file);
+  if (result.ok && result.avatarUrl) {
+    // 后端返回正式 URL，替换本地 data URL
+    if (user.value) {
+      user.value.avatar = result.avatarUrl;
+      localStorage.setItem('blog_user', JSON.stringify(user.value));
+      refresh();
+    }
+  }
+  // 重置 input 以便重复选择同一文件
+  input.value = '';
+  dropdownOpen.value = false;
 }
 
 async function handleLogout() {
@@ -115,14 +149,6 @@ async function handleLogout() {
   font-weight: 600;
   font-size: 14px;
 }
-.username {
-  font-size: 14px;
-  color: var(--text-color);
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -149,10 +175,20 @@ async function handleLogout() {
   box-sizing: border-box;
 }
 .dropdown-item:hover { background: var(--primary-color-light); }
-.dropdown-item.admin-link {
+.admin-link {
   color: var(--primary-color);
   font-weight: 600;
   border-bottom: 1px solid var(--border-color);
+  text-decoration: none;
+}
+.avatar-upload-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.hidden-input {
+  display: none;
 }
 .login-trigger {
   display: flex;
