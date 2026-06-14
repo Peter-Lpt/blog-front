@@ -79,10 +79,11 @@
   margin: 16px 0;
   border-radius: 8px;
   overflow-x: auto;
-  background: #f6f8fa !important;
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--border-color);
   padding: 16px;
   position: relative;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .markdown-body pre code {
@@ -205,11 +206,27 @@
 }
 
 /* ============================================
-   暗色模式：Shiki 自动切换主题，但代码块背景需手动覆盖
+   暗色模式：Shiki 双主题切换
+   Shiki 把暗色值放在 --shiki-dark-* 变量里，
+   切换时需要手动把变量值应用到 color/background
    ============================================ */
-[data-theme="dark"] .markdown-body pre,
 [data-theme="dark"] .markdown-body pre.astro-code {
-  background: #16161e !important;
+  background-color: var(--shiki-dark-bg, #24292e) !important;
+  color: var(--shiki-dark, #e1e4e8) !important;
   border-color: #333;
-  color: #c0caf5;
+}
+
+/* 暗色下每个 token 的颜色切换（Shiki 用 --shiki-dark 携带暗色值） */
+[data-theme="dark"] .markdown-body pre.astro-code span[style] {
+  color: var(--shiki-dark, #e1e4e8) !important;
+  font-weight: var(--shiki-dark-font-weight, normal) !important;
+  font-style: var(--shiki-dark-font-style, normal) !important;
+  text-decoration: var(--shiki-dark-text-decoration, none) !important;
+}
+
+/* 行内代码暗色背景 */
+[data-theme="dark"] .markdown-body code:not(pre code) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e1e4e8;
 }
