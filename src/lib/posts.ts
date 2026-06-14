@@ -73,6 +73,20 @@ export async function getArchives(): Promise<Record<string, Post[]>> {
 }
 
 /**
+ * 按日统计文章数量（供日历归档用）
+ */
+export async function getArticleDatesByDay(): Promise<Record<string, number>> {
+  const posts = await getPublishedPosts();
+  const result: Record<string, number> = {};
+  posts.forEach((p) => {
+    const d = p.data.pubDate;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    result[key] = (result[key] || 0) + 1;
+  });
+  return result;
+}
+
+/**
  * 文章 slug（去掉 .md 后缀）
  */
 export function getSlug(post: Post): string {

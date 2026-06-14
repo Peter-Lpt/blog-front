@@ -1,44 +1,54 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Sidebar from '@/components/Sidebar.astro';
 import { getArchives, formatDate, getSlug } from '@/lib/posts';
 
 const archives = await getArchives();
 ---
 
 <BaseLayout title="归档" description="按时间归档的全部文章">
-  <section class="archive-page">
-    <header class="page-header">
-      <h1>📚 归档</h1>
-      <p class="page-desc">按时间线查看所有文章</p>
-    </header>
+  <div class="page-layout">
+    <Sidebar />
+    <section class="archive-page">
+      <header class="page-header">
+        <h1>归档</h1>
+        <p class="page-desc">按时间线查看所有文章</p>
+      </header>
 
-    {Object.keys(archives).length === 0 ? (
-      <div class="empty">暂无文章</div>
-    ) : (
-      <div class="archive-list">
-        {Object.entries(archives).map(([month, posts]) => (
-          <section class="archive-group">
-            <h2 class="archive-month">{month} <span class="count">({posts.length})</span></h2>
-            <ul class="month-posts">
-              {posts.map((post) => (
-                <li>
-                  <span class="post-date">{formatDate(post.data.pubDate)}</span>
-                  <a href={`/blog/${getSlug(post)}/`} class="post-title">
-                    {post.data.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-    )}
-  </section>
+      {Object.keys(archives).length === 0 ? (
+        <div class="empty">暂无文章</div>
+      ) : (
+        <div class="archive-list">
+          {Object.entries(archives).map(([month, posts]) => (
+            <section class="archive-group">
+              <h2 class="archive-month">{month} <span class="count">({posts.length})</span></h2>
+              <ul class="month-posts">
+                {posts.map((post) => (
+                  <li>
+                    <span class="post-date">{formatDate(post.data.pubDate)}</span>
+                    <a href={`/blog/${getSlug(post)}/`} class="post-title">
+                      {post.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .archive-page { padding: 40px 0; max-width: 800px; margin: 0 auto; }
-  .page-header { margin-bottom: 32px; }
+  .page-layout {
+    display: flex;
+    gap: 40px;
+    padding: 40px 0;
+    align-items: flex-start;
+  }
+  .archive-page { flex: 1; min-width: 0; }
+  .page-header { margin-bottom: 24px; }
   .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--text-color); }
   .page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
   .archive-group { margin-bottom: 32px; }
@@ -66,4 +76,8 @@ const archives = await getArchives();
   .post-title { color: var(--text-color); }
   .post-title:hover { color: var(--primary-color); }
   .empty { text-align: center; padding: 60px; color: var(--text-secondary); }
+
+  @media (max-width: 768px) {
+    .page-layout { flex-direction: column; gap: 24px; padding: 20px 0; }
+  }
 </style>

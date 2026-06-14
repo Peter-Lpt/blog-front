@@ -19,7 +19,7 @@ const url = `/blog/${slug}/`;
       {description && <p class="card-summary">{description}</p>}
       {tags && tags.length > 0 && (
         <div class="card-tags">
-          {tags.slice(0, 3).map((t) => <span class="tag-item">#{t}</span>)}
+          {tags.slice(0, 3).map((t) => <span class="tag-item">{t}</span>)}
         </div>
       )}
       <div class="card-meta">

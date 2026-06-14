@@ -15,6 +15,7 @@ const currentPosts = posts.slice(0, PAGE_SIZE);
 
 <BaseLayout>
   <div class="home-layout">
+    <Sidebar />
     <section class="post-list" aria-label="文章列表">
       <h1 class="visually-hidden">文章列表</h1>
       {currentPosts.length === 0 ? (
@@ -29,14 +30,13 @@ const currentPosts = posts.slice(0, PAGE_SIZE);
       )}
       <Pagination currentPage={1} totalPages={totalPages} baseUrl="/" />
     </section>
-    <Sidebar />
   </div>
 </BaseLayout>
 
 <style>
   .home-layout {
     display: flex;
-    gap: 48px;
+    gap: 40px;
     padding: 40px 0;
     align-items: flex-start;
   }

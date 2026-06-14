@@ -51,6 +51,11 @@ coverage
 .cache
 .parcel-cache
 *.tsbuildinfo
+dev-*.txt
+
+# Generated (unplugin-auto-import / unplugin-vue-components)
+auto-imports.d.ts
+components.d.ts
 
 # Astro
 .astro/

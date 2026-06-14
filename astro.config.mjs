@@ -9,7 +9,7 @@ export default defineConfig({
   // TODO: 上线前替换为正式域名（影响 sitemap/RSS 绝对 URL）
   site: 'https://example.com',
   output: 'static',
-  trailingSlash: 'always',
+  trailingSlash: 'ignore',
   integrations: [
     mdx(),
     sitemap({
