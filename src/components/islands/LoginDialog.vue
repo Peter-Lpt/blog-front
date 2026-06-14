@@ -1,6 +1,7 @@
 <template>
-  <div v-if="visible" class="login-overlay" @click.self="close">
-    <div class="login-card">
+  <Teleport to="body" :disabled="!isClient">
+    <div v-if="visible" class="login-overlay" @click.self="close">
+      <div class="login-card">
       <button class="ld-close" @click="close" aria-label="关闭">×</button>
 
       <div class="ld-header">
@@ -71,15 +72,22 @@
       </p>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { SITE } from '@/lib/config';
 import { login, register } from '@/lib/auth';
 
 const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{ close: [] }>();
+
+// SSR 安全守卫：SSR 时 disabled=true（内容内联渲染），客户端 mount 后启用 Teleport
+// 因为 visible 初始为 false，SSR 和客户端初始输出一致（都是 v-if=false 空注释），
+// 不会产生 hydration mismatch，mount 后 isClient=true 时 Teleport 才真正生效
+const isClient = ref(false);
+onMounted(() => { isClient.value = true; });
 
 const mode = ref<'login' | 'register'>('login');
 const form = reactive({ username: '', password: '', nickname: '' });
@@ -119,12 +127,12 @@ function loginWithGithub() {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  /* 用 grid 居中最可靠，且内容超高时自动滚动 */
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
   overflow-y: auto;
-  z-index: 9999;
+  z-index: 10000;
   animation: ld-fade 0.2s ease;
 }
 @keyframes ld-fade {
@@ -145,8 +153,7 @@ function loginWithGithub() {
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: ld-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* margin:auto 作为 grid 备选，确保垂直居中 */
-  margin: auto;
+
 }
 @keyframes ld-pop {
   from { transform: scale(0.92); opacity: 0; }

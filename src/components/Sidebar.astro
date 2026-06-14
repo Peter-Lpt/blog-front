@@ -1,52 +1,97 @@
 ---
-import { getMainCategories, getAllTags, getArchives, formatDate } from '@/lib/posts';
+import { SITE } from '@/lib/config';
+import { getMainCategories, getAllTags, getArchives, getArticleDatesByDay } from '@/lib/posts';
+import CalendarArchive from '@/components/islands/CalendarArchive.vue';
 
-const [categories, tags, archives] = await Promise.all([
+interface TocItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  tocItems?: TocItem[];
+  /** 详情页模式：只显示目录，不显示作者卡/分类/标签等 */
+  minimal?: boolean;
+}
+
+const { tocItems = [], minimal = false } = Astro.props;
+
+const [categories, tags, archives, articleDates] = await Promise.all([
   getMainCategories(),
   getAllTags(),
   getArchives(),
+  getArticleDatesByDay(),
 ]);
 ---
 
 <aside class="sidebar">
-  <section class="sidebar-section">
-    <h3 class="sidebar-title">分类</h3>
-    <ul class="category-list">
-      {Object.entries(categories).map(([name, count]) => (
-        <li>
-          <a href={`/category/${name}/`}>
-            <span>{name}</span>
-            <span class="count">{count}</span>
+  {!minimal && (
+    <div class="sidebar-non-toc">
+      <div class="author-card">
+        <div class="author-avatar">
+          <img src="/avatar.png" alt={SITE.author} onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="avatar-fallback" style="display:none">{SITE.author.charAt(0)}</div>
+        </div>
+        <h2 class="author-name">{SITE.author}</h2>
+        <p class="author-desc">代码与生活的记录者</p>
+        {SITE.github && (
+          <a href={SITE.github} target="_blank" rel="noopener" class="github-link">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span>GitHub</span>
           </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  {Object.keys(tags).length > 0 && (
-    <section class="sidebar-section">
-      <h3 class="sidebar-title">标签</h3>
-      <div class="tag-cloud">
-        {Object.entries(tags).map(([name, count]) => (
-          <a href={`/tag/${name}/`} class="tag-chip">#{name}<span class="tag-count">{count}</span></a>
-        ))}
+        )}
       </div>
+
+      {Object.keys(archives).length > 0 && (
+        <CalendarArchive articleDates={articleDates} client:load />
+      )}
+    </div>
+  )}
+
+  {tocItems.length > 0 && (
+    <section class="sidebar-section toc-section">
+      <h3 class="sidebar-title">目录</h3>
+      <nav class="toc-nav">
+        {tocItems.map((item) => (
+          <a
+            href={'#' + item.slug}
+            class={'toc-item toc-h' + item.depth}
+            data-toc-target={item.slug}
+          >
+            {item.text}
+          </a>
+        ))}
+      </nav>
     </section>
   )}
 
-  {Object.keys(archives).length > 0 && (
+  {!minimal && Object.keys(categories).length > 0 && (
     <section class="sidebar-section">
-      <h3 class="sidebar-title">归档</h3>
-      <ul class="archive-list">
-        {Object.entries(archives).map(([key, posts]) => (
+      <h3 class="sidebar-title">分类</h3>
+      <ul class="category-list">
+        {Object.entries(categories).map(([name, count]) => (
           <li>
-            <a href={`/archives/${key}/`}>
-              <span>{key}</span>
-              <span class="count">{posts.length}</span>
+            <a href={`/category/${name}/`}>
+              <span>{name}</span>
+              <span class="count">{count}</span>
             </a>
           </li>
         ))}
       </ul>
+    </section>
+  )}
+
+  {!minimal && Object.keys(tags).length > 0 && (
+    <section class="sidebar-section">
+      <h3 class="sidebar-title">标签</h3>
+      <div class="tag-cloud">
+        {Object.entries(tags).map(([name, count]) => (
+          <a href={`/tag/${name}/`} class="tag-chip">{name}<span class="tag-count">{count}</span></a>
+        ))}
+      </div>
     </section>
   )}
 </aside>
@@ -60,8 +105,75 @@ const [categories, tags, archives] = await Promise.all([
     height: fit-content;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
   }
+  .sidebar-non-toc {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .author-card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 28px 20px;
+    text-align: center;
+  }
+  .author-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .avatar-fallback {
+    width: 100%;
+    height: 100%;
+    background: var(--primary-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .author-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--text-color);
+  }
+  .author-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 14px;
+  }
+  .github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .github-link:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: var(--primary-color-light);
+  }
+
   .sidebar-section {
     background: var(--card-bg);
     border: var(--card-border);
@@ -76,7 +188,7 @@ const [categories, tags, archives] = await Promise.all([
     border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
   }
-  .category-list, .archive-list {
+  .category-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -84,7 +196,7 @@ const [categories, tags, archives] = await Promise.all([
     flex-direction: column;
     gap: 4px;
   }
-  .category-list a, .archive-list a {
+  .category-list a {
     display: flex;
     justify-content: space-between;
     color: var(--text-secondary);
@@ -93,7 +205,7 @@ const [categories, tags, archives] = await Promise.all([
     font-size: 14px;
     transition: all 0.2s;
   }
-  .category-list a:hover, .archive-list a:hover {
+  .category-list a:hover {
     color: var(--primary-color);
     background: var(--primary-color-light);
   }
@@ -125,6 +237,39 @@ const [categories, tags, archives] = await Promise.all([
   .tag-count {
     font-size: 11px;
     opacity: 0.7;
+  }
+
+  .toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .toc-item {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .toc-item:hover {
+    color: var(--primary-color);
+    background: var(--primary-color-light);
+  }
+  .toc-item.toc-active {
+    color: var(--primary-color);
+    background: var(--primary-color-light);
+    font-weight: 600;
+    border-left: 2px solid var(--primary-color);
+    padding-left: 10px;
+  }
+  .toc-h3 {
+    padding-left: 20px;
   }
 
   @media (max-width: 768px) {
