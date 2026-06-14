@@ -1,0 +1,217 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LikeButton from '@/components/islands/LikeButton.vue';
+import CommentSection from '@/components/islands/CommentSection.vue';
+import { formatDate, getSlug } from '@/lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: getSlug(post) },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+const slug = getSlug(post);
+const { title, pubDate, updatedDate, tags, description, coverImage } = post.data;
+const category = tags?.[0];
+
+// 只取 h2/h3 作为目录
+const tocItems = headings
+  .filter((h) => h.depth === 2 || h.depth === 3)
+  .map((h) => ({
+    depth: h.depth,
+    slug: h.slug,
+    text: h.text,
+  }));
+
+// JSON-LD 结构化数据（SEO）
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate || pubDate).toISOString(),
+  articleSection: category,
+  keywords: (tags || []).join(', '),
+  url: new URL(`/blog/${slug}/`, Astro.site ?? Astro.url).toString(),
+};
+---
+
+<BaseLayout title={title} description={description} image={coverImage}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">{title}</h1>
+      <div class="post-meta">
+        <span>📅 <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></span>
+        {updatedDate && (
+          <span>✏️ 更新于 <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>
+        )}
+        {category && <span>📂 <a href={`/category/${category}/`}>{category}</a></span>}
+      </div>
+      {tags && tags.length > 1 && (
+        <div class="post-tags">
+          {tags.slice(1).map((t) => <a href={`/tag/${t}/`} class="tag">#{t}</a>)}
+        </div>
+      )}
+    </header>
+
+    {coverImage && (
+      <div class="cover">
+        <img src={coverImage} alt={title} />
+      </div>
+    )}
+
+    <div class="post-body">
+      <div class="prose-content">
+        <Content />
+      </div>
+    </div>
+
+    <div class="post-actions">
+      <LikeButton client:visible essay-slug={slug} />
+    </div>
+
+    <CommentSection client:visible essay-slug={slug} />
+  </article>
+
+  {tocItems.length > 0 && (
+    <aside class="toc">
+      <div class="toc-title">目录</div>
+      <nav>
+        {tocItems.map((item) => (
+          <a href={`#${item.slug}`} class:list={['toc-item', `toc-h${item.depth}`]}>
+            {item.text}
+          </a>
+        ))}
+      </nav>
+    </aside>
+  )}
+</BaseLayout>
+
+<style>
+  .post {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 0;
+  }
+  .post-header {
+    margin-bottom: 24px;
+  }
+  .post-title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 12px;
+    color: var(--text-color);
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .post-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .tag {
+    color: var(--primary-color);
+  }
+  .cover {
+    margin-bottom: 28px;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+  }
+  .cover img {
+    width: 100%;
+    display: block;
+  }
+  .post-body {
+    margin-bottom: 32px;
+  }
+  /* Markdown 内容排版（@tailwindcss/typography 处理大部分） */
+  .prose-content {
+    color: var(--text-color);
+    line-height: 1.8;
+  }
+  .prose-content :global(h2) {
+    margin-top: 2em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .prose-content :global(pre) {
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .post-actions {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    margin: 32px 0;
+  }
+
+  /* TOC 侧栏 */
+  .toc {
+    position: fixed;
+    top: 100px;
+    right: 40px;
+    width: 220px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+  }
+  .toc-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+  }
+  .toc-item {
+    display: block;
+    padding: 3px 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    transition: all 0.2s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .toc-item:hover {
+    color: var(--primary-color);
+    background: var(--primary-color-light);
+  }
+  .toc-h3 {
+    padding-left: 20px;
+  }
+
+  @media (max-width: 1280px) {
+    .toc { display: none; }
+  }
+  @media (max-width: 768px) {
+    .post { padding: 20px 0; }
+    .post-title { font-size: 24px; }
+  }
+</style>

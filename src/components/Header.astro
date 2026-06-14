@@ -1,0 +1,122 @@
+---
+import { SITE } from '@/lib/config';
+import ThemeToggle from '@/components/islands/ThemeToggle.vue';
+
+const navItems = [
+  { href: '/', label: '所有文章' },
+  { href: '/tools/', label: '工具箱' },
+  { href: '/friend-links/', label: '友情链接' },
+  { href: '/about/', label: '关于' },
+];
+
+const pathname = Astro.url.pathname;
+// 去掉尾部斜杠后比较，便于 active 判断
+const current = pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <div class="header-inner container">
+    <a href="/" class="logo">{SITE.title}</a>
+    <nav class="nav" aria-label="主导航">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={['nav-link', { active: current === item.href.replace(/\/$/, '') || (item.href !== '/' && current.startsWith(item.href)) }]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="header-actions">
+      <ThemeToggle client:load />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    gap: 24px;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .logo:hover {
+    color: var(--primary-color);
+  }
+  .nav {
+    display: flex;
+    gap: 28px;
+    margin-left: auto;
+  }
+  .nav-link {
+    color: var(--text-secondary);
+    font-size: 15px;
+    padding: 6px 0;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    transition: width 0.3s;
+  }
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--text-color);
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    width: 100%;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .header-inner {
+      height: 60px;
+      gap: 12px;
+    }
+    .logo {
+      font-size: 18px;
+    }
+    .nav {
+      gap: 16px;
+    }
+    .nav-link {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav {
+      gap: 12px;
+    }
+  }
+</style>

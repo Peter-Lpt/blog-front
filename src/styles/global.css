@@ -1,0 +1,122 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ============================================
+   主题变量系统（迁移自 Vue 版 themes.css）
+   统一用 [data-theme="dark"]，不再使用 html.dark 双轨（见 ADR-002 4.1）
+   ============================================ */
+:root {
+  /* 主色：金色 */
+  --primary-color: #c9a96e;
+  --primary-color-light: rgba(201, 169, 110, 0.12);
+
+  /* 背景 */
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+
+  /* 文字（对比度提升，原 #666 → #595959，达 WCAG AA） */
+  --text-color: #1a1a1a;
+  --text-secondary: #595959;
+
+  /* 边框 / 卡片 */
+  --border-color: #e8e8e8;
+  --card-bg: #ffffff;
+  --card-border: 1px solid rgba(0, 0, 0, 0.06);
+  --card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --card-radius: 16px;
+
+  /* 玻璃拟态 */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-bg-strong: rgba(255, 255, 255, 0.95);
+  --glass-blur: 20px;
+  --glass-radius: 16px;
+
+  /* 容器宽度统一变量（修复原 main 1280 vs HomeView 1400 冲突） */
+  --container-width: 1200px;
+
+  /* 字体 */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root[data-theme="dark"] {
+  --primary-color: #d4af37;
+  --primary-color-light: rgba(212, 175, 55, 0.12);
+
+  --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+
+  --text-color: #e5e5e5;
+  --text-secondary: #a0a0a0;
+
+  --border-color: #333;
+  --card-bg: #2a2a2a;
+  --card-border: 1px solid rgba(212, 175, 55, 0.15);
+  --card-hover-shadow: 0 8px 30px rgba(212, 175, 55, 0.08);
+
+  --glass-bg: rgba(42, 42, 42, 0.85);
+  --glass-bg-strong: rgba(48, 48, 48, 0.95);
+}
+
+/* ============================================
+   基础元素
+   ============================================ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--text-color);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--text-color);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 代码字体 */
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* 焦点可见（A11y） */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* 容器 */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 32px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}

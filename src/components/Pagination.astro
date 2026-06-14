@@ -1,0 +1,67 @@
+---
+export interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string; // 如 '/' 或 '/category/前端/'
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props;
+
+function pageHref(page: number): string {
+  if (page === 1) return baseUrl;
+  // 首页分页：/page/2/；其他：原 baseUrl 已带斜杠，拼数字
+  if (baseUrl === '/') return `/page/${page}/`;
+  return `${baseUrl}page/${page}/`;
+}
+
+const showPrev = currentPage > 1;
+const showNext = currentPage < totalPages;
+
+// 简单展示数字 1..totalPages（文章量不大时够用）
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+---
+
+{totalPages > 1 && (
+  <nav class="pagination" aria-label="分页">
+    {showPrev && <a href={pageHref(currentPage - 1)} rel="prev">← 上一页</a>}
+    <div class="page-numbers">
+      {pages.map((p) => (
+        <a href={pageHref(p)} class:list={['page-num', { active: p === currentPage }]}>{p}</a>
+      ))}
+    </div>
+    {showNext && <a href={pageHref(currentPage + 1)} rel="next">下一页 →</a>}
+  </nav>
+)}
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .pagination a {
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .pagination a:hover {
+    color: var(--primary-color);
+    background: var(--primary-color-light);
+  }
+  .page-numbers {
+    display: flex;
+    gap: 4px;
+  }
+  .page-num {
+    min-width: 32px;
+    text-align: center;
+  }
+  .page-num.active {
+    background: var(--primary-color);
+    color: #fff;
+  }
+</style>

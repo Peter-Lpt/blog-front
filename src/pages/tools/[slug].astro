@@ -1,0 +1,83 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate } from '@/lib/posts';
+
+export async function getStaticPaths() {
+  const tools = await getCollection('tools', ({ data }) => !data.draft);
+  return tools.map((tool) => ({
+    params: { slug: tool.id.replace(/\.md$/, '') },
+    props: { tool },
+  }));
+}
+
+interface Props {
+  tool: CollectionEntry<'tools'>;
+}
+
+const { tool } = Astro.props;
+const { Content } = await tool.render();
+const { name, url, category, icon, tags, rating, cost, platform, addedDate, updatedDate } = tool.data;
+---
+
+<BaseLayout title={`${name} - 工具记录`} description={`${name}：${category}`}>
+  <article class="tool-detail">
+    <a href="/tools/" class="back">← 返回工具箱</a>
+
+    <header class="tool-header">
+      <div class="tool-title-row">
+        <span class="big-icon">{icon || '🔧'}</span>
+        <h1>{name}</h1>
+        <a href={url} target="_blank" rel="noopener noreferrer" class="visit">访问官网 ↗</a>
+      </div>
+      <div class="tool-info">
+        <span class="info-item">📂 {category}</span>
+        {rating !== undefined && rating > 0 && (
+          <span class="info-item rating">{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</span>
+        )}
+        {cost && <span class="info-item">{cost}</span>}
+        {platform && platform.length > 0 && (
+          <span class="info-item">{platform.join(' / ')}</span>
+        )}
+      </div>
+      {tags && tags.length > 0 && (
+        <div class="tool-tags">
+          {tags.map((t) => <span class="tag">#{t}</span>)}
+        </div>
+      )}
+    </header>
+
+    <div class="tool-body prose-content">
+      <Content />
+    </div>
+
+    <footer class="tool-footer">
+      <p class="meta-line">添加于 {formatDate(addedDate)}{updatedDate && ` · 更新于 ${formatDate(updatedDate)}`}</p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .tool-detail { max-width: 760px; margin: 0 auto; padding: 40px 0; }
+  .back { font-size: 13px; color: var(--text-secondary); display: inline-block; margin-bottom: 16px; }
+  .back:hover { color: var(--primary-color); }
+  .tool-header { margin-bottom: 32px; }
+  .tool-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .big-icon { font-size: 36px; }
+  .tool-title-row h1 { font-size: 28px; margin: 0; flex: 1; color: var(--text-color); }
+  .visit {
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .visit:hover { opacity: 0.9; color: #fff; }
+  .tool-info { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 14px; color: var(--text-secondary); }
+  .rating { color: #f5a623; }
+  .tool-tags { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 13px; color: var(--primary-color); }
+  .tool-body { color: var(--text-color); line-height: 1.8; }
+  .tool-footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border-color); }
+  .meta-line { font-size: 13px; color: var(--text-secondary); margin: 0; }
+</style>

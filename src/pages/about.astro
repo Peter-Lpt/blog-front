@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/lib/config';
+---
+
+<BaseLayout title="关于" description="关于本站">
+  <article class="about-page prose-content">
+    <h1>关于</h1>
+
+    <p>欢迎来到 {SITE.title}。这里是我的个人技术博客，记录前端、后端、工程实践方面的思考和笔记。</p>
+
+    <h2>关于内容</h2>
+    <p>本站文章以 Markdown 文件形式管理，基于 Astro 静态站点生成器构建。</p>
+
+    <h2>联系方式</h2>
+    <ul>
+      <li>GitHub：<a href={SITE.github} target="_blank" rel="noopener noreferrer">{SITE.github}</a></li>
+      {SITE.email && <li>Email：<a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>}
+    </ul>
+
+    <h2>订阅</h2>
+    <p>欢迎通过 <a href="/rss.xml">RSS</a> 订阅本站更新。</p>
+  </article>
+</BaseLayout>
+
+<style>
+  .about-page { max-width: 720px; margin: 0 auto; padding: 40px 0; color: var(--text-color); }
+</style>

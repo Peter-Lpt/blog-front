@@ -1,10 +1,10 @@
-const STORAGE_KEY = 'blog_user_key'
-
+/** 用户标识（点赞防刷，IP/Cookie 组合，纯客户端生成） */
 export function getUserKey(): string {
-    let key = localStorage.getItem(STORAGE_KEY)
-    if (!key) {
-        key = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10)
-        localStorage.setItem(STORAGE_KEY, key)
-    }
-    return key
+  const KEY = 'blog_user_key';
+  let key = localStorage.getItem(KEY);
+  if (!key) {
+    key = `u_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(KEY, key);
+  }
+  return key;
 }

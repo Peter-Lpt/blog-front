@@ -1,0 +1,69 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getArchives, formatDate, getSlug } from '@/lib/posts';
+
+const archives = await getArchives();
+---
+
+<BaseLayout title="归档" description="按时间归档的全部文章">
+  <section class="archive-page">
+    <header class="page-header">
+      <h1>📚 归档</h1>
+      <p class="page-desc">按时间线查看所有文章</p>
+    </header>
+
+    {Object.keys(archives).length === 0 ? (
+      <div class="empty">暂无文章</div>
+    ) : (
+      <div class="archive-list">
+        {Object.entries(archives).map(([month, posts]) => (
+          <section class="archive-group">
+            <h2 class="archive-month">{month} <span class="count">({posts.length})</span></h2>
+            <ul class="month-posts">
+              {posts.map((post) => (
+                <li>
+                  <span class="post-date">{formatDate(post.data.pubDate)}</span>
+                  <a href={`/blog/${getSlug(post)}/`} class="post-title">
+                    {post.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .archive-page { padding: 40px 0; max-width: 800px; margin: 0 auto; }
+  .page-header { margin-bottom: 32px; }
+  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--text-color); }
+  .page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
+  .archive-group { margin-bottom: 32px; }
+  .archive-month {
+    font-size: 18px;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+    margin: 0 0 12px;
+  }
+  .count { font-size: 14px; color: var(--text-secondary); font-weight: normal; }
+  .month-posts { list-style: none; padding: 0; margin: 0; }
+  .month-posts li {
+    display: flex;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
+  }
+  .post-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    width: 100px;
+  }
+  .post-title { color: var(--text-color); }
+  .post-title:hover { color: var(--primary-color); }
+  .empty { text-align: center; padding: 60px; color: var(--text-secondary); }
+</style>

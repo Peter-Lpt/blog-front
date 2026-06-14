@@ -51,3 +51,6 @@ coverage
 .cache
 .parcel-cache
 *.tsbuildinfo
+
+# Astro
+.astro/

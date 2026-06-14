@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getPublishedPosts } from '@/lib/posts';
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 50;
+  const posts = await getPublishedPosts();
+  const categories = [...new Set(posts.map((p) => p.data.tags?.[0]).filter(Boolean))];
+  return categories.map((category) => ({
+    params: { category },
+    props: {
+      category,
+      posts: posts.filter((p) => p.data.tags?.[0] === category).slice(0, PAGE_SIZE),
+    },
+  }));
+}
+
+const { category, posts } = Astro.props;
+---
+
+<BaseLayout title={`分类：${category}`}>
+  <section class="category-page">
+    <header class="page-header">
+      <p class="breadcrumb"><a href="/">首页</a> / 分类</p>
+      <h1>📂 {category}</h1>
+      <p class="page-desc">共 {posts.length} 篇文章</p>
+    </header>
+    <div class="cards">
+      {posts.map((post: any) => <PostCard post={post} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .category-page { padding: 40px 0; }
+  .page-header { margin-bottom: 24px; }
+  .breadcrumb { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--text-color); }
+  .page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  @media (max-width: 1024px) { .cards { grid-template-columns: 1fr; } }
+</style>
