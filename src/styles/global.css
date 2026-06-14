@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 /* ============================================
    主题变量系统（迁移自 Vue 版 themes.css）
    统一用 [data-theme="dark"]，不再使用 html.dark 双轨（见 ADR-002 4.1）
