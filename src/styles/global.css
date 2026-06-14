@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 
 /* ============================================
    主题变量系统（迁移自 Vue 版 themes.css）
@@ -120,3 +119,6 @@ code, pre {
     padding: 0 16px;
   }
 }
+
+/* 引入 Markdown 渲染样式 */
+@import "./markdown.css";

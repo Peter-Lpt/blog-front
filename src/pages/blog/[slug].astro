@@ -4,6 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import LikeButton from '@/components/islands/LikeButton.vue';
 import CommentSection from '@/components/islands/CommentSection.vue';
 import { formatDate, getSlug } from '@/lib/posts';
+import '@/styles/markdown.css';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -23,16 +24,10 @@ const slug = getSlug(post);
 const { title, pubDate, updatedDate, tags, description, coverImage } = post.data;
 const category = tags?.[0];
 
-// 只取 h2/h3 作为目录
 const tocItems = headings
   .filter((h) => h.depth === 2 || h.depth === 3)
-  .map((h) => ({
-    depth: h.depth,
-    slug: h.slug,
-    text: h.text,
-  }));
+  .map((h) => ({ depth: h.depth, slug: h.slug, text: h.text }));
 
-// JSON-LD 结构化数据（SEO）
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
@@ -49,169 +44,237 @@ const jsonLd = {
 <BaseLayout title={title} description={description} image={coverImage}>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">{title}</h1>
-      <div class="post-meta">
-        <span>📅 <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></span>
-        {updatedDate && (
-          <span>✏️ 更新于 <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>
+  <div class="detail-wrapper">
+    <article class="detail-view">
+      <header class="detail-header">
+        <h1 class="detail-title">{title}</h1>
+        <div class="detail-meta">
+          <span>📅 <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></span>
+          {updatedDate && (
+            <span>✏️ 更新于 <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>
+          )}
+          {category && <span>📂 <a href={`/category/${category}/`}>{category}</a></span>}
+        </div>
+        {tags && tags.length > 1 && (
+          <div class="detail-tags">
+            {tags.slice(1).map((t) => <a href={`/tag/${t}/`} class="tag">#{t}</a>)}
+          </div>
         )}
-        {category && <span>📂 <a href={`/category/${category}/`}>{category}</a></span>}
-      </div>
-      {tags && tags.length > 1 && (
-        <div class="post-tags">
-          {tags.slice(1).map((t) => <a href={`/tag/${t}/`} class="tag">#{t}</a>)}
+      </header>
+
+      {coverImage && (
+        <div class="detail-cover">
+          <img src={coverImage} alt={title} />
         </div>
       )}
-    </header>
 
-    {coverImage && (
-      <div class="cover">
-        <img src={coverImage} alt={title} />
-      </div>
-    )}
-
-    <div class="post-body">
-      <div class="prose-content">
+      <div class="detail-content markdown-body">
         <Content />
       </div>
-    </div>
 
-    <div class="post-actions">
-      <LikeButton client:visible essay-slug={slug} />
-    </div>
+      <div class="detail-actions">
+        <LikeButton client:visible essay-slug={slug} />
+      </div>
 
-    <CommentSection client:visible essay-slug={slug} />
-  </article>
+      <CommentSection client:visible essay-slug={slug} />
+    </article>
 
-  {tocItems.length > 0 && (
-    <aside class="toc">
-      <div class="toc-title">目录</div>
-      <nav>
-        {tocItems.map((item) => (
-          <a href={`#${item.slug}`} class:list={['toc-item', `toc-h${item.depth}`]}>
-            {item.text}
-          </a>
-        ))}
-      </nav>
-    </aside>
-  )}
+    {tocItems.length > 0 && (
+      <aside class="toc-sidebar">
+        <div class="toc-title">目录</div>
+        <nav class="toc-nav">
+          {tocItems.map((item) => (
+            <a
+              href={`#${item.slug}`}
+              class:list={['toc-item', `toc-h${item.depth}`]}
+            >
+              {item.text}
+            </a>
+          ))}
+        </nav>
+      </aside>
+    )}
+  </div>
 </BaseLayout>
 
 <style>
-  .post {
-    max-width: 760px;
+  .detail-wrapper {
+    display: flex;
+    gap: 24px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 40px 0;
+    position: relative;
   }
-  .post-header {
+
+  .detail-view {
+    flex: 1;
+    min-width: 0;
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .detail-header {
     margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
   }
-  .post-title {
-    font-size: 32px;
+
+  .detail-title {
+    font-size: 28px;
     font-weight: 700;
-    line-height: 1.3;
     margin: 0 0 12px;
+    line-height: 1.4;
     color: var(--text-color);
   }
-  .post-meta {
+
+  .detail-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    font-size: 14px;
     color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 12px;
   }
-  .post-tags {
+
+  .detail-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .detail-meta a {
+    color: var(--primary-color);
+  }
+
+  .detail-tags {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-top: 12px;
-    font-size: 13px;
+    margin-top: 8px;
   }
+
   .tag {
+    font-size: 13px;
     color: var(--primary-color);
+    background: var(--primary-color-light);
+    padding: 2px 10px;
+    border-radius: 12px;
+    transition: all 0.2s;
   }
-  .cover {
-    margin-bottom: 28px;
-    border-radius: var(--card-radius);
-    overflow: hidden;
+
+  .tag:hover {
+    background: var(--primary-color);
+    color: #fff;
+    text-decoration: none;
   }
-  .cover img {
+
+  .detail-cover {
+    margin-bottom: 24px;
+  }
+
+  .detail-cover img {
     width: 100%;
+    border-radius: 8px;
     display: block;
   }
-  .post-body {
-    margin-bottom: 32px;
+
+  .detail-content {
+    margin-bottom: 30px;
   }
-  /* Markdown 内容排版（@tailwindcss/typography 处理大部分） */
-  .prose-content {
-    color: var(--text-color);
-    line-height: 1.8;
-  }
-  .prose-content :global(h2) {
-    margin-top: 2em;
-    padding-bottom: 0.3em;
-    border-bottom: 1px solid var(--border-color);
-  }
-  .prose-content :global(pre) {
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  .post-actions {
+
+  .detail-actions {
     display: flex;
     justify-content: center;
     padding: 20px 0;
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
-    margin: 32px 0;
+    margin-bottom: 30px;
   }
 
   /* TOC 侧栏 */
-  .toc {
-    position: fixed;
-    top: 100px;
-    right: 40px;
+  .toc-sidebar {
     width: 220px;
-    max-height: calc(100vh - 160px);
+    flex-shrink: 0;
+    position: sticky;
+    top: 96px;
+    height: fit-content;
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
-    padding: 16px;
     background: var(--card-bg);
     border: var(--card-border);
     border-radius: var(--card-radius);
+    padding: 20px;
   }
+
+  .toc-sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .toc-sidebar::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 2px;
+  }
+
   .toc-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
   }
+
+  .toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   .toc-item {
     display: block;
-    padding: 3px 8px;
     font-size: 13px;
     color: var(--text-secondary);
+    text-decoration: none;
+    padding: 4px 8px;
     border-radius: 4px;
     transition: all 0.2s;
+    line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
   .toc-item:hover {
     color: var(--primary-color);
     background: var(--primary-color-light);
   }
+
   .toc-h3 {
     padding-left: 20px;
   }
 
-  @media (max-width: 1280px) {
-    .toc { display: none; }
+  @media (max-width: 1100px) {
+    .toc-sidebar {
+      display: none;
+    }
   }
+
   @media (max-width: 768px) {
-    .post { padding: 20px 0; }
-    .post-title { font-size: 24px; }
+    .detail-view {
+      padding: 20px 16px;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+    .detail-title {
+      font-size: 22px;
+    }
+    .detail-wrapper {
+      padding: 16px 0;
+    }
   }
 </style>

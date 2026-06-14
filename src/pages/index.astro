@@ -45,9 +45,8 @@ const currentPosts = posts.slice(0, PAGE_SIZE);
     min-width: 0;
   }
   .cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    display: flex;
+    flex-direction: column;
   }
   .empty {
     text-align: center;
@@ -62,11 +61,6 @@ const currentPosts = posts.slice(0, PAGE_SIZE);
     clip: rect(0, 0, 0, 0);
   }
 
-  @media (max-width: 1024px) {
-    .cards {
-      grid-template-columns: 1fr;
-    }
-  }
   @media (max-width: 768px) {
     .home-layout {
       flex-direction: column;

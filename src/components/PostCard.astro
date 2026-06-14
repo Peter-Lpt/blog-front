@@ -1,5 +1,4 @@
 ---
-import { CATEGORY_COLORS, DEFAULT_GRADIENT } from '@/lib/config';
 import { formatDate, getSlug, type Post } from '@/lib/posts';
 
 export interface Props {
@@ -10,123 +9,193 @@ const { post } = Astro.props;
 const slug = getSlug(post);
 const { title, pubDate, tags, description, coverImage } = post.data;
 const category = tags?.[0] || '';
-const [c1, c2] = CATEGORY_COLORS[category] || DEFAULT_GRADIENT;
 const url = `/blog/${slug}/`;
 ---
 
-<article class="post-card">
-  <a href={url} class="card-link" aria-label={title}>
-    {coverImage ? (
-      <div class="cover">
-        <img src={coverImage} alt={title} loading="lazy" decoding="async" />
-      </div>
-    ) : (
-      <div class="cover cover-gradient" style={`background: linear-gradient(135deg, ${c1}, ${c2})`}>
-        <span class="cover-title">{title}</span>
-      </div>
-    )}
-    <div class="card-body">
+<article class="article-card">
+  <a href={url} class="card-link">
+    <div class="card-content">
       <h2 class="card-title">{title}</h2>
-      {description && <p class="card-desc">{description}</p>}
+      {description && <p class="card-summary">{description}</p>}
+      {tags && tags.length > 0 && (
+        <div class="card-tags">
+          {tags.slice(0, 3).map((t) => <span class="tag-item">#{t}</span>)}
+        </div>
+      )}
       <div class="card-meta">
-        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-        {tags && tags.length > 0 && (
-          <div class="card-tags">
-            {tags.slice(0, 3).map((t) => (
-              <span class="tag">#{t}</span>
-            ))}
-          </div>
+        {category && (
+          <span class="meta-category">
+            <span class="meta-dot"></span>
+            {category}
+          </span>
         )}
+        <span class="meta-date">{formatDate(pubDate)}</span>
       </div>
     </div>
+    {coverImage && (
+      <div class="card-cover">
+        <img src={coverImage} alt={title} loading="lazy" decoding="async" />
+      </div>
+    )}
   </a>
 </article>
 
 <style>
-  .post-card {
-    background: var(--card-bg);
+  .article-card {
+    padding: 32px;
     border: var(--card-border);
     border-radius: var(--card-radius);
+    margin-bottom: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--card-bg);
+    position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
   }
-  .post-card:hover {
-    box-shadow: var(--card-hover-shadow);
+
+  .article-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), rgba(201, 169, 110, 0.3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .article-card:hover {
     border-color: var(--primary-color);
-    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+    transform: translateY(-4px);
   }
+
+  .article-card:hover::before {
+    opacity: 1;
+  }
+
   .card-link {
-    display: block;
-    color: inherit;
+    display: flex;
+    gap: 32px;
+    color: var(--text-color);
+    text-decoration: none;
   }
-  .cover {
-    aspect-ratio: 16 / 7;
+
+  .article-card:hover .card-title {
+    color: var(--primary-color);
+  }
+
+  .article-card:hover .card-cover img {
+    transform: scale(1.05);
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    line-height: 1.4;
+    color: var(--text-color);
+    transition: color 0.2s;
+    letter-spacing: -0.01em;
+  }
+
+  .card-summary {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.8;
+    margin: 0 0 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .cover img {
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tag-item {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--glass-bg);
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+  }
+
+  .article-card:hover .tag-item {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: auto;
+  }
+
+  .meta-category {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .meta-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-color);
+  }
+
+  .card-cover {
+    width: 220px;
+    height: 160px;
+    flex-shrink: 0;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .post-card:hover .cover img {
-    transform: scale(1.03);
-  }
-  .cover-gradient {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-  }
-  .cover-title {
-    color: #fff;
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .card-body {
-    padding: 18px 20px;
-  }
-  .card-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 8px;
-    line-height: 1.4;
-    color: var(--text-color);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .card-desc {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0 0 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-  .card-tags {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  .tag {
-    color: var(--primary-color);
+
+  @media (max-width: 768px) {
+    .article-card {
+      padding: 24px;
+    }
+    .card-title {
+      font-size: 18px;
+    }
+    .card-summary {
+      font-size: 14px;
+    }
+    .card-link {
+      flex-direction: column-reverse;
+    }
+    .card-cover {
+      width: 100%;
+      height: 200px;
+    }
   }
 </style>
