@@ -76,27 +76,30 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { SITE } from '@/lib/config';
 import { login, register } from '@/lib/auth';
 
-const props = defineProps<{ visible: boolean }>();
-const emit = defineEmits<{ close: [] }>();
-
-// SSR 安全守卫：SSR 时 disabled=true（内容内联渲染），客户端 mount 后启用 Teleport
-// 因为 visible 初始为 false，SSR 和客户端初始输出一致（都是 v-if=false 空注释），
-// 不会产生 hydration mismatch，mount 后 isClient=true 时 Teleport 才真正生效
+// SSR 安全守卫
 const isClient = ref(false);
 onMounted(() => { isClient.value = true; });
+
+// 自管理可见性，通过 document.dispatchEvent(new CustomEvent('open-login')) 触发
+const visible = ref(false);
+function open() { visible.value = true; }
+function close() { visible.value = false; }
+
+onMounted(() => {
+  document.addEventListener('open-login', open);
+});
+onUnmounted(() => {
+  document.removeEventListener('open-login', open);
+});
 
 const mode = ref<'login' | 'register'>('login');
 const form = reactive({ username: '', password: '', nickname: '' });
 const loading = ref(false);
 const errorMsg = ref('');
-
-function close() {
-  emit('close');
-}
 
 async function submit() {
   if (loading.value) return;
