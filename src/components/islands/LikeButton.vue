@@ -16,24 +16,25 @@ const liked = ref(false);
 const likeCount = ref(0);
 const loading = ref(false);
 
-onMounted(() => {
-  const cacheKey = `like_${props.essaySlug}`;
-  const cachedLiked = localStorage.getItem(cacheKey);
-  if (cachedLiked !== null) {
-    liked.value = cachedLiked === '1';
-  }
-  // 拉取当前点赞数
-  fetchCount();
-});
-
-async function fetchCount() {
+onMounted(async () => {
+  const userKey = getUserKey();
   try {
-    // 无专用 count 接口，复用 toggle 不可行；这里仅依赖本地状态
-    // 后续可加 /like/count?essaySlug=xxx 接口（见 ROADMAP 浏览量持久化）
+    const res = await fetch(
+      `${SITE.apiBaseUrl}/like/status?essaySlug=${encodeURIComponent(props.essaySlug)}&userKey=${encodeURIComponent(userKey)}`
+    );
+    const data = await res.json();
+    if (data.success && data.data) {
+      liked.value = data.data.liked;
+      likeCount.value = data.data.likeCount || 0;
+      // 同步 localStorage（与后端为准）
+      localStorage.setItem(`like_${props.essaySlug}`, data.data.liked ? '1' : '0');
+    }
   } catch {
-    // ignore
+    // 网络异常时降级到 localStorage 缓存
+    const cached = localStorage.getItem(`like_${props.essaySlug}`);
+    if (cached !== null) liked.value = cached === '1';
   }
-}
+});
 
 async function handleToggle() {
   if (loading.value) return;
@@ -46,13 +47,13 @@ async function handleToggle() {
       body: JSON.stringify({ essaySlug: props.essaySlug, userKey }),
     });
     const data = await res.json();
-    if (data.success) {
+    if (data.success && data.data) {
       liked.value = data.data.liked;
-      likeCount.value = data.data.likeCount;
+      likeCount.value = data.data.likeCount || 0;
       localStorage.setItem(`like_${props.essaySlug}`, data.data.liked ? '1' : '0');
     }
-  } catch (e) {
-    // 网络错误时静默
+  } catch {
+    // ignore
   } finally {
     loading.value = false;
   }
@@ -72,6 +73,7 @@ async function handleToggle() {
   font-size: 15px;
   color: var(--text-secondary);
   transition: all 0.3s ease;
+  font-family: inherit;
 }
 .like-button:hover {
   border-color: var(--primary-color);
