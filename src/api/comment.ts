@@ -1,7 +1,7 @@
 import service from './request'
 
-export function getCommentByEssayId(essayId: string) {
-    return service.get('/comment/findByEssayId', {params: {essayId}})
+export function getCommentByEssaySlug(essaySlug: string) {
+    return service.get('/comment/findByEssaySlug', {params: {essaySlug}})
 }
 
 export function getCommentPage(params: PageParams) {

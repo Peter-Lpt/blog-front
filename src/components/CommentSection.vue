@@ -71,11 +71,11 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import {addComment, getCommentByEssayId} from '@/api/comment'
+import {addComment, getCommentByEssaySlug} from '@/api/comment'
 import {formatDate} from '@/utils/format'
 import {useAuthStore} from '@/stores/auth'
 
-const props = defineProps<{ essayId: string }>()
+const props = defineProps<{ essaySlug: string }>()
 const authStore = useAuthStore()
 
 const comments = ref<Comment[]>([])
@@ -85,7 +85,7 @@ const replyTo = ref<Comment | null>(null)
 const replyContent = ref('')
 
 async function fetchComments() {
-  const data = await getCommentByEssayId(props.essayId) as unknown as Comment[]
+  const data = await getCommentByEssaySlug(props.essaySlug) as unknown as Comment[]
   comments.value = data || []
 }
 
@@ -124,7 +124,7 @@ async function handleSubmit() {
   submitting.value = true
   try {
     await addComment({
-      essayId: props.essayId,
+      essaySlug: props.essaySlug,
       content: form.value.content,
     })
     ElMessage.success('评论已提交，等待审核')
@@ -139,7 +139,7 @@ async function submitReply(parent: Comment) {
   submitting.value = true
   try {
     await addComment({
-      essayId: props.essayId,
+      essaySlug: props.essaySlug,
       content: replyContent.value,
       parentId: parent.commentId,
       replyUserId: parent.commentId,

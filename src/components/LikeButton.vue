@@ -14,7 +14,7 @@ import {toggleLike} from '@/api/like'
 import {getUserKey} from '@/utils/userKey'
 
 const props = defineProps<{
-  essayId: string
+  essaySlug: string
   likeCount: number
 }>()
 
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 const liked = ref(false)
 
 onMounted(() => {
-  const cacheKey = `like_${props.essayId}`
+  const cacheKey = `like_${props.essaySlug}`
   const cached = localStorage.getItem(cacheKey)
   if (cached !== null) {
     liked.value = cached === '1'
@@ -34,10 +34,10 @@ onMounted(() => {
 
 async function handleToggle() {
   const userKey = getUserKey()
-  const data = await toggleLike(props.essayId, userKey) as unknown as { liked: boolean; likeCount: number }
+  const data = await toggleLike(props.essaySlug, userKey) as unknown as { liked: boolean; likeCount: number }
   liked.value = data.liked
   emit('update:likeCount', data.likeCount)
-  localStorage.setItem(`like_${props.essayId}`, data.liked ? '1' : '0')
+  localStorage.setItem(`like_${props.essaySlug}`, data.liked ? '1' : '0')
 }
 </script>
 

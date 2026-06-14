@@ -25,9 +25,9 @@
         <MarkdownRender :content="essay.content" @toc="handleToc"/>
       </div>
       <div class="detail-actions">
-        <LikeButton :essay-id="essay.essayId" v-model:like-count="essay.likeCount"/>
+        <LikeButton :essay-slug="essay.essayId" v-model:like-count="essay.likeCount"/>
       </div>
-      <CommentSection :essay-id="essay.essayId"/>
+      <CommentSection :essay-slug="essay.essayId"/>
     </article>
     <aside v-if="tocItems.length > 0" class="toc-sidebar">
       <div class="toc-title">目录</div>

@@ -1,5 +1,5 @@
 import service from './request'
 
-export function toggleLike(essayId: string, userKey: string) {
-    return service.post('/like/toggle', {essayId, userKey})
+export function toggleLike(essaySlug: string, userKey: string) {
+    return service.post('/like/toggle', {essaySlug, userKey})
 }

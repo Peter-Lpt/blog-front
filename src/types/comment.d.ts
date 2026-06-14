@@ -1,6 +1,6 @@
 interface Comment {
     commentId: string
-    essayId: string
+    essaySlug: string
     content: string
     parentId: string | null
     replyUserId: string | null
@@ -15,7 +15,7 @@ interface Comment {
 }
 
 interface CommentForm {
-    essayId: string
+    essaySlug: string
     content: string
     parentId?: string | null
     replyUserId?: string | null
