@@ -1,56 +1,82 @@
 <template>
   <div v-if="visible" class="login-overlay" @click.self="close">
     <div class="login-card">
-      <button class="close-btn" @click="close" aria-label="关闭">×</button>
+      <button class="ld-close" @click="close" aria-label="关闭">×</button>
 
-      <div class="tabs">
-        <button :class="{ active: mode === 'login' }" @click="mode = 'login'">登录</button>
-        <button :class="{ active: mode === 'register' }" @click="mode = 'register'">注册</button>
+      <div class="ld-header">
+        <h2 class="ld-title">{{ mode === 'login' ? '登录' : '注册' }}</h2>
+        <p class="ld-subtitle">{{ mode === 'login' ? '欢迎回来' : '创建你的账号' }}</p>
       </div>
 
-      <form @submit.prevent="submit">
-        <input
-          v-model="form.username"
-          placeholder="用户名"
-          class="input"
-          autocomplete="username"
-          required
-        />
-        <input
-          v-model="form.password"
-          type="password"
-          placeholder="密码"
-          class="input"
-          :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
-          required
-        />
-        <input
-          v-if="mode === 'register'"
-          v-model="form.nickname"
-          placeholder="昵称（可选）"
-          class="input"
-        />
-        <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
-        <button type="submit" class="submit-btn" :disabled="loading">
-          {{ loading ? '提交中...' : mode === 'login' ? '登录' : '注册' }}
+      <form class="ld-form" @submit.prevent="submit">
+        <label class="ld-field">
+          <span class="ld-label">用户名</span>
+          <input
+            v-model="form.username"
+            type="text"
+            class="ld-input"
+            placeholder="请输入用户名"
+            autocomplete="username"
+            required
+          />
+        </label>
+
+        <label class="ld-field">
+          <span class="ld-label">密码</span>
+          <input
+            v-model="form.password"
+            type="password"
+            class="ld-input"
+            placeholder="请输入密码"
+            :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
+            required
+          />
+        </label>
+
+        <label class="ld-field" v-if="mode === 'register'">
+          <span class="ld-label">昵称（选填）</span>
+          <input
+            v-model="form.nickname"
+            type="text"
+            class="ld-input"
+            placeholder="请输入昵称"
+          />
+        </label>
+
+        <p v-if="errorMsg" class="ld-error">{{ errorMsg }}</p>
+
+        <button type="submit" class="ld-submit" :disabled="loading">
+          {{ loading ? '提交中...' : mode === 'login' ? '登 录' : '注 册' }}
         </button>
       </form>
 
-      <div class="divider"><span>或</span></div>
-      <button class="github-btn" @click="loginWithGithub">
-        <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      <div class="ld-divider"><span>第三方登录</span></div>
+
+      <button class="ld-github" @click="loginWithGithub">
+        <svg class="ld-github-icon" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0016 8c0-4.42-3.58-8-8-8z"/>
         </svg>
-        GitHub 登录
+        <span>使用 GitHub 登录</span>
       </button>
+
+      <p class="ld-switch">
+        <span v-if="mode === 'login'">
+          没有账号？
+          <a href="javascript:void(0)" @click="mode = 'register'">去注册</a>
+        </span>
+        <span v-else>
+          已有账号？
+          <a href="javascript:void(0)" @click="mode = 'login'">去登录</a>
+        </span>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { SITE } from '@/lib/config';
-import { login, register, onAuthChange } from '@/lib/auth';
+import { login, register } from '@/lib/auth';
 
 const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{ close: [] }>();
@@ -75,23 +101,15 @@ async function submit() {
   loading.value = false;
   if (result.ok) {
     close();
-    onAuthChangeCallback && onAuthChangeCallback();
   } else {
     errorMsg.value = result.message || '操作失败';
   }
 }
 
 function loginWithGithub() {
-  // 跳后端 authorize 接口（登录后回到当前页）
   const back = encodeURIComponent(window.location.pathname + window.location.search);
   window.location.href = `${SITE.apiBaseUrl}/user/oauth/github/authorize?redirect=${back}`;
 }
-
-// 触发外部刷新登录态（通过 onAuthChange 事件）
-let onAuthChangeCallback: (() => void) | null = null;
-onMounted(() => {
-  // no-op：登录成功后 emit 自动触发 UserMenu 刷新
-});
 </script>
 
 <style scoped>
@@ -99,116 +117,204 @@ onMounted(() => {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadein 0.2s;
+  animation: ld-fade 0.2s ease;
 }
-@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ld-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .login-card {
   background: var(--card-bg);
-  border-radius: 16px;
-  padding: 28px;
-  width: 360px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px;
+  width: 380px;
   max-width: 92vw;
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: ld-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.close-btn {
+@keyframes ld-pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.ld-close {
   position: absolute;
-  top: 12px;
-  right: 16px;
-  background: none;
+  top: 16px;
+  right: 20px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
   border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--text-secondary);
+  font-size: 22px;
   line-height: 1;
-}
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-.tabs button {
-  flex: 1;
-  padding: 8px;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
   cursor: pointer;
-  font-size: 15px;
   color: var(--text-secondary);
+  border-radius: 50%;
+  transition: all 0.2s;
 }
-.tabs button.active {
-  color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
-  font-weight: 600;
+.ld-close:hover {
+  background: var(--glass-bg);
+  color: var(--text-color);
 }
-.input {
-  display: block;
+
+.ld-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.ld-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text-color);
+}
+.ld-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ld-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ld-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ld-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+.ld-input {
   width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 12px;
+  padding: 10px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--glass-bg);
   color: var(--text-color);
   font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
   box-sizing: border-box;
 }
-.input:focus {
-  outline: none;
+.ld-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+.ld-input:hover {
   border-color: var(--primary-color);
 }
-.error {
+.ld-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+}
+
+.ld-error {
   color: #f56c6c;
   font-size: 13px;
-  margin: 0 0 12px;
+  margin: 0;
+  text-align: center;
+  background: rgba(245, 108, 108, 0.08);
+  padding: 8px;
+  border-radius: 8px;
 }
-.submit-btn {
+
+.ld-submit {
   width: 100%;
-  padding: 10px;
+  padding: 11px;
   background: var(--primary-color);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  margin-top: 4px;
+  transition: all 0.2s;
 }
-.submit-btn:hover:not(:disabled) { opacity: 0.9; }
-.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.divider {
+.ld-submit:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+}
+.ld-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ld-divider {
   text-align: center;
   color: var(--text-secondary);
-  font-size: 13px;
-  margin: 16px 0;
+  font-size: 12px;
+  margin: 20px 0 14px;
   position: relative;
 }
-.divider::before, .divider::after {
+.ld-divider span {
+  background: var(--card-bg);
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
+}
+.ld-divider::before {
   content: '';
   position: absolute;
   top: 50%;
-  width: 35%;
+  left: 0;
+  right: 0;
   height: 1px;
   background: var(--border-color);
 }
-.divider::before { left: 0; }
-.divider::after { right: 0; }
-.github-btn {
+
+.ld-github {
   width: 100%;
   padding: 10px;
   background: #24292e;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  font-family: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: all 0.2s;
 }
-.github-btn:hover { opacity: 0.9; }
+.ld-github:hover {
+  background: #2f3640;
+  transform: translateY(-1px);
+}
+.ld-github-icon {
+  flex-shrink: 0;
+}
+
+.ld-switch {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 16px 0 0;
+}
+.ld-switch a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.ld-switch a:hover {
+  text-decoration: underline;
+}
 </style>
