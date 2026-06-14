@@ -119,10 +119,12 @@ function loginWithGithub() {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  /* 用 grid 居中最可靠，且内容超高时自动滚动 */
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 9999;
   animation: ld-fade 0.2s ease;
 }
 @keyframes ld-fade {
@@ -136,10 +138,15 @@ function loginWithGithub() {
   border-radius: 20px;
   padding: 32px;
   width: 380px;
-  max-width: 92vw;
+  max-width: 100%;
+  /* 注册模式（多一个昵称字段）可能较高，限制并允许内部滚动 */
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: ld-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* margin:auto 作为 grid 备选，确保垂直居中 */
+  margin: auto;
 }
 @keyframes ld-pop {
   from { transform: scale(0.92); opacity: 0; }
