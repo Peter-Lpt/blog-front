@@ -1,6 +1,6 @@
 <template>
   <div class="search-wrapper" :class="{ expanded }" ref="wrapperRef">
-    <button class="search-trigger" @click="toggle" aria-label="搜索">
+    <button class="search-trigger" :class="{ active: expanded }" @click="toggle" aria-label="搜索">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -98,21 +98,26 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: none;
-  color: var(--text-secondary);
+  width: 38px;
+  height: 38px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
+  border-radius: 12px;
+  transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), background var(--motion-base) var(--ease-standard), box-shadow var(--motion-base) var(--ease-emphasis), transform var(--motion-fast) var(--ease-standard);
   flex-shrink: 0;
 }
 
-.search-trigger:hover {
-  background: var(--glass-bg);
-  color: var(--text-color);
+.search-trigger:hover, .search-trigger.active {
+  border-color: var(--color-fog);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 8px 20px rgb(16 24 32 / .06);
+  transform: translateY(-1px);
 }
+
+.search-trigger:active { transform: translateY(0) scale(.96); }
 
 .search-inline {
   display: flex;

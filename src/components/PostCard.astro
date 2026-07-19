@@ -1,201 +1,49 @@
 ---
-import { formatDate, getSlug, resolveCategory, type Post } from '@/lib/posts';
-
-export interface Props {
-  post: Post;
-}
-
-const { post } = Astro.props;
+import { formatDate, getSlug, resolveCategory, resolveTags, type Post } from '@/lib/posts';
+export interface Props { post: Post; featured?: boolean; }
+const { post, featured = false } = Astro.props;
 const slug = getSlug(post);
-const { title, pubDate, tags, description, coverImage } = post.data;
+const { title, pubDate, description, coverImage } = post.data;
+const tags = resolveTags(post);
 const category = resolveCategory(post);
-const url = `/blog/${slug}/`;
+const url = '/blog/' + slug + '/';
 ---
-
-<article class="article-card">
-  <a href={url} class="card-link">
+<article class:list={['article-card', { featured }]} data-reveal>
+  <a href={url} class="card-link" aria-label={'阅读：' + title}>
+    {coverImage && <div class="card-cover"><img src={coverImage} alt="" loading="lazy" decoding="async" /></div>}
     <div class="card-content">
+      <div class="card-kicker"><span>{category || '随笔'}</span><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></div>
       <h2 class="card-title">{title}</h2>
       {description && <p class="card-summary">{description}</p>}
-      {tags && tags.length > 0 && (
-        <div class="card-tags">
-          {tags.slice(0, 3).map((t: string) => <span class="tag-item">{t}</span>)}
-        </div>
-      )}
-      <div class="card-meta">
-        {category && (
-          <span class="meta-category">
-            <span class="meta-dot"></span>
-            {category}
-          </span>
-        )}
-        <span class="meta-date">{formatDate(pubDate)}</span>
-      </div>
+      <div class="card-footer"><span class="read-link">阅读全文 <span aria-hidden="true">↗</span></span>{tags && tags.length > 0 && <span class="tag-preview">{tags.slice(0, 2).map((tag: string) => '#' + tag).join('  ')}</span>}</div>
     </div>
-    {coverImage && (
-      <div class="card-cover">
-        <img src={coverImage} alt={title} loading="lazy" decoding="async" />
-      </div>
-    )}
   </a>
 </article>
-
 <style>
-  .article-card {
-    padding: 32px;
-    border: var(--card-border);
-    border-radius: var(--card-radius);
-    margin-bottom: 20px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: var(--card-bg);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .article-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary-color), rgba(201, 169, 110, 0.3));
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .article-card:hover {
-    border-color: var(--primary-color);
-    box-shadow: var(--card-hover-shadow);
-    transform: translateY(-4px);
-  }
-
-  .article-card:hover::before {
-    opacity: 1;
-  }
-
-  .card-link {
-    display: flex;
-    gap: 32px;
-    color: var(--text-color);
-    text-decoration: none;
-  }
-
-  .article-card:hover .card-title {
-    color: var(--primary-color);
-  }
-
-  .article-card:hover .card-cover img {
-    transform: scale(1.05);
-  }
-
-  .card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
-  }
-
-  .card-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 0 0 12px;
-    line-height: 1.4;
-    color: var(--text-color);
-    transition: color 0.2s;
-    letter-spacing: -0.01em;
-  }
-
-  .card-summary {
-    color: var(--text-secondary);
-    font-size: 15px;
-    line-height: 1.8;
-    margin: 0 0 16px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  .tag-item {
-    font-size: 12px;
-    color: var(--text-secondary);
-    background: var(--glass-bg);
-    padding: 4px 12px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s;
-  }
-
-  .article-card:hover .tag-item {
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-  }
-
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: var(--text-secondary);
-    font-size: 13px;
-    margin-top: auto;
-  }
-
-  .meta-category {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--primary-color);
-    font-weight: 500;
-  }
-
-  .meta-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--primary-color);
-  }
-
-  .card-cover {
-    width: 220px;
-    height: 160px;
-    flex-shrink: 0;
-    border-radius: var(--card-radius);
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-
-  .card-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  @media (max-width: 768px) {
-    .article-card {
-      padding: 24px;
-    }
-    .card-title {
-      font-size: 18px;
-    }
-    .card-summary {
-      font-size: 14px;
-    }
-    .card-link {
-      flex-direction: column-reverse;
-    }
-    .card-cover {
-      width: 100%;
-      height: 200px;
-    }
-  }
+  .article-card { position:relative; overflow:hidden; border-top:1px solid var(--color-fog); transition:transform var(--motion-base) var(--ease-standard), border-color var(--motion-base); }
+  .article-card::after { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--color-signal); transform:scaleY(0); transform-origin:top; transition:transform var(--motion-base) var(--ease-emphasis); }
+  .article-card:hover { border-color:var(--color-signal); transform:translateX(6px); }
+  .article-card:hover::after { transform:scaleY(1); }
+  .card-link { display:grid; grid-template-columns:minmax(0,1fr) 176px; gap:28px; padding:26px 0 28px 18px; color:var(--color-text); }
+  .card-content { min-width:0; display:flex; flex-direction:column; }
+  .card-kicker { display:flex; align-items:center; gap:12px; margin-bottom:12px; color:var(--color-text-faint); font:600 var(--text-xs)/1 var(--font-ui); letter-spacing:.08em; text-transform:uppercase; }
+  .card-kicker span { color:var(--color-signal); }
+  .card-title { margin:0 0 10px; color:var(--color-text); font:600 var(--text-xl)/1.3 var(--font-display); letter-spacing:-.025em; transition:color var(--motion-fast); }
+  .article-card:hover .card-title { color:var(--color-signal); }
+  .card-summary { display:-webkit-box; overflow:hidden; margin:0; color:var(--color-text-muted); font-size:var(--text-sm); line-height:1.75; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+  .card-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; color:var(--color-text-faint); font:var(--text-xs)/1 var(--font-ui); }
+  .read-link { color:var(--color-text); font-weight:600; } .read-link span { color:var(--color-signal); font-size:1rem; }
+  .tag-preview { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .card-cover { order:2; min-height:118px; border-radius:var(--radius-md); overflow:hidden; background:var(--color-surface-raised); }
+  .card-cover img { width:100%; height:100%; min-height:118px; object-fit:cover; transition:transform var(--motion-slow) var(--ease-emphasis); }
+  .article-card:hover .card-cover img { transform:scale(1.05); }
+  .article-card:not(.featured) .card-cover { align-self:center; }
+  .article-card.featured { border:0; border-radius:var(--radius-lg); background:var(--color-ink); box-shadow:var(--shadow-float); }
+  .article-card.featured::after { display:none; }
+  .article-card.featured .card-link { grid-template-columns:minmax(0,1fr) 220px; padding:32px; }
+  .article-card.featured .card-title, .article-card.featured .read-link { color:var(--color-on-ink); } .article-card.featured .card-summary { color:rgb(255 255 255 / .68); }
+  .article-card.featured .card-kicker { color:rgb(255 255 255 / .5); } .article-card.featured .card-kicker span, .article-card.featured .read-link span { color:var(--color-signal); }
+  .article-card.featured .tag-preview { color:rgb(255 255 255 / .45); }
+  .article-card.featured .card-cover { min-height:180px; } .article-card.featured .card-cover img { min-height:180px; }
+  @media (max-width:680px) { .card-link,.article-card.featured .card-link { grid-template-columns:1fr; gap:18px; padding:22px 0 24px 14px; } .card-cover,.article-card.featured .card-cover { order:0; min-height:150px; } .card-cover img,.article-card.featured .card-cover img { min-height:150px; } .article-card.featured .card-link { padding:22px; } .card-title { font-size:1.3rem; } .card-footer { margin-top:18px; } }
 </style>

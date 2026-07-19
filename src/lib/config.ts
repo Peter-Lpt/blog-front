@@ -8,7 +8,7 @@ export const SITE = {
   // 后端 API 地址（动态接口：评论/点赞/登录）
   apiBaseUrl: import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:8001',
   // 社交链接（按需填写）
-  github: 'https://github.com/',
+  github: 'https://github.com/Peter-Lpt',
   email: '',
 };
 

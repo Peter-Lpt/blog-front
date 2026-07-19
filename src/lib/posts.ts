@@ -18,8 +18,19 @@ export function resolveCategory(post: Post): string {
 }
 
 /**
- * 稳定 slug：优先 Astro 注入的 post.slug（来自 frontmatter.slug 或文件名去日期前缀），
- * 否则取文件名（去扩展名）
+ * 获取文章的独立标签：去空、去重，并排除主分类。
+ */
+export function resolveTags(post: Post): string[] {
+  const category = resolveCategory(post);
+  return [...new Set(
+    (post.data.tags || [])
+      .map((tag) => tag.trim())
+      .filter((tag) => tag && tag !== category),
+  )];
+}
+
+/**
+ * 稳定 slug：优先 Astro 注入的 post.slug，缺省时取去除日期前缀的文件名。
  */
 export function getSlug(post: Post): string {
   if ((post as any).slug) return (post as any).slug;
@@ -72,9 +83,9 @@ export async function getMainCategories(): Promise<Record<string, number>> {
 export async function getAllTags(): Promise<Record<string, number>> {
   const posts = await getAllPosts();
   const result: Record<string, number> = {};
-  posts.forEach((p) => {
-    (p.data.tags || []).forEach((t: string) => {
-      result[t] = (result[t] || 0) + 1;
+  posts.forEach((post) => {
+    resolveTags(post).forEach((tag) => {
+      result[tag] = (result[tag] || 0) + 1;
     });
   });
   return Object.fromEntries(Object.entries(result).sort((a, b) => b[1] - a[1]));
@@ -93,7 +104,7 @@ export async function getPostsByCategory(category: string): Promise<Post[]> {
  */
 export async function getPostsByTag(tag: string): Promise<Post[]> {
   const posts = await getAllPosts();
-  return posts.filter((p) => (p.data.tags || []).includes(tag));
+  return posts.filter((p) => resolveTags(p).includes(tag));
 }
 
 /**

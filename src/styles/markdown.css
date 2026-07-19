@@ -230,3 +230,29 @@
   border-color: rgba(255, 255, 255, 0.1);
   color: #e1e4e8;
 }
+
+
+/* Reading surface refinements */
+.markdown-body { max-width:var(--content-width); color:var(--color-text); font-family:var(--font-body); font-size:1.06rem; line-height:1.95; }
+.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6 { font-family:var(--font-display); letter-spacing:-.025em; }
+.markdown-body h2 { margin-top:2.8em; border-bottom:1px solid var(--color-fog); padding-bottom:.45em; }
+.markdown-body h3 { margin-top:2.1em; }
+.markdown-body p { margin:1.1em 0; }
+.markdown-body blockquote { margin:1.8em 0; padding:1rem 1.25rem; border-left:3px solid var(--color-signal); border-radius:0 var(--radius-sm) var(--radius-sm) 0; background:var(--color-surface-raised); color:var(--color-text-muted); }
+.markdown-body pre,.markdown-body pre.astro-code { margin:1.8em 0; border:1px solid var(--color-fog); border-radius:var(--radius-md); box-shadow:var(--shadow-soft); }
+.markdown-body img { border-radius:var(--radius-md); box-shadow:var(--shadow-soft); }
+.markdown-body table { margin:1.8em 0; }
+@media (max-width:680px) { .markdown-body { font-size:1rem; line-height:1.85; } .markdown-body pre,.markdown-body pre.astro-code { margin-left:-4px; margin-right:-4px; border-radius:var(--radius-sm); } }
+
+
+/* Editorial reading refinements inspired by the reference information architecture. */
+.markdown-body h2 { position:relative; border-bottom:0; padding-bottom:0; }
+.markdown-body h2::before { content:''; display:inline-block; width:20px; height:3px; margin:0 10px 0 0; vertical-align:.18em; border-radius:999px; background:var(--color-signal); }
+.markdown-body h3 { position:relative; }
+.markdown-body pre { position:relative; padding-top:48px !important; background:var(--color-surface-raised) !important; }
+.markdown-body pre.astro-code { border-color:var(--color-fog); }
+.code-toolbar { position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 12px; border-bottom:1px solid var(--color-fog); background:var(--color-surface); color:var(--color-text-faint); font:600 .68rem var(--font-ui); letter-spacing:.1em; }
+.code-copy-button { padding:5px 9px; border:1px solid var(--color-fog); border-radius:999px; background:transparent; color:var(--color-text-muted); cursor:pointer; font:600 .68rem var(--font-ui); transition:border-color var(--motion-fast),color var(--motion-fast),background var(--motion-fast); }
+.code-copy-button:hover { border-color:var(--color-signal); color:var(--color-signal); background:var(--primary-color-light); }
+[data-theme="dark"] .markdown-body pre { background:var(--color-ink) !important; }
+[data-theme="dark"] .code-toolbar { background:var(--color-surface); border-color:var(--color-fog); }

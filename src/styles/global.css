@@ -1,135 +1,50 @@
-/* 引入 Markdown 渲染样式 */
 @import "./markdown.css";
 
-/* ============================================
-   主题变量系统（迁移自 Vue 版 themes.css）
-   统一用 [data-theme="dark"]，不再使用 html.dark 双轨（见 ADR-002 4.1）
-   ============================================ */
 :root {
-  /* 主色：金色 */
-  --primary-color: #c9a96e;
-  --primary-color-light: rgba(201, 169, 110, 0.12);
-
-  /* 背景 */
-  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
-
-  /* 文字（对比度提升，原 #666 → #595959，达 WCAG AA） */
-  --text-color: #1a1a1a;
-  --text-secondary: #595959;
-
-  /* 边框 / 卡片 */
-  --border-color: #e8e8e8;
-  --card-bg: #ffffff;
-  --card-border: 1px solid rgba(0, 0, 0, 0.06);
-  --card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  --card-radius: 16px;
-
-  /* 玻璃拟态 */
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --glass-bg-strong: rgba(255, 255, 255, 0.95);
-  --glass-blur: 20px;
-  --glass-radius: 16px;
-
-  /* 容器宽度统一变量（修复原 main 1280 vs HomeView 1400 冲突） */
-  --container-width: 1200px;
-
-  /* 字体 */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-ink: #101820;
+  --color-on-ink: #ffffff;
+  --color-paper: #f3f0e8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #faf9f5;
+  --color-fog: #d8dee3;
+  --color-fog-strong: #aab6bf;
+  --color-text: #18232b;
+  --color-text-muted: #5d6b73;
+  --color-text-faint: #86939a;
+  --color-signal: #e49b52;
+  --color-signal-cool: #76a9b8;
+  --color-success: #6d9b78;
+  --color-warning: #d29a4a;
+  --color-danger: #c66a62;
+  --font-display: "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  --font-body: "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
+  --font-ui: Inter, "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Maple Mono", ui-monospace, monospace;
+  --text-xs: .75rem; --text-sm: .875rem; --text-base: 1rem; --text-lg: 1.125rem; --text-xl: 1.375rem;
+  --text-2xl: clamp(1.75rem, 3vw, 2.75rem); --text-display: clamp(2.8rem, 7vw, 6.5rem);
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem; --space-16: 4rem; --space-24: 6rem;
+  --content-width: 780px; --shell-width: 1200px; --radius-sm: .35rem; --radius-md: .75rem; --radius-lg: 1.25rem;
+  --shadow-soft: 0 12px 40px rgb(16 24 32 / .08); --shadow-float: 0 22px 70px rgb(16 24 32 / .14);
+  --motion-fast: 140ms; --motion-base: 220ms; --motion-slow: 420ms;
+  --ease-standard: cubic-bezier(.2, .8, .2, 1); --ease-emphasis: cubic-bezier(.16, 1, .3, 1);
+  --primary-color: var(--color-signal); --primary-color-light: rgb(228 155 82 / .14); --bg-gradient: var(--color-paper);
+  --text-color: var(--color-text); --text-secondary: var(--color-text-muted); --border-color: var(--color-fog);
+  --card-bg: var(--color-surface); --card-border: 1px solid rgb(16 24 32 / .08); --card-hover-shadow: var(--shadow-soft); --card-radius: var(--radius-lg);
+  --glass-bg: rgb(255 255 255 / .72); --glass-bg-strong: rgb(255 255 255 / .86); --glass-blur: 18px; --container-width: var(--shell-width); --font-sans: var(--font-body);
 }
-
-:root[data-theme="dark"] {
-  --primary-color: #d4af37;
-  --primary-color-light: rgba(212, 175, 55, 0.12);
-
-  --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
-
-  --text-color: #e5e5e5;
-  --text-secondary: #a0a0a0;
-
-  --border-color: #333;
-  --card-bg: #2a2a2a;
-  --card-border: 1px solid rgba(212, 175, 55, 0.15);
-  --card-hover-shadow: 0 8px 30px rgba(212, 175, 55, 0.08);
-
-  --glass-bg: rgba(42, 42, 42, 0.85);
-  --glass-bg-strong: rgba(48, 48, 48, 0.95);
-}
-
-/* ============================================
-   基础元素
-   ============================================ */
-* {
-  box-sizing: border-box;
-}
-
-html {
-  font-family: var(--font-sans);
-  color: var(--text-color);
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* main 撑满剩余空间，把 footer 推到底部 */
-body > main {
-  flex: 1;
-}
-
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-a:hover {
-  color: var(--text-color);
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* 代码字体 */
-code, pre {
-  font-family: var(--font-mono);
-}
-
-/* 焦点可见（A11y） */
-:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-/* 容器 */
-.container {
-  max-width: var(--container-width);
-  margin: 0 auto;
-  padding: 0 32px;
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 0 16px;
-  }
-}
-
-/* 防登录按钮闪烁：已登录时 SSR 的登录按钮隐藏，Vue hydration 后移除此规则 */
-:root.has-auth .login-trigger {
-  visibility: hidden;
-  pointer-events: none;
-}
+:root[data-theme="dark"] { --color-ink:#0b1117; --color-on-ink:#ffffff; --color-paper:#141c22; --color-surface:#18232b; --color-surface-raised:#1e2c35; --color-fog:#34434d; --color-fog-strong:#536673; --color-text:#e8edf0; --color-text-muted:#a8b5bb; --color-text-faint:#7f9099; --color-signal:#e6aa60; --color-signal-cool:#8ab9c7; --primary-color-light:rgb(230 170 96 / .14); --card-border:1px solid rgb(230 170 96 / .15); --glass-bg:rgb(24 35 43 / .72); --glass-bg-strong:rgb(24 35 43 / .88); }
+* { box-sizing:border-box; }
+html { font-family:var(--font-body); color:var(--color-text); background:var(--color-paper); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+body { margin:0; min-height:100vh; display:flex; flex-direction:column; background:var(--color-paper); }
+body::before, body::after { content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; }
+body::before { opacity:.55; background-image:linear-gradient(rgb(118 169 184 / .08) 1px, transparent 1px),linear-gradient(90deg,rgb(118 169 184 / .08) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,#000,transparent 72%); }
+body::after { opacity:.3; background:radial-gradient(circle at 85% 8%,rgb(228 155 82 / .16),transparent 22rem),radial-gradient(circle at 12% 45%,rgb(118 169 184 / .12),transparent 20rem); }
+body > main { flex:1; } a { color:var(--color-signal); text-decoration:none; transition:color var(--motion-fast) var(--ease-standard); } a:hover { color:var(--color-text); }
+button,input,textarea { font:inherit; } img { max-width:100%; height:auto; } code,pre { font-family:var(--font-mono); }
+:focus-visible { outline:2px solid var(--color-signal); outline-offset:3px; }
+.container { max-width:var(--shell-width); margin:0 auto; padding:0 32px; width:100%; }
+.skip-link { position:fixed; left:16px; top:10px; transform:translateY(-180%); z-index:1000; padding:10px 14px; border-radius:var(--radius-sm); background:var(--color-ink); color:#fff; transition:transform var(--motion-fast); } .skip-link:focus { transform:none; color:#fff; }
+.site-main { position:relative; } [data-reveal] { animation:reveal-in var(--motion-slow) var(--ease-emphasis) both; } @keyframes reveal-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } } [data-reveal].is-visible { animation:none; opacity:1; transform:none; }
+.visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+@media (max-width:768px) { .container { padding:0 18px; } body::before { background-size:34px 34px; } }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:1ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:1ms !important; } [data-reveal] { animation:none; opacity:1; transform:none; } }

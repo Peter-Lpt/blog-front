@@ -2,19 +2,15 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
 import Sidebar from '@/components/Sidebar.astro';
-import { getAllPosts, resolveCategory } from '@/lib/posts';
+import { getMainCategories, getPostsByCategory } from '@/lib/posts';
 
 export async function getStaticPaths() {
   const PAGE_SIZE = 50;
-  const posts = await getAllPosts();
-  const categories = [...new Set(posts.map((p) => resolveCategory(p)))];
-  return categories.map((category) => ({
+  const categories = await getMainCategories();
+  return Promise.all(Object.keys(categories).map(async (category) => ({
     params: { category },
-    props: {
-      category,
-      posts: posts.filter((p) => resolveCategory(p) === category).slice(0, PAGE_SIZE),
-    },
-  }));
+    props: { category, posts: (await getPostsByCategory(category)).slice(0, PAGE_SIZE) },
+  })));
 }
 
 const { category, posts } = Astro.props;
