@@ -12,11 +12,20 @@ interface UserInfo {
   role?: string
 }
 
+function readUser(): UserInfo | null {
+  const raw = localStorage.getItem(USER_KEY)
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as UserInfo
+  } catch {
+    localStorage.removeItem(USER_KEY)
+    return null
+  }
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem(TOKEN_KEY))
-  const user = ref<UserInfo | null>(
-    JSON.parse(localStorage.getItem(USER_KEY) || 'null')
-  )
+  const user = ref<UserInfo | null>(readUser())
 
   const isLoggedIn = computed(() => !!token.value)
   const isAdmin = computed(() => user.value?.role === 'admin')

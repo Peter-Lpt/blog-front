@@ -4,7 +4,6 @@ import PostCard from '@/components/PostCard.astro';
 import Sidebar from '@/components/Sidebar.astro';
 import { getArchives } from '@/lib/posts';
 
-const archives = await getArchives();
 
 export async function getStaticPaths() {
   const allArchives = await getArchives();

@@ -1,4 +1,4 @@
-import { defineCollection, z } from 'astro:content';
+import { z } from 'astro:content';
 
 /**
  * 内容集合定义（FS-003）

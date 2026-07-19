@@ -1,14 +1,14 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import LikeButton from '@/components/islands/LikeButton.vue';
 import CommentSection from '@/components/islands/CommentSection.vue';
 import Sidebar from '@/components/Sidebar.astro';
-import { formatDate, getSlug } from '@/lib/posts';
+import { formatDate, getAllPosts, getSlug, resolveCategory } from '@/lib/posts';
 import '@/styles/markdown.css';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getAllPosts();
   return posts.map((post) => ({
     params: { slug: getSlug(post) },
     props: { post },
@@ -23,7 +23,7 @@ const { post } = Astro.props;
 const { Content, headings } = await post.render();
 const slug = getSlug(post);
 const { title, pubDate, updatedDate, tags, description, coverImage } = post.data;
-const category = tags?.[0];
+const category = resolveCategory(post);
 
 const tocItems = headings
   .filter((h) => h.depth === 2 || h.depth === 3)
@@ -43,7 +43,7 @@ const jsonLd = {
 ---
 
 <BaseLayout title={title} description={description} image={coverImage}>
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div class="detail-wrapper">
     <Sidebar tocItems={tocItems} minimal />

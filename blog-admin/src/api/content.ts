@@ -1,85 +1,89 @@
-/**
- * 内容管理 API（FS-005/006/007）
- *
- * 契约见 04/07 文档：/api/admin/content/*
- * 后端 BE-005/006/007 实现前，前端按此契约完成；接口未就绪时请求会失败，
- * UI 以友好提示兜底，不影响其它后台功能。
- *
- * 统一响应：{ success, data, message }
- */
 import service from './request'
 
-/** 内容树节点 */
+export type ContentStatus = 'VALIDATING' | 'COMMITTED' | 'BUILDING' | 'PREVIEWABLE' | 'FAILED'
+
 export interface ContentNode {
   name: string
   path: string
-  type: 'dir' | 'file'
+  directory: boolean
+  size: number
+  updatedAt?: string
   category?: string
   draft?: boolean
   slug?: string
-  updatedAt?: string
   status?: ContentStatus
-  children?: ContentNode[]
+  children: ContentNode[]
 }
 
-/** 发布状态（04 文档 9 节） */
-export type ContentStatus = 'VALIDATING' | 'COMMITTED' | 'BUILDING' | 'PREVIEWABLE' | 'FAILED'
-
-/** 文件详情 */
 export interface ContentFile {
   path: string
   content: string
-  status?: ContentStatus
-  commitId?: string
-  lastMessage?: string
 }
 
-/** 校验结果项 */
-export interface ValidationIssue {
-  field: string
-  message: string
+export interface FrontMatter {
+  title?: string
+  description?: string
+  pubDate?: string
+  updatedDate?: string
+  slug?: string
+  category?: string
+  tags?: string[]
+  coverImage?: string
+  draft?: boolean
 }
 
 export interface ValidationResult {
   valid: boolean
-  issues: ValidationIssue[]
+  errors: string[]
+  frontMatter?: FrontMatter
+  resolvedCategory?: string
 }
 
-/** 构建/发布状态 */
+export interface ContentFileResponse {
+  path: string
+  commitId: string
+  status: 'COMMITTED'
+}
+
 export interface BuildStatus {
   status: ContentStatus
   message?: string
   updatedAt?: string
+  output?: string
+  lastCommitId?: string
+  lastCommitMessage?: string
+  dirty: boolean
+  branch?: string
 }
 
-export function getContentTree(): Promise<any> {
+export function getContentTree(): Promise<ContentNode[]> {
   return service.get('/admin/content/tree')
 }
 
-export function getContentFile(path: string): Promise<any> {
+export function getContentFile(path: string): Promise<ContentFile> {
   return service.get('/admin/content/file', { params: { path } })
 }
 
-export function validateContent(payload: { path?: string; content?: string }): Promise<any> {
+export function validateContent(payload: { path?: string; content: string }): Promise<ValidationResult> {
   return service.post('/admin/content/validate', payload)
 }
 
-export function createContentFile(payload: { path: string; content: string; message: string }): Promise<any> {
+export function createContentFile(payload: { path: string; content: string; message: string }): Promise<ContentFileResponse> {
   return service.post('/admin/content/file', payload)
 }
 
-export function updateContentFile(payload: { path: string; content: string; message: string }): Promise<any> {
+export function updateContentFile(payload: { path: string; content: string; message: string }): Promise<ContentFileResponse> {
   return service.put('/admin/content/file', payload)
 }
 
-export function deleteContentFile(path: string): Promise<any> {
-  return service.post('/admin/content/file/delete', { path })
+export function deleteContentFile(path: string, message?: string): Promise<ContentFileResponse> {
+  return service.delete('/admin/content/file', { params: { path, message } })
 }
 
-export function triggerBuild(): Promise<any> {
+export function triggerBuild(): Promise<BuildStatus> {
   return service.post('/admin/content/build')
 }
 
-export function getBuildStatus(): Promise<any> {
+export function getBuildStatus(): Promise<BuildStatus> {
   return service.get('/admin/content/status')
 }

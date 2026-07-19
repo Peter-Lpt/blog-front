@@ -11,12 +11,16 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
     "axios": "^1.7.0",
+    "dompurify": "^3.4.12",
     "element-plus": "^2.14.0",
+    "js-yaml": "^5.2.1",
+    "marked": "^18.0.6",
     "pinia": "^3.0.4",
     "vue": "^3.5.32",
     "vue-router": "^4.4.0"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.0.0",
     "@vitejs/plugin-vue": "^5.0.0",
     "sass": "^1.80.0",

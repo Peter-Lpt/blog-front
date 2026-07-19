@@ -38,7 +38,7 @@ function includeDrafts(): boolean {
 }
 
 /**
- * 获取所有文章（受草稿开关控制），按发布日期降序
+ * 获取当前构建可见的文章（受草稿开关控制），按发布日期降序
  */
 export async function getAllPosts(): Promise<Post[]> {
   const posts = await getCollection('blog', ({ data }) => includeDrafts() || !data.draft);
@@ -49,14 +49,15 @@ export async function getAllPosts(): Promise<Post[]> {
  * 获取所有已发布文章（排除 draft），按发布日期降序
  */
 export async function getPublishedPosts(): Promise<Post[]> {
-  return getAllPosts();
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }
 
 /**
  * 主分类聚合（去重计数，按文章数降序）
  */
 export async function getMainCategories(): Promise<Record<string, number>> {
-  const posts = await getPublishedPosts();
+  const posts = await getAllPosts();
   const result: Record<string, number> = {};
   posts.forEach((p) => {
     const cat = resolveCategory(p);
@@ -69,7 +70,7 @@ export async function getMainCategories(): Promise<Record<string, number>> {
  * 全部标签云聚合
  */
 export async function getAllTags(): Promise<Record<string, number>> {
-  const posts = await getPublishedPosts();
+  const posts = await getAllPosts();
   const result: Record<string, number> = {};
   posts.forEach((p) => {
     (p.data.tags || []).forEach((t: string) => {
@@ -83,7 +84,7 @@ export async function getAllTags(): Promise<Record<string, number>> {
  * 按主分类筛选
  */
 export async function getPostsByCategory(category: string): Promise<Post[]> {
-  const posts = await getPublishedPosts();
+  const posts = await getAllPosts();
   return posts.filter((p) => resolveCategory(p) === category);
 }
 
@@ -91,7 +92,7 @@ export async function getPostsByCategory(category: string): Promise<Post[]> {
  * 按任意标签筛选
  */
 export async function getPostsByTag(tag: string): Promise<Post[]> {
-  const posts = await getPublishedPosts();
+  const posts = await getAllPosts();
   return posts.filter((p) => (p.data.tags || []).includes(tag));
 }
 
@@ -99,7 +100,7 @@ export async function getPostsByTag(tag: string): Promise<Post[]> {
  * 按年月归档
  */
 export async function getArchives(): Promise<Record<string, Post[]>> {
-  const posts = await getPublishedPosts();
+  const posts = await getAllPosts();
   const groups: Record<string, Post[]> = {};
   posts.forEach((p) => {
     const d = p.data.pubDate;
@@ -113,7 +114,7 @@ export async function getArchives(): Promise<Record<string, Post[]>> {
  * 按日统计文章数量（供日历归档用）
  */
 export async function getArticleDatesByDay(): Promise<Record<string, number>> {
-  const posts = await getPublishedPosts();
+  const posts = await getAllPosts();
   const result: Record<string, number> = {};
   posts.forEach((p) => {
     const d = p.data.pubDate;

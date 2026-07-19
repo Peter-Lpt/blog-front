@@ -3,7 +3,7 @@
     <div class="tree-toolbar">
       <el-button type="primary" @click="createNew">新建文章</el-button>
       <el-button @click="refresh">刷新</el-button>
-      <el-tag v-if="buildStatus" :type="statusType(buildStatus.status)" size="small">
+      <el-tag v-if="buildStatus?.status" :type="statusType(buildStatus.status)" size="small">
         构建：{{ buildStatus.status }}
       </el-tag>
       <div class="spacer" />
@@ -14,8 +14,8 @@
       v-if="!backendReady"
       type="warning"
       :closable="false"
-      title="后端内容接口尚未接入"
-      description="已按 /api/admin/content/* 契约完成前端。后端 BE-005/006/007 就绪后此处即可联调，当前读取目录树会返回网络错误。"
+      title="无法连接内容管理接口"
+      description="请确认本地后端已启动，并检查当前账号是否具有 content:read 权限。"
       style="margin-bottom: 12px"
     />
 
@@ -32,7 +32,8 @@
           <span class="node-name">{{ data.name }}</span>
           <el-tag v-if="data.draft" size="small" type="info">草稿</el-tag>
           <el-tag v-if="data.status" size="small" :type="statusType(data.status)">{{ data.status }}</el-tag>
-          <span class="node-actions" v-if="data.type === 'file'">
+          <span class="node-meta" v-if="!data.directory && data.category">{{ data.category }}</span>
+          <span class="node-actions" v-if="isEditable(data)">
             <el-button link type="primary" size="small" @click.stop="open(data)">编辑</el-button>
           </span>
         </span>
@@ -49,14 +50,14 @@ import {
   getContentTree,
   getBuildStatus,
   type ContentNode,
-  type ContentStatus,
+  type BuildStatus,
 } from '@/api/content'
 
 const router = useRouter()
 const loading = ref(false)
 const backendReady = ref(true)
 const tree = ref<ContentNode[]>([])
-const buildStatus = ref<any>(null)
+const buildStatus = ref<BuildStatus | null>(null)
 
 function statusType(s: string): 'success' | 'warning' | 'info' | 'danger' {
   return s === 'PREVIEWABLE' || s === 'COMMITTED'
@@ -72,6 +73,7 @@ async function refresh() {
   loading.value = true
   try {
     tree.value = await getContentTree()
+    backendReady.value = true
   } catch {
     backendReady.value = false
     tree.value = []
@@ -83,6 +85,7 @@ async function refresh() {
 async function showBuildStatus() {
   try {
     buildStatus.value = await getBuildStatus()
+    backendReady.value = true
   } catch {
     backendReady.value = false
     ElMessage.warning('构建状态接口未就绪')
@@ -91,6 +94,10 @@ async function showBuildStatus() {
 
 function open(data: ContentNode) {
   router.push(`/content/edit?path=${encodeURIComponent(data.path)}`)
+}
+
+function isEditable(data: ContentNode) {
+  return !data.directory && /\.mdx?$/i.test(data.path)
 }
 
 function createNew() {
@@ -107,5 +114,6 @@ onMounted(refresh)
 .tree { border: 1px solid var(--el-border-color); border-radius: 8px; padding: 8px; }
 .tree-node { display: flex; align-items: center; gap: 8px; width: 100%; }
 .node-name { font-weight: 500; }
+.node-meta { color: var(--el-text-color-secondary); font-size: 12px; }
 .node-actions { margin-left: auto; }
 </style>

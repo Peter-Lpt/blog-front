@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { SITE } from '@/lib/config';
+import { apiRequest } from '@/lib/api';
 import { getUserKey } from '@/utils/userKey';
 
 const props = defineProps<{ essaySlug: string }>();
@@ -19,13 +19,12 @@ const loading = ref(false);
 onMounted(async () => {
   const userKey = getUserKey();
   try {
-    const res = await fetch(
-      `${SITE.apiBaseUrl}/like/status?essaySlug=${encodeURIComponent(props.essaySlug)}&userKey=${encodeURIComponent(userKey)}`
+    const data = await apiRequest<{ liked: boolean; likeCount?: number }>(
+      `/like/status?essaySlug=${encodeURIComponent(props.essaySlug)}&userKey=${encodeURIComponent(userKey)}`
     );
-    const data = await res.json();
-    if (data.success && data.data) {
-      liked.value = data.data.liked;
-      likeCount.value = data.data.likeCount || 0;
+    if (data) {
+      liked.value = data.liked;
+      likeCount.value = data.likeCount || 0;
       // 同步 localStorage（与后端为准）
       localStorage.setItem(`like_${props.essaySlug}`, data.data.liked ? '1' : '0');
     }
@@ -41,16 +40,14 @@ async function handleToggle() {
   loading.value = true;
   const userKey = getUserKey();
   try {
-    const res = await fetch(`${SITE.apiBaseUrl}/like/toggle`, {
+    const data = await apiRequest<{ liked: boolean; likeCount?: number }>('/like/toggle', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ essaySlug: props.essaySlug, userKey }),
     });
-    const data = await res.json();
-    if (data.success && data.data) {
-      liked.value = data.data.liked;
-      likeCount.value = data.data.likeCount || 0;
-      localStorage.setItem(`like_${props.essaySlug}`, data.data.liked ? '1' : '0');
+    if (data) {
+      liked.value = data.liked;
+      likeCount.value = data.likeCount || 0;
+      localStorage.setItem(`like_${props.essaySlug}`, data.liked ? '1' : '0');
     }
   } catch {
     // ignore

@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import { SITE } from '@/lib/config';
+import { apiRequest } from '@/lib/api';
 
 interface Comment {
   commentId: string;
@@ -74,11 +74,10 @@ onMounted(fetchComments);
 async function fetchComments() {
   loading.value = true;
   try {
-    const res = await fetch(
-      `${SITE.apiBaseUrl}/comment/findByEssaySlug?essaySlug=${encodeURIComponent(props.essaySlug)}`
+    const data = await apiRequest<Comment[]>(
+      `/comment/findByEssaySlug?essaySlug=${encodeURIComponent(props.essaySlug)}`
     );
-    const data = await res.json();
-    comments.value = data.success ? data.data || [] : [];
+    comments.value = data || [];
   } catch {
     comments.value = [];
   } finally {
@@ -90,24 +89,18 @@ async function submit() {
   if (!form.content.trim()) return;
   submitting.value = true;
   try {
-    const res = await fetch(`${SITE.apiBaseUrl}/comment/add`, {
+    await apiRequest('/comment/add', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         essaySlug: props.essaySlug,
         content: form.content,
         nickname: form.nickname || '匿名访客',
       }),
     });
-    const data = await res.json();
-    if (data.success) {
-      form.content = '';
-      alert('评论已提交，审核通过后将展示');
-    } else {
-      alert(data.message || '评论失败');
-    }
-  } catch {
-    alert('网络异常，评论失败');
+    form.content = '';
+    alert('评论已提交，审核通过后将展示');
+  } catch (error) {
+    alert(error instanceof Error ? error.message : '评论失败');
   } finally {
     submitting.value = false;
   }

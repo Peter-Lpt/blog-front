@@ -73,10 +73,15 @@ export function generateAvatar(seed: string): string {
   </svg>`;
 
   const isBrowser = typeof window !== 'undefined';
-  const encoded = isBrowser
-    ? btoa(unescape(encodeURIComponent(svg)))
-    : Buffer.from(svg).toString('base64');
+  const encoded = isBrowser ? encodeBase64(svg) : Buffer.from(svg).toString('base64');
   return `data:image/svg+xml;base64,${encoded}`;
+}
+
+function encodeBase64(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
 }
 
 /**

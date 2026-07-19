@@ -12,7 +12,7 @@
  * 只同步允许的目录与扩展名；不删除目标目录中其它文件（保留手写产物安全）。
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync, copyFileSync, rmSync } from 'node:fs';
-import { join, resolve, relative, sep } from 'node:path';
+import { join, resolve, relative } from 'node:path';
 
 loadEnvFile();
 

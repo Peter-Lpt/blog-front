@@ -6,6 +6,7 @@
       <div class="spacer" />
       <el-button @click="runValidate">校验</el-button>
       <el-button type="primary" @click="save(false)">保存</el-button>
+      <el-button type="warning" plain @click="save(true)">保存草稿</el-button>
       <el-button type="danger" plain @click="remove" v-if="filePath">删除</el-button>
       <el-button type="success" @click="onTriggerBuild">本地构建</el-button>
     </div>
@@ -14,8 +15,8 @@
       v-if="!backendReady"
       type="warning"
       :closable="false"
-      title="后端内容接口尚未接入"
-      description="已按 /api/admin/content/* 契约完成前端。后端 BE-005/006/007 就绪后此处即可联调，当前操作会返回网络错误。"
+      title="无法连接内容管理接口"
+      description="请确认本地后端已启动，并检查当前账号是否具有 content:read/content:write 权限。"
       style="margin-bottom: 12px"
     />
 
@@ -23,10 +24,10 @@
       v-if="validation && !validation.valid"
       type="error"
       :closable="false"
-      :title="`校验未通过（${validation.issues.length} 项）`"
+      :title="`校验未通过（${validation.errors.length} 项）`"
     >
       <ul class="issues">
-        <li v-for="(it, i) in validation.issues" :key="i">{{ it.field }}：{{ it.message }}</li>
+        <li v-for="(error, i) in validation.errors" :key="i">{{ error }}</li>
       </ul>
     </el-alert>
     <el-alert v-else-if="validation && validation.valid" type="success" :closable="false" title="校验通过" />
@@ -74,6 +75,12 @@
     <div class="commit-row">
       <el-input v-model="commitMessage" placeholder="commit message，例如：content: add welcome" style="max-width: 420px" />
     </div>
+
+    <el-collapse v-if="buildOutput" class="build-output">
+      <el-collapse-item title="查看构建输出" name="output">
+        <pre>{{ buildOutput }}</pre>
+      </el-collapse-item>
+    </el-collapse>
   </div>
 </template>
 
@@ -81,6 +88,9 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import DOMPurify from 'dompurify'
+import { marked } from 'marked'
+import { dump, load as loadYaml } from 'js-yaml'
 import {
   getContentFile,
   validateContent,
@@ -88,6 +98,8 @@ import {
   updateContentFile,
   deleteContentFile,
   triggerBuild,
+  type ContentStatus,
+  type ValidationResult,
 } from '@/api/content'
 
 const route = useRoute()
@@ -98,8 +110,9 @@ const backendReady = ref(true)
 const filePath = ref((route.query.path as string) || '')
 const body = ref('')
 const commitMessage = ref('')
-const status = ref<string>('')
-const validation = ref<any>(null)
+const status = ref<ContentStatus | ''>('')
+const validation = ref<ValidationResult | null>(null)
+const buildOutput = ref('')
 
 const form = reactive({
   title: '',
@@ -121,52 +134,44 @@ function statusType(s: string): 'success' | 'warning' | 'info' | 'danger' {
         : 'info'
 }
 
-/** 轻量 Markdown 预览（标题/列表/加粗/代码/段落），仅前端展示，不依赖后端 */
 const renderedPreview = computed(() => {
   const text = `# ${form.title || '标题预览'}\n\n${body.value}`
-  const escaped = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-  return escaped
-    .replace(/^### (.*)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.*)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.*)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^\s*-\s+(.*)$/gm, '<li>$1</li>')
-    .replace(/\n/g, '<br/>')
+  return DOMPurify.sanitize(marked.parse(text) as string)
 })
 
 function parseFrontmatter(raw: string) {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
-  if (!m) return
-  const fm = m[1]
+  if (!m) throw new Error('Markdown 缺少合法 frontmatter')
+  const frontMatter = (loadYaml(m[1]) || {}) as Record<string, unknown>
   body.value = m[2] || ''
-  const get = (k: string) => {
-    const mm = fm.match(new RegExp(`^${k}:\\s*(.*)$`, 'm'))
-    return mm ? mm[1].trim().replace(/^["']|["']$/g, '') : ''
-  }
-  form.title = get('title')
-  form.description = get('description')
-  form.slug = get('slug')
-  form.pubDate = get('pubDate')
-  form.category = get('category')
-  const tags = get('tags')
-  form.tags = tags ? tags.replace(/^\[|\]$/g, '').split(',').map((t: string) => t.trim()).filter(Boolean) : []
-  form.draft = get('draft') === 'true'
+  form.title = String(frontMatter.title || '')
+  form.description = String(frontMatter.description || '')
+  form.slug = String(frontMatter.slug || '')
+  form.pubDate = normalizeDate(frontMatter.pubDate)
+  form.category = String(frontMatter.category || '')
+  form.tags = Array.isArray(frontMatter.tags) ? frontMatter.tags.map(String) : []
+  form.draft = frontMatter.draft === true
 }
 
 function buildMarkdown(): string {
-  const lines = ['---']
-  lines.push(`title: ${form.title}`)
-  if (form.description) lines.push(`description: ${form.description}`)
-  if (form.pubDate) lines.push(`pubDate: ${form.pubDate}`)
-  if (form.slug) lines.push(`slug: ${form.slug}`)
-  if (form.category) lines.push(`category: ${form.category}`)
-  if (form.tags.length) lines.push(`tags: [${form.tags.join(', ')}]`)
-  lines.push(`draft: ${form.draft}`)
-  lines.push('---', '', body.value)
-  return lines.join('\n')
+  const frontMatter = {
+    title: form.title,
+    description: form.description,
+    pubDate: form.pubDate,
+    slug: form.slug,
+    category: form.category,
+    tags: form.tags,
+    draft: form.draft,
+  }
+  return `---\n${dump(frontMatter, { lineWidth: 100, noRefs: true }).trim()}\n---\n\n${body.value}`
+}
+
+function normalizeDate(value: unknown): string {
+  if (!value) return ''
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+  return String(value).slice(0, 10)
 }
 
 async function load() {
@@ -175,7 +180,8 @@ async function load() {
   try {
     const data = await getContentFile(filePath.value)
     parseFrontmatter(data.content)
-    status.value = data.status || ''
+    status.value = 'COMMITTED'
+    backendReady.value = true
     if (!commitMessage.value) commitMessage.value = `content: update ${form.slug || filePath.value}`
   } catch {
     backendReady.value = false
@@ -186,9 +192,12 @@ async function load() {
 
 async function runValidate() {
   validation.value = null
+  status.value = 'VALIDATING'
   try {
     const res = await validateContent({ path: filePath.value, content: buildMarkdown() })
     validation.value = res
+    status.value = res.valid ? 'VALIDATING' : 'FAILED'
+    backendReady.value = true
   } catch {
     backendReady.value = false
     ElMessage.warning('后端校验接口未就绪')
@@ -196,8 +205,9 @@ async function runValidate() {
 }
 
 async function save(isDraft: boolean) {
-  if (!form.title) {
-    ElMessage.error('标题不能为空')
+  form.draft = isDraft
+  if (!form.title || !form.slug || !form.pubDate) {
+    ElMessage.error('标题、slug 和日期不能为空')
     return
   }
   const content = buildMarkdown()
@@ -212,6 +222,7 @@ async function save(isDraft: boolean) {
       filePath.value = data.path
       status.value = data.status || ''
     }
+    backendReady.value = true
     ElMessage.success('已保存')
   } catch {
     backendReady.value = false
@@ -223,7 +234,9 @@ async function remove() {
   if (!filePath.value) return
   await ElMessageBox.confirm('确认删除该文件？此操作会生成 Git commit', '删除确认', { type: 'warning' })
   try {
-    await deleteContentFile(filePath.value)
+    await deleteContentFile(filePath.value, commitMessage.value || undefined)
+    status.value = 'COMMITTED'
+    backendReady.value = true
     ElMessage.success('已删除')
     router.push('/content')
   } catch {
@@ -233,11 +246,16 @@ async function remove() {
 }
 
 async function onTriggerBuild() {
+  status.value = 'BUILDING'
+  buildOutput.value = ''
   try {
     const data = await triggerBuild()
     status.value = data.status
+    buildOutput.value = data.output || ''
+    backendReady.value = true
     ElMessage.success(`构建状态：${data.status}`)
   } catch {
+    status.value = 'FAILED'
     backendReady.value = false
     ElMessage.error('构建失败：后端接口未就绪')
   }
@@ -262,6 +280,8 @@ onMounted(load)
 .markdown-preview { line-height: 1.7; }
 .issues { margin: 4px 0 0; padding-left: 18px; }
 .commit-row { margin-top: 12px; display: flex; gap: 8px; }
+.build-output { margin-top: 12px; }
+.build-output pre { white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow: auto; }
 @media (max-width: 1100px) {
   .editor-body { grid-template-columns: 1fr; }
 }

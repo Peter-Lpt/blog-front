@@ -222,23 +222,16 @@ const current = pathname.replace(/\/$/, '') || '/';
   }
 </style>
 
-<script is:inline define:vars={{ apiBase: SITE.apiBaseUrl }}>
+<script>
+import { clearSession, getToken, getUser, uploadAvatar } from '@/lib/auth';
+import { setStoredSession } from '@/lib/session';
+
 (function () {
-  var TOKEN_KEY='blog_token';
-  var USER_KEY = 'blog_user';
-
-  function getUser() {
-    try {
-      var raw = localStorage.getItem(USER_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  }
-
   function isLoggedIn() {
-    return !!localStorage.getItem(TOKEN_KEY);
+    return !!getToken();
   }
 
-  function generateAvatar(seed) {
+  function generateAvatar(seed: string) {
     var h = 5381;
     for (var i = 0; i < (seed || '').length; i++) {
       h = ((h << 5) + h + seed.charCodeAt(i)) | 0;
@@ -255,11 +248,11 @@ const current = pathname.replace(/\/$/, '') || '/';
     var userArea = document.getElementById('auth-user-area');
     var loginBtn = document.getElementById('auth-login-btn');
     var userMenu = document.getElementById('auth-user-menu');
-    var userAvatar = document.getElementById('auth-user-avatar');
+    var userAvatar = document.getElementById('auth-user-avatar') as HTMLImageElement | null;
     var userDropdown = document.getElementById('auth-user-dropdown');
     var adminLink = document.getElementById('auth-admin-link');
     var logoutBtn = document.getElementById('auth-logout-btn');
-    var avatarInput = document.getElementById('auth-avatar-input');
+    var avatarInput = document.getElementById('auth-avatar-input') as HTMLInputElement | null;
 
     if (!userArea || !loginBtn) return;
 
@@ -282,18 +275,17 @@ const current = pathname.replace(/\/$/, '') || '/';
     if (userMenu && userDropdown) {
       userMenu.onclick = function (e) {
         e.stopPropagation();
-        userDropdown.classList.toggle('hidden');
+        userDropdown?.classList.toggle('hidden');
       };
       document.addEventListener('click', function () {
-        userDropdown.classList.add('hidden');
+        userDropdown?.classList.add('hidden');
       });
     }
 
     // 退出登录
     if (logoutBtn) {
       logoutBtn.onclick = function () {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
+        clearSession();
         location.reload();
       };
     }
@@ -301,40 +293,37 @@ const current = pathname.replace(/\/$/, '') || '/';
     // 头像上传
     if (avatarInput) {
       avatarInput.onchange = function (e) {
-        var file = e.target.files && e.target.files[0];
+        var input = e.currentTarget as HTMLInputElement;
+        var file = input.files?.[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function () {
-          if (userAvatar) userAvatar.src = reader.result;
+          var result = typeof reader.result === 'string' ? reader.result : '';
+          if (userAvatar && result) userAvatar.src = result;
           var user = getUser();
-          if (user) {
-            user.avatar = reader.result;
-            localStorage.setItem(USER_KEY, JSON.stringify(user));
+          if (user && result) {
+            user.avatar = result;
+            var authToken = getToken();
+            if (authToken) setStoredSession(authToken, user);
           }
         };
         reader.readAsDataURL(file);
         // 上传到后端
-        var token = localStorage.getItem(TOKEN_KEY);
+        var token = getToken();
         if (token) {
-          var fd = new FormData();
-          fd.append('file', file);
-          fetch(apiBase + '/user/avatar', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token },
-            body: fd
-          }).then(function (r) { return r.json(); }).then(function (data) {
-            if (data.success && data.data && data.data.avatar) {
-              var user = getUser();
-              if (user) {
-                user.avatar = data.data.avatar;
-                localStorage.setItem(USER_KEY, JSON.stringify(user));
-              }
-              if (userAvatar) userAvatar.src = data.data.avatar;
+          var authToken = token;
+          uploadAvatar(file).then(function (result) {
+            if (!result.ok || !result.avatarUrl) return;
+            var user = getUser();
+            if (user) {
+              user.avatar = result.avatarUrl;
+              setStoredSession(authToken, user);
             }
+            if (userAvatar) userAvatar.src = result.avatarUrl;
           }).catch(function () {});
         }
-        avatarInput.value = '';
-        if (userDropdown) userDropdown.classList.add('hidden');
+        if (avatarInput) avatarInput.value = '';
+        userDropdown?.classList.add('hidden');
       };
     }
 

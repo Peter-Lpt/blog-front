@@ -12,10 +12,17 @@
  * - POST /user/logout     退出
  */
 
-import { SITE } from '@/lib/config';
+import { apiRequest } from '@/lib/api';
+import {
+  TOKEN_KEY,
+  USER_KEY,
+  clearStoredSession,
+  getStoredToken,
+  getStoredUser,
+  setStoredSession,
+} from '@/lib/session';
 
-export const TOKEN_KEY = 'blog_token';
-export const USER_KEY = 'blog_user';
+export { TOKEN_KEY, USER_KEY };
 
 export interface UserInfo {
   userId: number;
@@ -27,8 +34,6 @@ export interface UserInfo {
 }
 
 /** SSR 安全：构建时（无 window）返回 null，不访问 localStorage */
-const isBrowser = typeof window !== 'undefined';
-
 /** 简单事件订阅（岛组件间同步登录态） */
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -41,19 +46,11 @@ function emit() {
 }
 
 export function getToken(): string | null {
-  if (!isBrowser) return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return getStoredToken();
 }
 
 export function getUser(): UserInfo | null {
-  if (!isBrowser) return null;
-  const raw = localStorage.getItem(USER_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as UserInfo;
-  } catch {
-    return null;
-  }
+  return getStoredUser<UserInfo>();
 }
 
 export function isLoggedIn(): boolean {
@@ -65,39 +62,34 @@ export function isAdmin(): boolean {
 }
 
 function setSession(token: string, user: UserInfo) {
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  setStoredSession(token, user);
   emit();
 }
 
 export function clearSession() {
-  if (!isBrowser) return;
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+  clearStoredSession();
   emit();
 }
 
 export async function login(username: string, password: string): Promise<{ ok: boolean; message?: string }> {
   try {
-    const res = await fetch(`${SITE.apiBaseUrl}/user/login`, {
+    const data = await apiRequest<any>('/user/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
-    const data = await res.json();
-    if (data.success && data.data?.token) {
-      setSession(data.data.token, {
-        userId: data.data.userId,
-        username: data.data.username,
-        nickname: data.data.nickname,
-        avatar: data.data.avatar,
-        role: data.data.role,
+    if (data?.token) {
+      setSession(data.token, {
+        userId: data.userId,
+        username: data.username,
+        nickname: data.nickname,
+        avatar: data.avatar,
+        role: data.role,
       });
       return { ok: true };
     }
-    return { ok: false, message: data.message || '登录失败' };
-  } catch {
-    return { ok: false, message: '网络异常' };
+    return { ok: false, message: '登录失败' };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : '网络异常' };
   }
 }
 
@@ -107,35 +99,32 @@ export async function register(
   nickname?: string
 ): Promise<{ ok: boolean; message?: string }> {
   try {
-    const res = await fetch(`${SITE.apiBaseUrl}/user/register`, {
+    const data = await apiRequest<any>('/user/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password, nickname }),
     });
-    const data = await res.json();
-    if (data.success && data.data?.token) {
-      setSession(data.data.token, {
-        userId: data.data.userId,
-        username: data.data.username,
-        nickname: data.data.nickname,
-        avatar: data.data.avatar,
-        role: data.data.role,
+    if (data?.token) {
+      setSession(data.token, {
+        userId: data.userId,
+        username: data.username,
+        nickname: data.nickname,
+        avatar: data.avatar,
+        role: data.role,
       });
       return { ok: true };
     }
-    return { ok: false, message: data.message || '注册失败' };
-  } catch {
-    return { ok: false, message: '网络异常' };
+    return { ok: false, message: '注册失败' };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : '网络异常' };
   }
 }
 
 export async function logout() {
   const token = getToken();
   if (token) {
-    fetch(`${SITE.apiBaseUrl}/user/logout`, {
+    apiRequest('/user/logout', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
+    }).catch(() => undefined);
   }
   clearSession();
 }
@@ -150,14 +139,12 @@ export async function uploadAvatar(file: File): Promise<{ ok: boolean; avatarUrl
   try {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch(`${SITE.apiBaseUrl}/user/avatar`, {
+    const data = await apiRequest<{ avatar?: string }>('/user/avatar', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
       body: fd,
     });
-    const data = await res.json();
-    if (data.success && data.data?.avatar) {
-      return { ok: true, avatarUrl: data.data.avatar };
+    if (data?.avatar) {
+      return { ok: true, avatarUrl: data.avatar };
     }
     return { ok: false };
   } catch {
@@ -172,20 +159,13 @@ export async function verifyToken(): Promise<boolean> {
   const token = getToken();
   if (!token) return false;
   try {
-    const res = await fetch(`${SITE.apiBaseUrl}/user/verify`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) {
-      clearSession();
-      return false;
-    }
-    const data = await res.json();
-    if (data.success) {
+    const data = await apiRequest<any>('/user/verify');
+    if (data) {
       // 同步 role（后端 verify 返回的 role 为准）
       const user = getUser();
-      if (user && data.data?.role && user.role !== data.data.role) {
-        user.role = data.data.role;
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
+      if (user && data.role && user.role !== data.role) {
+        user.role = data.role;
+        setStoredSession(token, user);
         emit();
       }
       return true;

@@ -2,16 +2,14 @@
 
 个人博客 Monorepo 工作区。
 
-> 当前为过渡结构：`blog-front/`（Astro 前台）与 `blog-front/blog-admin/`（Vue 后台）位于同一仓库；后端为独立仓库（待后续整合为完整 Monorepo）。
+> `blog-admin/` 是唯一正式管理后台；Astro 前台保持静态生成，后端为独立 Spring Boot 仓库。
 
 ## 结构
 
 ```
 blog-front/                    # 前台（Astro SSG）
 ├── src/
-│   ├── content/
-│   │   ├── blog/              # 文章 Markdown（扁平，分类走 frontmatter tags）
-│   │   └── tools/             # 工具记录 Markdown
+│   ├── content/               # 由外部 blog-content 仓库同步生成
 │   ├── pages/                 # 路由：首页/文章/分类/标签/归档/工具/关于/友链/404
 │   ├── components/            # Astro 组件 + islands/（Vue 岛）
 │   ├── layouts/               # BaseLayout
@@ -19,7 +17,6 @@ blog-front/                    # 前台（Astro SSG）
 │   └── styles/                # 主题 CSS 变量
 ├── blog-admin/                # 后台（Vue 3 SPA，独立构建）
 │   └── src/views/             # LoginView / AdminLayout / CommentManage / FriendLinkManage
-├── legacy-vue/                # 旧 Vue SPA 源码（参考用，可删）
 ├── astro.config.mjs
 └── public/                    # 静态资源 + robots.txt
 ```
@@ -35,6 +32,7 @@ npm install
 npm run dev          # http://localhost:4321
 npm run build        # 构建到 dist/，并跑 Pagefind 索引
 npm run preview      # 本地预览构建产物
+npm run smoke        # 检查首页、文章、后台、RSS、sitemap 和 Pagefind 产物
 ```
 
 ### 后台（Vue admin）
@@ -56,13 +54,15 @@ mvn spring-boot:run -pl blog-spring-boot-starter    # http://localhost:8001
 ## 内容管理
 
 ### 新增文章
-在 `blog-front/src/content/blog/` 创建 `YYYY-MM-DD-{slug}.md`：
+在外部 `blog-content/blog/` 创建 `YYYY-MM-DD-{slug}.md`，通过 `BLOG_CONTENT_DIR` 指向该仓库：
 ```markdown
 ---
 title: 文章标题
 description: 一句话摘要
 pubDate: 2026-06-14
-tags: [前端, Vue, 性能优化]   # 第一个 tag 为主分类
+slug: article-slug
+category: 前端
+tags: [Vue, 性能优化]
 coverImage: /images/{slug}/cover.jpg   # 可选
 draft: false
 ---
@@ -85,7 +85,7 @@ addedDate: 2026-06-14
 ```
 
 ### 发布流程
-`git push` → GitHub Actions 自动构建部署（main 分支）。
+内容仓库 commit 后，在前端仓库执行 `npm run content:check && npm run content:sync && npm run build`。
 
 ## 文档
 
@@ -109,7 +109,7 @@ addedDate: 2026-06-14
 | 前台 | Astro 5 + MDX + Vue 3（岛屿） + Tailwind + Shiki + Pagefind |
 | 后台 | Vue 3 + Element Plus + Pinia + Vue Router |
 | 后端 | Spring Boot 2.6 + MyBatis-Plus + MySQL + JWT |
-| 部署 | GitHub Actions + GitHub Pages（前台）/ 服务器（后端） |
+| 运行 | 本地 Markdown Git + 本地 Astro + 本地 Spring Boot |
 
 ## License
 

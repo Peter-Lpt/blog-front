@@ -52,6 +52,7 @@ coverage
 .parcel-cache
 *.tsbuildinfo
 dev-*.txt
+.reasonix/
 
 # Generated (unplugin-auto-import / unplugin-vue-components)
 auto-imports.d.ts

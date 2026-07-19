@@ -11,7 +11,7 @@ import { join, resolve } from 'node:path';
 // 仅「唯一正式后台」blog-admin 作为后台入口，Astro /admin 仅做跳转。
 function copyAdminDist() {
   const src = resolve(process.cwd(), 'blog-admin', 'dist');
-  const dest = resolve(process.cwd(), 'public', 'admin');
+  const dest = resolve(process.cwd(), 'dist', 'admin');
   if (!existsSync(src)) return;
   if (existsSync(dest)) rmSync(dest, { recursive: true, force: true });
   mkdirSync(dest, { recursive: true });
@@ -35,14 +35,9 @@ function copyAdminDist() {
 }
 
 function syncAdminBuild() {
-  try {
-    console.log('[astro.config] building blog-admin...');
-    execSync('npm run build:admin', { stdio: 'inherit', cwd: process.cwd() });
-    copyAdminDist();
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.warn('[astro.config] blog-admin build 失败，跳过 public/admin 同步：', msg);
-  }
+  console.log('[astro.config] building blog-admin...');
+  execSync('npm run build:admin', { stdio: 'inherit', cwd: process.cwd() });
+  copyAdminDist();
 }
 
 // https://astro.build/config
@@ -60,7 +55,7 @@ export default defineConfig({
     {
       name: 'sync-admin-build',
       hooks: {
-        'astro:build:start': syncAdminBuild,
+       'astro:build:done': syncAdminBuild,
       },
     },
   ],
