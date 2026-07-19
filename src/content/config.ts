@@ -2,21 +2,25 @@ import type { ContentConfig } from 'astro';
 import { defineCollection, z } from 'astro:content';
 
 /**
- * 内容集合定义
- * - blog：文章（扁平目录，分类信息走 frontmatter tags）
- * - tools：工具记录
+ * 内容集合定义（FS-003）
+ * - blog：文章。统一 frontmatter：slug（稳定唯一）、category、tags、draft 等。
+ * - tools：工具记录。
  *
- * 详见 docs/ADR-001（Markdown 文件驱动）、ADR-006（工具页面）、ADR-008（分类标签设计）
+ * 分类优先级：frontmatter.category > blog 下直接父目录 > 未分类（见 posts.ts resolveCategory）。
  */
 export const collections: ContentConfig['collections'] = {
   blog: {
     type: 'content',
     schema: z.object({
       title: z.string(),
-      description: z.string().optional(),
+      // 注意：slug 是 Astro 内容集合的保留字段，由 frontmatter.slug 或文件名自动注入，
+      // 不能放入 zod schema（否则会被剥离导致校验失败）。统一通过 posts.ts getSlug() 读取。
+      description: z.string().default(''),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
-      // 第一个 tag 视作主分类（见 ADR-008）
+      // 主分类：frontmatter.category 优先；缺省时由目录名推导（见 resolveCategory）
+      category: z.string().optional(),
+      // 兼容旧结构：tags[0] 曾作为主分类
       tags: z.array(z.string()).default([]),
       coverImage: z.string().optional(),
       draft: z.boolean().default(false),
@@ -26,6 +30,7 @@ export const collections: ContentConfig['collections'] = {
     type: 'content',
     schema: z.object({
       name: z.string(),
+      slug: z.string().optional(),
       url: z.string().url(),
       category: z.string(),
       icon: z.string().optional(),

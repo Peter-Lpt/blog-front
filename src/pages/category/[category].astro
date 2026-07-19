@@ -2,17 +2,17 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
 import Sidebar from '@/components/Sidebar.astro';
-import { getPublishedPosts } from '@/lib/posts';
+import { getPublishedPosts, resolveCategory } from '@/lib/posts';
 
 export async function getStaticPaths() {
   const PAGE_SIZE = 50;
   const posts = await getPublishedPosts();
-  const categories = [...new Set(posts.map((p) => p.data.tags?.[0]).filter(Boolean))];
+  const categories = [...new Set(posts.map((p) => resolveCategory(p)))];
   return categories.map((category) => ({
     params: { category },
     props: {
       category,
-      posts: posts.filter((p) => p.data.tags?.[0] === category).slice(0, PAGE_SIZE),
+      posts: posts.filter((p) => resolveCategory(p) === category).slice(0, PAGE_SIZE),
     },
   }));
 }

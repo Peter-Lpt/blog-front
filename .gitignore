@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules
 
 # Build output
@@ -59,4 +59,13 @@ components.d.ts
 
 # Astro
 .astro/
+
+# 内容同步生成目录（由 scripts/sync-content.mjs 生成，事实来源是独立内容 Git 仓库）
+src/content/blog/
+src/content/tools/
+public/images/
+public/admin/
+
+# 内容仓库配置（不提交本地路径）
+.env.content
 

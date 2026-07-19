@@ -3,27 +3,66 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 export type Post = CollectionEntry<'blog'>;
 
 /**
- * 获取所有已发布文章（排除 draft），按发布日期降序
+ * 分类解析优先级（FS-003 / 04 文档）：
+ *   frontmatter.category > blog 下直接父目录 > 未分类
+ * 注意：collection entry 的 id 形如「随笔/2026-06-14-welcome.md」，
+ * 父目录即默认分类。
  */
-export async function getPublishedPosts(): Promise<Post[]> {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+export function resolveCategory(post: Post): string {
+  if (post.data.category && post.data.category.trim()) return post.data.category.trim();
+  const parent = post.id.includes('/') ? post.id.split('/').slice(0, -1).join('/') : '';
+  if (parent) return parent;
+  // 兼容 tags[0] 旧结构
+  if (post.data.tags?.[0]) return post.data.tags[0];
+  return '未分类';
+}
+
+/**
+ * 稳定 slug：优先 Astro 注入的 post.slug（来自 frontmatter.slug 或文件名去日期前缀），
+ * 否则取文件名（去扩展名）
+ */
+export function getSlug(post: Post): string {
+  if ((post as any).slug) return (post as any).slug;
+  return post.id
+    .replace(/\.mdx?$/, '')
+    .split('/')
+    .pop()!
+    .replace(/^\d{4}-\d{2}-\d{2}-/, '');
+}
+
+/**
+ * 是否包含草稿：受环境变量 CONTENT_INCLUDE_DRAFTS 控制（默认 false，正式构建排除草稿）
+ */
+function includeDrafts(): boolean {
+  return process.env.CONTENT_INCLUDE_DRAFTS === 'true';
+}
+
+/**
+ * 获取所有文章（受草稿开关控制），按发布日期降序
+ */
+export async function getAllPosts(): Promise<Post[]> {
+  const posts = await getCollection('blog', ({ data }) => includeDrafts() || !data.draft);
   return posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }
 
 /**
- * 主分类聚合：每篇文章的 tags[0]（见 ADR-008）
+ * 获取所有已发布文章（排除 draft），按发布日期降序
+ */
+export async function getPublishedPosts(): Promise<Post[]> {
+  return getAllPosts();
+}
+
+/**
+ * 主分类聚合（去重计数，按文章数降序）
  */
 export async function getMainCategories(): Promise<Record<string, number>> {
   const posts = await getPublishedPosts();
   const result: Record<string, number> = {};
   posts.forEach((p) => {
-    const cat = p.data.tags?.[0];
-    if (cat) result[cat] = (result[cat] || 0) + 1;
+    const cat = resolveCategory(p);
+    result[cat] = (result[cat] || 0) + 1;
   });
-  // 按文章数降序
-  return Object.fromEntries(
-    Object.entries(result).sort((a, b) => b[1] - a[1])
-  );
+  return Object.fromEntries(Object.entries(result).sort((a, b) => b[1] - a[1]));
 }
 
 /**
@@ -37,9 +76,7 @@ export async function getAllTags(): Promise<Record<string, number>> {
       result[t] = (result[t] || 0) + 1;
     });
   });
-  return Object.fromEntries(
-    Object.entries(result).sort((a, b) => b[1] - a[1])
-  );
+  return Object.fromEntries(Object.entries(result).sort((a, b) => b[1] - a[1]));
 }
 
 /**
@@ -47,7 +84,7 @@ export async function getAllTags(): Promise<Record<string, number>> {
  */
 export async function getPostsByCategory(category: string): Promise<Post[]> {
   const posts = await getPublishedPosts();
-  return posts.filter((p) => p.data.tags?.[0] === category);
+  return posts.filter((p) => resolveCategory(p) === category);
 }
 
 /**
@@ -84,13 +121,6 @@ export async function getArticleDatesByDay(): Promise<Record<string, number>> {
     result[key] = (result[key] || 0) + 1;
   });
   return result;
-}
-
-/**
- * 文章 slug（去掉 .md 后缀）
- */
-export function getSlug(post: Post): string {
-  return post.id.replace(/\.md$/, '').replace(/\.mdx$/, '');
 }
 
 /**

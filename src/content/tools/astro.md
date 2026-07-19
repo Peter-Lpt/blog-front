@@ -3,11 +3,13 @@ name: Astro
 url: https://astro.build
 category: 开发
 icon: 🚀
+slug: astro
 tags: [SSG, 框架, 前端]
 rating: 5
 cost: free
 platform: [mac, windows, linux]
 addedDate: 2026-06-14
+draft: false
 ---
 
 ## 我怎么用的
