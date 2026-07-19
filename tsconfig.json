@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "legacy-vue", "node_modules"],
+  "exclude": ["dist", "legacy-vue", "node_modules", "blog-admin"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

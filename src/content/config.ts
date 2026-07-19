@@ -1,4 +1,3 @@
-import type { ContentConfig } from 'astro';
 import { defineCollection, z } from 'astro:content';
 
 /**
@@ -8,7 +7,7 @@ import { defineCollection, z } from 'astro:content';
  *
  * 分类优先级：frontmatter.category > blog 下直接父目录 > 未分类（见 posts.ts resolveCategory）。
  */
-export const collections: ContentConfig['collections'] = {
+export const collections = {
   blog: {
     type: 'content',
     schema: z.object({

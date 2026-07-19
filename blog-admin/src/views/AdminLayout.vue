@@ -11,6 +11,10 @@
           <el-icon><Link /></el-icon>
           <span>友链管理</span>
         </el-menu-item>
+        <el-menu-item index="/content">
+          <el-icon><Document /></el-icon>
+          <span>内容管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -40,7 +44,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ChatDotRound, Link, ArrowDown } from '@element-plus/icons-vue'
+import { ChatDotRound, Link, ArrowDown, Document } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()

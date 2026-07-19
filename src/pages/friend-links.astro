@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { SITE } from '@/lib/config';
 
 // 友链：先写死示例，后续可改为从 md 文件加载（见 ROADMAP）
-const friendLinks = [
+const friendLinks: { name: string; url: string; description: string; logo: string }[] = [
   // { name: '示例博客', url: 'https://example.com', description: '描述', logo: '' },
 ];
 ---

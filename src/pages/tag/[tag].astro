@@ -8,7 +8,7 @@ export async function getStaticPaths() {
   const PAGE_SIZE = 50;
   const posts = await getPublishedPosts();
   const allTags = new Set<string>();
-  posts.forEach((p) => (p.data.tags || []).forEach((t) => allTags.add(t)));
+  posts.forEach((p) => (p.data.tags || []).forEach((t: string) => allTags.add(t)));
   return [...allTags].map((tag) => ({
     params: { tag },
     props: {

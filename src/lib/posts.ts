@@ -72,7 +72,7 @@ export async function getAllTags(): Promise<Record<string, number>> {
   const posts = await getPublishedPosts();
   const result: Record<string, number> = {};
   posts.forEach((p) => {
-    (p.data.tags || []).forEach((t) => {
+    (p.data.tags || []).forEach((t: string) => {
       result[t] = (result[t] || 0) + 1;
     });
   });

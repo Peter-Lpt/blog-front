@@ -42,7 +42,7 @@ const { name, url, category, icon, tags, rating, cost, platform, addedDate, upda
       </div>
       {tags && tags.length > 0 && (
         <div class="tool-tags">
-          {tags.map((t) => <span class="tag">#{t}</span>)}
+          {tags.map((t: string) => <span class="tag">#{t}</span>)}
         </div>
       )}
     </header>

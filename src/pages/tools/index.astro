@@ -37,7 +37,7 @@ tools.forEach((t) => {
         <div class="tool-grid">
           {tools.map((tool) => {
             const slug = tool.id.replace(/\.md$/, '');
-            const { name, url, category, icon, tags, rating, cost, platform } = tool.data;
+            const { name, url, category, icon, rating, cost, platform } = tool.data;
             return (
               <article class="tool-card" data-category={category}>
                 <a href={`/tools/${slug}/`} class="tool-link">

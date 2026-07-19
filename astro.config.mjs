@@ -4,15 +4,44 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import vue from '@astrojs/vue';
 import { execSync } from 'node:child_process';
+import { existsSync, mkdirSync, readdirSync, statSync, copyFileSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 
 // 构建前把管理后台（blog-admin）产物同步进 public/admin/，供 Astro 原样拷贝到 dist/admin/
 // 仅「唯一正式后台」blog-admin 作为后台入口，Astro /admin 仅做跳转。
+function copyAdminDist() {
+  const src = resolve(process.cwd(), 'blog-admin', 'dist');
+  const dest = resolve(process.cwd(), 'public', 'admin');
+  if (!existsSync(src)) return;
+  if (existsSync(dest)) rmSync(dest, { recursive: true, force: true });
+  mkdirSync(dest, { recursive: true });
+  /**
+   * @param {string} s
+   * @param {string} d
+   */
+  const walk = (s, d) => {
+    for (const name of readdirSync(s)) {
+      const sp = join(s, name);
+      const dp = join(d, name);
+      if (statSync(sp).isDirectory()) {
+        mkdirSync(dp, { recursive: true });
+        walk(sp, dp);
+      } else {
+        copyFileSync(sp, dp);
+      }
+    }
+  };
+  walk(src, dest);
+}
+
 function syncAdminBuild() {
   try {
     console.log('[astro.config] building blog-admin...');
     execSync('npm run build:admin', { stdio: 'inherit', cwd: process.cwd() });
+    copyAdminDist();
   } catch (e) {
-    console.warn('[astro.config] blog-admin build 失败，跳过 public/admin 同步：', e.message);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.warn('[astro.config] blog-admin build 失败，跳过 public/admin 同步：', msg);
   }
 }
 

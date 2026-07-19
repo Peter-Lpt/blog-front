@@ -60,7 +60,7 @@ const jsonLd = {
         </div>
         {tags && tags.length > 1 && (
           <div class="detail-tags">
-            {tags.slice(1).map((t) => <a href={`/tag/${t}/`} class="tag">{t}</a>)}
+            {tags.slice(1).map((t: string) => <a href={`/tag/${t}/`} class="tag">{t}</a>)}
           </div>
         )}
       </header>
@@ -76,10 +76,10 @@ const jsonLd = {
       </div>
 
       <div class="detail-actions">
-        <LikeButton client:visible essay-slug={slug} />
+        <LikeButton client:visible essaySlug={slug} />
       </div>
 
-      <CommentSection client:visible essay-slug={slug} />
+      <CommentSection client:visible essaySlug={slug} />
     </article>
   </div>
 </BaseLayout>
