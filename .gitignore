@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 node_modules
 
 # Build output
@@ -59,3 +59,4 @@ components.d.ts
 
 # Astro
 .astro/
+
