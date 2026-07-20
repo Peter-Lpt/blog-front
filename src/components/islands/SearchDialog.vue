@@ -98,13 +98,13 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 10px;
   transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), background var(--motion-base) var(--ease-standard), box-shadow var(--motion-base) var(--ease-emphasis), transform var(--motion-fast) var(--ease-standard);
   flex-shrink: 0;
 }
@@ -113,11 +113,16 @@ onUnmounted(() => {
   border-color: var(--color-fog);
   background: var(--color-surface);
   color: var(--color-text);
-  box-shadow: 0 8px 20px rgb(16 24 32 / .06);
+  box-shadow: 0 7px 16px rgb(16 24 32 / .06);
   transform: translateY(-1px);
 }
 
 .search-trigger:active { transform: translateY(0) scale(.96); }
+
+.search-trigger svg {
+  width: 17px;
+  height: 17px;
+}
 
 .search-inline {
   display: flex;
