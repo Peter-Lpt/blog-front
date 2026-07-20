@@ -25,16 +25,6 @@ const router = createRouter({
           name: 'friendLinks',
           component: () => import('@/views/FriendLinkManage.vue'),
         },
-        {
-          path: 'content',
-          name: 'content',
-          component: () => import('@/views/ContentTree.vue'),
-        },
-        {
-          path: 'content/edit',
-          name: 'contentEdit',
-          component: () => import('@/views/ContentEditor.vue'),
-        },
       ],
     },
     { path: '/:pathMatch(.*)*', redirect: '/' },

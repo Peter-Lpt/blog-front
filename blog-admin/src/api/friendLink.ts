@@ -1,11 +1,11 @@
 import service from './request'
 
 export function getFriendLinkList() {
-  return service.get('/friendlink/findList')
+  return service.get('/friendLink/findList')
 }
 
 export function getFriendLinkPage(params: any) {
-  return service.get('/friendlink/findPage', { params })
+  return service.get('/friendLink/findPage', { params })
 }
 
 export function addFriendLink(data: any) {
