@@ -27,31 +27,26 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonical} />
 
-    <!-- Open Graph -->
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={new URL(ogImage, Astro.site ?? Astro.url)} />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site ?? Astro.url)} />
 
-    <!-- RSS 自动发现 -->
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
 
-    <!-- 防主题闪烁：在应用渲染前根据 localStorage 设置主题 -->
     <script is:inline>
       (function () {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (saved === 'dark' || (!saved && prefersDark)) {
           document.documentElement.setAttribute('data-theme', 'dark');
         }
-        // 防登录按钮闪烁：已登录时隐藏登录触发器，Vue hydration 后接管
         if (localStorage.getItem('blog_token')) {
           document.documentElement.classList.add('has-auth');
         }

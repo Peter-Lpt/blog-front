@@ -211,11 +211,16 @@ function nextMonth() {
   border-radius: 4px;
   font-size: 12px;
   color: var(--text-color);
+  transition: background 0.2s;
 }
 
 .date-cell.has-data {
   background: rgba(201, 169, 110, 0.12);
   cursor: pointer;
+}
+
+:root[data-theme="dark"] .date-cell.has-data {
+  background: rgba(201, 169, 110, 0.18);
 }
 
 .date-cell.has-data .date-number {
@@ -224,6 +229,11 @@ function nextMonth() {
 
 .date-cell.is-today {
   border: 1px solid var(--primary-color);
+}
+
+:root[data-theme="dark"] .date-cell.is-today {
+  border-color: var(--color-signal);
+  background: rgba(228, 155, 82, 0.12);
 }
 
 .date-number {
@@ -246,6 +256,10 @@ function nextMonth() {
   font-weight: 600;
   line-height: 12px;
   text-align: center;
+}
+
+:root[data-theme="dark"] .data-badge {
+  background: var(--color-signal);
 }
 
 .calendar-footer {
@@ -273,7 +287,16 @@ function nextMonth() {
   background: var(--card-bg);
 }
 
+:root[data-theme="dark"] .legend-dot--empty {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .legend-dot--has-data {
   background: rgba(201, 169, 110, 0.3);
+}
+
+:root[data-theme="dark"] .legend-dot--has-data {
+  background: rgba(201, 169, 110, 0.4);
 }
 </style>
