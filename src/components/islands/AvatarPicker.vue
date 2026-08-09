@@ -44,6 +44,7 @@ import { apiRequest } from '@/lib/api';
 import { getUser, uploadAvatar, verifyToken } from '@/lib/auth';
 import { setStoredSession } from '@/lib/session';
 import { getToken } from '@/lib/auth';
+import { compressImage } from '@/lib/image';
 
 const presets = [
   '/avatars/preset-1.svg',
@@ -93,7 +94,7 @@ async function pickPreset(preset: string) {
       user.avatar = preset;
       setStoredSession(token, user);
     }
-    document.dispatchEvent(new CustomEvent('blog-auth-change'));
+    window.dispatchEvent(new CustomEvent('blog-auth-change'));
     close();
   } catch (e: any) {
     errorMsg.value = e?.message || '设置失败，请重试';
@@ -108,7 +109,10 @@ async function uploadFile(e: Event) {
   errorMsg.value = '';
   uploading.value = true;
   try {
-    const result = await uploadAvatar(file);
+    // 先压缩（目标 ≤300KB / 512px），再上传
+    const compressed = await compressImage(file);
+    const result = await uploadAvatar(compressed.blob);
+    URL.revokeObjectURL(compressed.url);
     if (!result.ok || !result.avatarUrl) {
       errorMsg.value = '上传失败，请重试';
       return;
@@ -120,7 +124,7 @@ async function uploadFile(e: Event) {
       user.avatar = result.avatarUrl;
       setStoredSession(token, user);
     }
-    document.dispatchEvent(new CustomEvent('blog-auth-change'));
+    window.dispatchEvent(new CustomEvent('blog-auth-change'));
     // 后台再以 DB 为权威确认一次（幂等，保证刷新后一致）
     verifyToken().then(() => {}).catch(() => {});
     close();

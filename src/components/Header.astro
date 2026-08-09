@@ -14,6 +14,8 @@ const navItems = [
 
 const pathname = Astro.url.pathname;
 const current = pathname.replace(/\/$/, '') || '/';
+// 后台入口：dev 指向 admin 自己的 dev server（Astro 托管的 public/admin 是旧构建），生产同源 /admin/
+const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
 ---
 
 <header class="site-header">
@@ -47,7 +49,7 @@ const current = pathname.replace(/\/$/, '') || '/';
                 <img id="auth-dropdown-avatar" src="" alt="" class="dropdown-avatar" />
                 <span id="auth-dropdown-name">用户</span>
               </div>
-              <a id="auth-admin-link" href="/admin/" class="dropdown-item admin-link hidden" role="menuitem">
+              <a id="auth-admin-link" href={adminUrl} class="dropdown-item admin-link hidden" role="menuitem">
                 <span class="dropdown-icon">⚙</span>
                 <span>进入后台</span>
               </a>
@@ -214,9 +216,9 @@ import { applyOAuthResult, clearSession, getToken, getUser } from '@/lib/auth';
     if (isLoggedIn()) {
       var user = getUser();
       var src = (user && user.avatar) || generateAvatar((user && user.username) || 'u');
-      // 只在头像未由 inline script 设置时更新，避免闪烁
-      if (userAvatar && !userAvatar.dataset.inlineSet) userAvatar.src = src;
-      if (dropdownAvatar) dropdownAvatar.src = src;
+      // 始终同步头像 src（相同值不会触发重载；换头像/上传后广播事件即时生效）
+      if (userAvatar && userAvatar.getAttribute('src') !== src) userAvatar.src = src;
+      if (dropdownAvatar && dropdownAvatar.getAttribute('src') !== src) dropdownAvatar.src = src;
       if (dropdownName && user) dropdownName.textContent = user.nickname || user.username || '用户';
       userArea.classList.remove('hidden');
       loginBtn.classList.add('hidden');

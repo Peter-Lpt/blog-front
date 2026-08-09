@@ -1,11 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#c66a62"/>
-      <stop offset="1" stop-color="#a34a44"/>
+      <stop offset="0" stop-color="#ef9a8e"/>
+      <stop offset="1" stop-color="#c05c53"/>
     </linearGradient>
   </defs>
   <rect width="96" height="96" rx="22" fill="url(#g)"/>
-  <circle cx="48" cy="36" r="14" fill="#fff" opacity="0.92"/>
-  <path d="M24 84c2-14 12-21 24-21s22 7 24 21" fill="#fff" opacity="0.92"/>
+  <!-- 星球 + 轨道环 -->
+  <circle cx="48" cy="44" r="18" fill="#fff" opacity="0.95"/>
+  <ellipse cx="48" cy="44" rx="30" ry="11" fill="none" stroke="#fff" stroke-width="3" opacity="0.5"/>
+  <ellipse cx="48" cy="44" rx="30" ry="11" fill="none" stroke="#fff" stroke-width="3" opacity="0.5" transform="rotate(120 48 44)"/>
+  <!-- 小行星 -->
+  <circle cx="76" cy="26" r="4" fill="#fff" opacity="0.8"/>
 </svg>

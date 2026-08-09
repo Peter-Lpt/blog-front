@@ -77,6 +77,7 @@ import { ElMessage } from 'element-plus'
 import { ChatDotRound, Link, ArrowDown } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { setPresetAvatar, uploadAvatarFile } from '@/api/user'
+import { compressImage } from '@/utils/image'
 
 const route = useRoute()
 const router = useRouter()
@@ -149,7 +150,10 @@ async function onFileChange(e: Event) {
   uploading.value = true
   avatarErrorMsg.value = ''
   try {
-    await uploadAvatarFile(file)
+    // 先压缩（目标 ≤300KB / 512px），再上传
+    const compressed = await compressImage(file)
+    await uploadAvatarFile(compressed.blob)
+    URL.revokeObjectURL(compressed.url)
     await authStore.verifyToken()
     ElMessage.success('头像已更新')
     avatarDialogVisible.value = false

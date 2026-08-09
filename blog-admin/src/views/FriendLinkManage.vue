@@ -4,7 +4,7 @@
       <el-button type="primary" @click="openDialog()">新增友链</el-button>
     </div>
 
-    <el-table :data="list" v-loading="loading" border stripe>
+    <el-table :data="list" v-loading="loading" stripe :header-cell-style="{ background: '#faf9f5', color: '#5d6b73', fontWeight: 600 }">
       <el-table-column prop="name" label="名称" width="160" />
       <el-table-column prop="url" label="地址" min-width="240" show-overflow-tooltip />
       <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />

@@ -146,13 +146,17 @@ export async function logout() {
 /**
  * 上传用户头像
  * POST /user/avatar  multipart/form-data
+ * 支持 File 或压缩后的 Blob（前端压缩后上传）
  */
-export async function uploadAvatar(file: File): Promise<{ ok: boolean; avatarUrl?: string }> {
+export async function uploadAvatar(file: Blob | File): Promise<{ ok: boolean; avatarUrl?: string }> {
   const token = getToken();
   if (!token) return { ok: false };
   try {
     const fd = new FormData();
-    fd.append('file', file);
+    // Blob 无 name，需手动给文件名，否则后端拿不到扩展名
+    const isFile = file instanceof File;
+    const name = isFile ? file.name : `avatar-${Date.now()}.jpg`;
+    fd.append('file', file, name);
     const data = await apiRequest<{ avatar?: string }>('/user/avatar', {
       method: 'POST',
       body: fd,

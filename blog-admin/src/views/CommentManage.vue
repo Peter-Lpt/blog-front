@@ -9,7 +9,7 @@
       </el-select>
     </div>
 
-    <el-table :data="list" v-loading="loading" border stripe>
+    <el-table :data="list" v-loading="loading" stripe :header-cell-style="{ background: '#faf9f5', color: '#5d6b73', fontWeight: 600 }">
       <el-table-column prop="nickname" label="评论者" width="120" />
       <el-table-column prop="content" label="内容" min-width="280" show-overflow-tooltip />
       <el-table-column prop="essaySlug" label="文章 slug" width="180" show-overflow-tooltip />

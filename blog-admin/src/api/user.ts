@@ -17,9 +17,11 @@ export function setPresetAvatar(avatar: string) {
   return service.post('/user/avatar/preset', { avatar })
 }
 
-// 上传自定义头像（multipart）
-export function uploadAvatarFile(file: File) {
+// 上传自定义头像（multipart；支持压缩后的 Blob）
+export function uploadAvatarFile(file: Blob | File) {
   const fd = new FormData()
-  fd.append('file', file)
+  const isFile = file instanceof File
+  const name = isFile ? file.name : `avatar-${Date.now()}.jpg`
+  fd.append('file', file, name)
   return service.post('/user/avatar', fd)
 }
