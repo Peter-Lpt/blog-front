@@ -222,11 +222,15 @@ function goFront() {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #24292e;
+  background: #24292e;
+  border-color: #24292e;
+  color: #fff;
+  font-weight: 500;
 }
 .github-btn:hover {
-  border-color: #e49b52;
-  color: #e49b52;
+  background: #2f3640;
+  border-color: #2f3640;
+  color: #fff;
 }
 .gh-icon {
   flex-shrink: 0;

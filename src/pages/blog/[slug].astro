@@ -4,7 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import LikeButton from '@/components/islands/LikeButton.vue';
 import CommentSection from '@/components/islands/CommentSection.vue';
 import Sidebar from '@/components/Sidebar.astro';
-import { formatDate, getAllPosts, getSlug, resolveCategory, resolveTags } from '@/lib/posts';
+import { formatDate, getAllPosts, getPostDescription, getSlug, resolveCategory, resolveTags } from '@/lib/posts';
 import '@/styles/markdown.css';
 
 export async function getStaticPaths() {
@@ -22,10 +22,12 @@ interface Props {
 const { post } = Astro.props;
 const { Content, headings } = await post.render();
 const slug = getSlug(post);
-const { title, pubDate, updatedDate, description, coverImage } = post.data;
+const { title, pubDate, updatedDate, coverImage } = post.data;
 const tags = resolveTags(post);
 const readingMinutes = Math.max(1, Math.ceil(((post.body || '').replace(/\s+/g, '')).length / 500));
 const category = resolveCategory(post);
+// OG/meta description：优先 frontmatter.description，缺省时从正文自动提取
+const description = getPostDescription(post);
 
 const tocItems = headings
   .filter((h) => h.depth === 2 || h.depth === 3 || h.depth === 4)

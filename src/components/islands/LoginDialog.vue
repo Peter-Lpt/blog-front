@@ -5,6 +5,7 @@
       <button class="ld-close" @click="close" aria-label="关闭">×</button>
 
       <div class="ld-header">
+        <span class="ld-brand-dot" aria-hidden="true" />
         <h2 class="ld-title">{{ mode === 'login' ? '登录' : '注册' }}</h2>
         <p class="ld-subtitle">{{ mode === 'login' ? '欢迎回来' : '创建你的账号' }}</p>
       </div>
@@ -187,8 +188,17 @@ function loginWithGithub() {
   text-align: center;
   margin-bottom: 24px;
 }
+.ld-brand-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: var(--color-signal);
+  box-shadow: 0 0 0 6px var(--color-signal-soft);
+}
 .ld-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   margin: 0 0 4px;
   color: var(--color-text);

@@ -135,6 +135,33 @@ export async function getArticleDatesByDay(): Promise<Record<string, number>> {
   return result;
 }
 
+const MARKDOWN_SYNTAX = /[`*_~>#]|!\[[^\]]*\]\([^)]*\)|\[[^\]]*\]\([^)]*\)|<[^>]+>|!?\[[^\]]*\]/g;
+
+/**
+ * 从 Markdown 正文提取纯文本摘要（供 RSS / OG meta description 使用）。
+ * 规则：
+ *  1. frontmatter.description 非空时直接返回（作者手写最准确）；
+ *  2. 否则从正文剥除代码块、链接/图片语法、HTML 标签与标记符号后截取前 maxLen 字。
+ */
+export function getPostDescription(post: Post, maxLen = 120): string {
+  if (post.data.description && post.data.description.trim()) {
+    return post.data.description.trim();
+  }
+  const body = post.body || '';
+  // 跳过 YAML frontmatter（防御：body 通常已剥离，但保留以防万一）
+  const text = body
+    .replace(/^---[\s\S]*?---\s*/, '')
+    // 整段代码块整体剔除
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/~~~[\s\S]*?~~~/g, ' ')
+    // 行内代码、图片、链接、HTML 标签与各类标记符号
+    .replace(MARKDOWN_SYNTAX, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!text) return '';
+  return text.length > maxLen ? text.slice(0, maxLen) + '…' : text;
+}
+
 /**
  * 格式化日期
  */
