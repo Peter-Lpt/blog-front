@@ -32,12 +32,36 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="front">查看前台博客</el-dropdown-item>
+              <el-dropdown-item command="avatar">更换头像</el-dropdown-item>
+              <el-dropdown-item divided command="front">查看前台博客</el-dropdown-item>
               <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </el-header>
+
+      <!-- 更换头像对话框 -->
+      <el-dialog v-model="avatarDialogVisible" title="选择头像" width="440px" class="avatar-dialog">
+        <p class="avatar-dialog-label">默认头像</p>
+        <div class="avatar-grid">
+          <img
+            v-for="(preset, i) in presets"
+            :key="preset"
+            :src="preset"
+            :alt="'预设头像 ' + (i + 1)"
+            class="avatar-grid-item"
+            :class="{ 'avatar-grid-item--active': authStore.user?.avatar === preset }"
+            @click="pickPreset(preset)"
+          />
+        </div>
+        <p class="avatar-dialog-label">自定义上传</p>
+        <div class="avatar-upload-row">
+          <input ref="fileInputRef" type="file" accept="image/*" class="avatar-file" @change="onFileChange" />
+          <el-button :loading="uploading" @click="fileInputRef?.click()">选择图片并上传</el-button>
+          <el-button v-if="uploading" type="primary" loading disabled>上传中…</el-button>
+          <span v-if="avatarErrorMsg" class="avatar-error">{{ avatarErrorMsg }}</span>
+        </div>
+      </el-dialog>
 
       <el-main class="main">
         <router-view />
@@ -49,8 +73,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { ChatDotRound, Link, ArrowDown } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { setPresetAvatar, uploadAvatarFile } from '@/api/user'
 
 const route = useRoute()
 const router = useRouter()
@@ -59,6 +85,22 @@ const authStore = useAuthStore()
 const activeMenu = computed(() => route.path)
 
 const avatarError = ref(false)
+const avatarDialogVisible = ref(false)
+const uploading = ref(false)
+const avatarErrorMsg = ref('')
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+// 与前台一致的预设头像
+const presets = [
+  '/avatars/preset-1.svg',
+  '/avatars/preset-2.svg',
+  '/avatars/preset-3.svg',
+  '/avatars/preset-4.svg',
+  '/avatars/preset-5.svg',
+  '/avatars/preset-6.svg',
+  '/avatars/preset-7.svg',
+  '/avatars/preset-8.svg',
+]
 
 // 头像：优先用户已上传的头像；加载失败或无头像时回退默认头像
 const avatarSrc = computed(() => {
@@ -81,9 +123,42 @@ function defaultAvatar(): string {
   return (
     'data:image/svg+xml,' +
     encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="${c}cc"/></linearGradient></defs><rect width="80" height="80" fill="url(#g)"/><text x="40" y="52" text-anchor="middle" font-size="34" font-family="sans-serif" fill="#fff" font-weight="600">${ch}</text></svg>`
+      `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\"><defs><linearGradient id=\"g\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"${c}\"/><stop offset=\"1\" stop-color=\"${c}cc\"/></linearGradient></defs><rect width=\"80\" height=\"80\" fill=\"url(#g)\"/><text x=\"40\" y=\"52\" text-anchor=\"middle\" font-size=\"34\" font-family=\"sans-serif\" fill=\"#fff\" font-weight=\"600\">${ch}</text></svg>`
     )
   )
+}
+
+// 选择预设头像
+async function pickPreset(preset: string) {
+  avatarErrorMsg.value = ''
+  try {
+    await setPresetAvatar(preset)
+    await authStore.verifyToken()
+    ElMessage.success('头像已更新')
+    avatarDialogVisible.value = false
+  } catch (e: any) {
+    avatarErrorMsg.value = e?.message || '设置失败，请重试'
+  }
+}
+
+// 上传自定义头像
+async function onFileChange(e: Event) {
+  const input = e.currentTarget as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  uploading.value = true
+  avatarErrorMsg.value = ''
+  try {
+    await uploadAvatarFile(file)
+    await authStore.verifyToken()
+    ElMessage.success('头像已更新')
+    avatarDialogVisible.value = false
+  } catch (err: any) {
+    avatarErrorMsg.value = err?.message || '上传失败，请重试'
+  } finally {
+    uploading.value = false
+    input.value = ''
+  }
 }
 
 function handleCommand(cmd: string) {
@@ -94,6 +169,9 @@ function handleCommand(cmd: string) {
     // 生产：admin 部署在 /admin/ 下，'/' 即前台；dev：vite server 下 '/'
     // 指向 admin 自身，需显式指向前台 dev 地址
     window.open(import.meta.env.VITE_FRONT_BASE_URL || '/', '_blank')
+  } else if (cmd === 'avatar') {
+    avatarErrorMsg.value = ''
+    avatarDialogVisible.value = true
   }
 }
 </script>
@@ -223,4 +301,40 @@ function handleCommand(cmd: string) {
   border: 1px solid var(--admin-fog);
   border-radius: 12px;
 }
+
+/* 更换头像对话框 */
+.avatar-dialog-label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  letter-spacing: 0.06em;
+}
+.avatar-dialog-label:not(:first-of-type) { margin-top: 18px; }
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.avatar-grid-item {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.avatar-grid-item:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgb(16 24 32 / 0.14); }
+.avatar-grid-item--active {
+  border-color: var(--admin-signal);
+  box-shadow: 0 0 0 3px var(--admin-signal-soft);
+}
+.avatar-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar-file { display: none; }
+.avatar-error { color: var(--el-color-danger); font-size: 12px; }
 </style>

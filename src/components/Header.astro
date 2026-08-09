@@ -3,6 +3,7 @@ import { SITE } from '@/lib/config';
 import ThemeToggle from '@/components/islands/ThemeToggle.vue';
 import SearchDialog from '@/components/islands/SearchDialog.vue';
 import LoginDialog from '@/components/islands/LoginDialog.vue';
+import AvatarPicker from '@/components/islands/AvatarPicker.vue';
 
 const navItems = [
   { href: '/', label: '所有文章' },
@@ -50,11 +51,10 @@ const current = pathname.replace(/\/$/, '') || '/';
                 <span class="dropdown-icon">⚙</span>
                 <span>进入后台</span>
               </a>
-              <label class="dropdown-item avatar-upload-item" role="menuitem">
+              <button class="dropdown-item avatar-pick-item" role="menuitem" id="auth-avatar-pick-btn">
                 <span class="dropdown-icon">▣</span>
                 <span>更换头像</span>
-                <input type="file" accept="image/*" class="hidden-input" id="auth-avatar-input" />
-              </label>
+              </button>
               <button class="dropdown-item logout-item" id="auth-logout-btn" role="menuitem">
                 <span class="dropdown-icon">↩</span>
                 <span>退出登录</span>
@@ -118,6 +118,8 @@ const current = pathname.replace(/\/$/, '') || '/';
 
 <!-- LoginDialog 需要 Vue 岛（Teleport），页面加载时注册事件监听器 -->
 <LoginDialog client:load />
+<!-- 头像选择面板（预设头像 + 自定义上传） -->
+<AvatarPicker client:load />
 
 <style>
   .site-header { position:sticky; top:0; z-index:100; background:rgb(243 240 232 / .82); backdrop-filter:blur(var(--glass-blur)); border-bottom:1px solid rgb(216 222 227 / .82); transition:background-color var(--motion-base) var(--ease-standard),border-color var(--motion-base) var(--ease-standard); } :root[data-theme="dark"] .site-header { background:rgb(20 28 34 / .82); border-color:rgb(52 67 77 / .82); }
@@ -175,8 +177,7 @@ const current = pathname.replace(/\/$/, '') || '/';
 </style>
 
 <script>
-import { applyOAuthResult, clearSession, getToken, getUser, uploadAvatar, verifyToken } from '@/lib/auth';
-import { setStoredSession } from '@/lib/session';
+import { applyOAuthResult, clearSession, getToken, getUser } from '@/lib/auth';
 
 (function () {
   function isLoggedIn() {
@@ -206,7 +207,7 @@ import { setStoredSession } from '@/lib/session';
     var userDropdown = document.getElementById('auth-user-dropdown');
     var adminLink = document.getElementById('auth-admin-link');
     var logoutBtn = document.getElementById('auth-logout-btn');
-    var avatarInput = document.getElementById('auth-avatar-input') as HTMLInputElement | null;
+    var avatarPickBtn = document.getElementById('auth-avatar-pick-btn') as HTMLElement | null;
 
     if (!userArea || !loginBtn) return;
 
@@ -252,46 +253,12 @@ import { setStoredSession } from '@/lib/session';
       };
     }
 
-    // 头像上传
-    if (avatarInput) {
-      avatarInput.onchange = function (e) {
-        var input = e.currentTarget as HTMLInputElement;
-        var file = input.files?.[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function () {
-          var result = typeof reader.result === 'string' ? reader.result : '';
-          if (userAvatar && result) userAvatar.src = result;
-          if (dropdownAvatar && result) dropdownAvatar.src = result;
-          var user = getUser();
-          if (user && result) {
-            user.avatar = result;
-            var authToken = getToken();
-            if (authToken) setStoredSession(authToken, user);
-          }
-        };
-        reader.readAsDataURL(file);
-        // 上传到后端
-        var token = getToken();
-        if (token) {
-          var authToken = token;
-          uploadAvatar(file).then(function (result) {
-            if (!result.ok || !result.avatarUrl) return;
-            var user = getUser();
-            if (user) {
-              user.avatar = result.avatarUrl;
-              setStoredSession(authToken, user);
-            }
-            if (userAvatar) userAvatar.src = result.avatarUrl;
-            if (dropdownAvatar) dropdownAvatar.src = result.avatarUrl;
-            // 上传成功：以后端为权威刷新本地会话（verify 返回最新 avatar），保证刷新页面后头像不丢
-            verifyToken().then(function () {
-              initAuth();
-            });
-          }).catch(function () {});
-        }
-        if (avatarInput) avatarInput.value = '';
+    // 更换头像：打开预设头像选择面板（Vue 岛 AvatarPicker）
+    if (avatarPickBtn) {
+      avatarPickBtn.onclick = function (e) {
+        e.stopPropagation();
         userDropdown?.classList.add('hidden');
+        document.dispatchEvent(new CustomEvent('open-avatar-picker'));
       };
     }
 

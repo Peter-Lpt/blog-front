@@ -30,6 +30,12 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_PROXY_TARGET || 'http://localhost:8001',
           changeOrigin: true,
         },
+        // 预设头像静态资源（位于 blog-front/public/avatars）
+        // dev 下前台跑在 4321；生产同域由 nginx 直接服务，无需代理
+        '/avatars': {
+          target: 'http://localhost:4321',
+          changeOrigin: true,
+        },
       },
     },
   }
