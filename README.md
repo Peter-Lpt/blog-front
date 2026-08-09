@@ -113,4 +113,4 @@ addedDate: 2026-06-14
 
 ## License
 
-Private.
+[MIT](LICENSE)
