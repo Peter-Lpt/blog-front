@@ -60,8 +60,16 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return false
     try {
       const data: any = await userVerify()
-      if (user.value && data.role) {
-        user.value.role = data.role
+      if (data && data.username) {
+        // 以数据库为权威全量同步（头像/昵称/角色变更即时生效）
+        const prev = user.value
+        user.value = {
+          userId: data.userId ?? prev?.userId ?? 0,
+          username: data.username || prev?.username || '',
+          nickname: data.nickname ?? prev?.nickname,
+          avatar: data.avatar ?? prev?.avatar,
+          role: data.role ?? prev?.role ?? 'user',
+        }
         localStorage.setItem(USER_KEY, JSON.stringify(user.value))
       }
       return true

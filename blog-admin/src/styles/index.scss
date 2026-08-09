@@ -1,5 +1,83 @@
 @import 'element-plus/theme-chalk/dark/css-vars.css';
 
+/* ============================================================
+ * 博客后台主题：与前台（blog-front）暖色纸感风格统一
+ * 前台核心色：paper #f3f0e8 / surface #ffffff / signal #e49b52
+ * ============================================================ */
+
+:root {
+  /* Element Plus 主色 → 前台 signal 暖橙（!important 压过按需组件样式注入的默认值） */
+  --el-color-primary: #e49b52 !important;
+  --el-color-primary-light-3: #eaae70 !important;
+  --el-color-primary-light-5: #f0c194 !important;
+  --el-color-primary-light-7: #f5d6b9 !important;
+  --el-color-primary-light-8: #f8e1cd !important;
+  --el-color-primary-light-9: #fbece0 !important;
+  --el-color-primary-dark-2: #d98d3f !important;
+
+  --el-color-success: #6d9b78;
+  --el-color-warning: #d29a4a;
+  --el-color-danger: #c66a62;
+  --el-color-error: #c66a62;
+  --el-color-info: #86939a;
+
+  /* 圆角与前台一致 */
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+
+  /* 背景体系与前台统一 */
+  --admin-bg: #f3f0e8;          /* 前台 paper */
+  --admin-surface: #ffffff;     /* 卡片/表格底 */
+  --admin-sidebar-bg: #faf9f5;  /* 侧边栏纸感米白 */
+  --admin-text: #18232b;
+  --admin-text-muted: #5d6b73;
+  --admin-fog: #d8dee3;
+  --admin-signal: #e49b52;
+  --admin-signal-soft: rgb(228 155 82 / 0.12);
+
+  --el-bg-color-page: var(--admin-bg);
+  --el-bg-color: var(--admin-surface);
+  --el-fill-color-light: #faf9f5;
+  --el-fill-color-lighter: #f7f5ef;
+  --el-border-color: var(--admin-fog);
+  --el-border-color-light: #e4e0d8;
+  --el-border-color-lighter: #ece8e0;
+  --el-text-color-primary: var(--admin-text);
+  --el-text-color-regular: var(--admin-text-muted);
+  --el-text-color-secondary: #86939a;
+}
+
+/* Element Plus 暗色跟随前台暗色变量（前缀 el-） */
+html.dark {
+  --el-color-primary: #e6aa60 !important;
+  --el-color-primary-light-3: #c99555 !important;
+  --el-color-primary-light-5: #8a6a44 !important;
+  --el-color-primary-light-7: #5d4a36 !important;
+  --el-color-primary-light-8: #463830 !important;
+  --el-color-primary-light-9: #322a26 !important;
+  --el-color-primary-dark-2: #f0bc7a !important;
+
+  --admin-bg: #141c22;
+  --admin-surface: #18232b;
+  --admin-sidebar-bg: #18232b;
+  --admin-text: #e8edf0;
+  --admin-text-muted: #a8b5bb;
+  --admin-fog: #34434d;
+  --admin-signal: #e6aa60;
+  --admin-signal-soft: rgb(230 170 96 / 0.14);
+
+  --el-bg-color-page: var(--admin-bg);
+  --el-bg-color: var(--admin-surface);
+  --el-fill-color-light: #1e2c35;
+  --el-fill-color-lighter: #1b2830;
+  --el-border-color: var(--admin-fog);
+  --el-border-color-light: #2c3b44;
+  --el-border-color-lighter: #26353e;
+  --el-text-color-primary: var(--admin-text);
+  --el-text-color-regular: var(--admin-text-muted);
+  --el-text-color-secondary: #7f9099;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -7,10 +85,27 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: Inter, 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 14px;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  -webkit-font-smoothing: antialiased;
 }
 
 #app {
   min-height: 100vh;
+}
+
+/* 表格圆角与 hover 色调与前台一致 */
+.el-table {
+  --el-table-border-color: var(--admin-fog);
+  --el-table-header-bg-color: var(--admin-sidebar-bg);
+  --el-table-row-hover-bg-color: var(--admin-signal-soft);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.el-card {
+  border-radius: 14px;
+  border: 1px solid var(--admin-fog);
 }

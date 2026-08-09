@@ -1,7 +1,12 @@
 <template>
   <div class="calendar-archive">
     <h3 class="sidebar-title">
-      <span class="title-icon">📅</span>
+      <svg class="title-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="18" rx="3"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
       日历归档
     </h3>
     <div class="calendar-header">
@@ -145,7 +150,10 @@ function nextMonth() {
 }
 
 .title-icon {
-  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: var(--color-signal);
+  flex-shrink: 0;
 }
 
 .calendar-header {
@@ -215,12 +223,12 @@ function nextMonth() {
 }
 
 .date-cell.has-data {
-  background: rgba(201, 169, 110, 0.12);
+  background: var(--color-signal-soft);
   cursor: pointer;
 }
 
 :root[data-theme="dark"] .date-cell.has-data {
-  background: rgba(201, 169, 110, 0.18);
+  background: rgb(230 170 96 / 0.2);
 }
 
 .date-cell.has-data .date-number {
@@ -233,7 +241,7 @@ function nextMonth() {
 
 :root[data-theme="dark"] .date-cell.is-today {
   border-color: var(--color-signal);
-  background: rgba(228, 155, 82, 0.12);
+  background: rgb(230 170 96 / 0.16);
 }
 
 .date-number {
@@ -293,10 +301,12 @@ function nextMonth() {
 }
 
 .legend-dot--has-data {
-  background: rgba(201, 169, 110, 0.3);
+  background: var(--color-signal-soft);
+  border: 1px solid var(--color-signal);
 }
 
 :root[data-theme="dark"] .legend-dot--has-data {
-  background: rgba(201, 169, 110, 0.4);
+  background: rgb(230 170 96 / 0.3);
+  border-color: var(--color-signal);
 }
 </style>

@@ -152,7 +152,7 @@ onUnmounted(() => {
 
 .search-input:focus {
   border-color: var(--color-signal);
-  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+  box-shadow: 0 0 0 3px var(--color-signal-soft);
 }
 
 .search-input::placeholder {

@@ -246,7 +246,7 @@ function loginWithGithub() {
 }
 .ld-input:focus {
   border-color: var(--color-signal);
-  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+  box-shadow: 0 0 0 3px var(--color-signal-soft);
 }
 
 .ld-error {
@@ -276,7 +276,7 @@ function loginWithGithub() {
 .ld-submit:hover:not(:disabled) {
   opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+  box-shadow: 0 4px 12px var(--color-signal-soft);
 }
 .ld-submit:disabled {
   opacity: 0.5;

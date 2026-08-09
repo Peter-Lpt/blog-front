@@ -25,6 +25,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        // 头像等用户上传文件直连后端静态资源
+        '/uploads': {
+          target: env.VITE_API_PROXY_TARGET || 'http://localhost:8001',
+          changeOrigin: true,
+        },
       },
     },
   }

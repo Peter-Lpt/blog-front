@@ -100,7 +100,8 @@ function loginWithGithub() {
 }
 
 function goFront() {
-  window.location.href = '/'
+  // 生产：admin 在 /admin/ 下，'/' 即前台；dev：vite server 的 '/' 是 admin 自身
+  window.location.href = import.meta.env.VITE_FRONT_BASE_URL || '/'
 }
 </script>
 
@@ -170,7 +171,7 @@ function goFront() {
   box-shadow: 0 0 0 1px #d8dee3 inset;
 }
 .field :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px #e49b52 inset, 0 0 0 3px rgba(201, 169, 110, 0.15);
+  box-shadow: 0 0 0 1px #e49b52 inset, 0 0 0 3px var(--color-signal-soft);
 }
 .error {
   margin: 0;
