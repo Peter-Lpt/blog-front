@@ -8,7 +8,7 @@
   font-size: 16px;
   line-height: 1.8;
   word-wrap: break-word;
-  color: var(--text-color);
+  color: var(--color-text);
 }
 
 .markdown-body h1,
@@ -22,7 +22,7 @@
   font-weight: 600;
   line-height: 1.4;
   scroll-margin-top: 88px;
-  color: var(--text-color);
+  color: var(--color-text);
 }
 
 .markdown-body h1 {
@@ -31,7 +31,7 @@
 
 .markdown-body h2 {
   font-size: 24px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-fog);
   padding-bottom: 8px;
 }
 
@@ -46,7 +46,7 @@
 .markdown-body h5,
 .markdown-body h6 {
   font-size: 15px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
 }
 
 .markdown-body p {
@@ -54,7 +54,7 @@
 }
 
 .markdown-body a {
-  color: var(--primary-color);
+  color: var(--color-signal);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -70,7 +70,7 @@
   border-radius: 4px;
   font-size: 0.9em;
   font-family: var(--font-mono);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
 }
 
 /* 代码块（Shiki 渲染后的结构：pre.astro-code > code） */
@@ -79,7 +79,7 @@
   margin: 16px 0;
   border-radius: 8px;
   overflow-x: auto;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
   padding: 16px;
   position: relative;
   font-size: 14px;
@@ -100,9 +100,9 @@
 .markdown-body blockquote {
   margin: 16px 0;
   padding: 12px 20px;
-  border-left: 4px solid var(--primary-color);
+  border-left: 4px solid var(--color-signal);
   background: var(--glass-bg);
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   border-radius: 0 6px 6px 0;
 }
 
@@ -139,7 +139,7 @@
 
 .markdown-body table th,
 .markdown-body table td {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
   padding: 8px 12px;
   text-align: left;
 }
@@ -156,7 +156,7 @@
 /* 分隔线 */
 .markdown-body hr {
   border: none;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--color-fog);
   margin: 24px 0;
 }
 
@@ -169,7 +169,7 @@
 .markdown-body input[type="checkbox"] {
   margin-right: 8px;
   pointer-events: none;
-  accent-color: var(--primary-color);
+  accent-color: var(--color-signal);
 }
 
 /* 锚点链接（hover 显示） */
@@ -180,7 +180,7 @@
   opacity: 0;
   text-decoration: none;
   font-size: 0.85em;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
 }
 
 .markdown-body .header-anchor:hover {
@@ -200,9 +200,9 @@
 .markdown-body .footnotes {
   margin-top: 32px;
   padding-top: 16px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--color-fog);
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
 }
 
 /* ============================================
@@ -253,6 +253,6 @@
 .markdown-body pre.astro-code { border-color:var(--color-fog); }
 .code-toolbar { position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 12px; border-bottom:1px solid var(--color-fog); background:var(--color-surface); color:var(--color-text-faint); font:600 .68rem var(--font-ui); letter-spacing:.1em; }
 .code-copy-button { padding:5px 9px; border:1px solid var(--color-fog); border-radius:999px; background:transparent; color:var(--color-text-muted); cursor:pointer; font:600 .68rem var(--font-ui); transition:border-color var(--motion-fast),color var(--motion-fast),background var(--motion-fast); }
-.code-copy-button:hover { border-color:var(--color-signal); color:var(--color-signal); background:var(--primary-color-light); }
+.code-copy-button:hover { border-color:var(--color-signal); color:var(--color-signal); background:var(--color-signal-soft); }
 [data-theme="dark"] .markdown-body pre { background:var(--color-ink) !important; }
 [data-theme="dark"] .code-toolbar { background:var(--color-surface); border-color:var(--color-fog); }

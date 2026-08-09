@@ -43,14 +43,14 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     flex-wrap: wrap;
   }
   .pagination a {
-    color: var(--text-secondary);
+    color: var(--color-text-muted);
     padding: 6px 12px;
     border-radius: 8px;
     transition: all 0.2s;
   }
   .pagination a:hover {
-    color: var(--primary-color);
-    background: var(--primary-color-light);
+    color: var(--color-signal);
+    background: var(--color-signal-soft);
   }
   .page-numbers {
     display: flex;
@@ -61,7 +61,7 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     text-align: center;
   }
   .page-num.active {
-    background: var(--primary-color);
+    background: var(--color-signal);
     color: #fff;
   }
 </style>

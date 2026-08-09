@@ -20,6 +20,7 @@ import {
   getStoredToken,
   getStoredUser,
   setStoredSession,
+  type StoredUser,
 } from '@/lib/session';
 
 export { TOKEN_KEY, USER_KEY };
@@ -43,6 +44,19 @@ export function onAuthChange(fn: Listener) {
 }
 function emit() {
   listeners.forEach((fn) => fn());
+  // 同步给非订阅者（如 Header 的指令式 DOM 更新）
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('blog-auth-change'));
+  }
+}
+
+// 跨标签页同步：其他标签页登录/登出/换头像时，本页实时跟随
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === TOKEN_KEY || e.key === USER_KEY) {
+      emit();
+    }
+  });
 }
 
 export function getToken(): string | null {
@@ -153,21 +167,25 @@ export async function uploadAvatar(file: File): Promise<{ ok: boolean; avatarUrl
 }
 
 /**
- * 校验 token 有效性 + 刷新 role（防止本地缓存的 role 过期）
+ * 校验 token 有效性 + 全量刷新用户信息（role/昵称/头像以数据库为准，防止本地缓存过期）
  */
 export async function verifyToken(): Promise<boolean> {
   const token = getToken();
   if (!token) return false;
   try {
-    const data = await apiRequest<any>('/user/verify');
-    if (data) {
-      // 同步 role（后端 verify 返回的 role 为准）
+    const data = await apiRequest<Partial<UserInfo>>('/user/verify');
+    if (data && data.username) {
+      // 后端 verify 返回权威用户信息，全量同步回本地缓存
       const user = getUser();
-      if (user && data.role && user.role !== data.role) {
-        user.role = data.role;
-        setStoredSession(token, user);
-        emit();
-      }
+      setStoredSession(token, {
+        userId: data.userId ?? user?.userId ?? 0,
+        username: data.username || user?.username || '',
+        nickname: data.nickname ?? user?.nickname,
+        avatar: data.avatar ?? user?.avatar,
+        role: data.role ?? user?.role ?? 'user',
+        email: data.email ?? user?.email,
+      });
+      emit();
       return true;
     }
     clearSession();
@@ -175,4 +193,42 @@ export async function verifyToken(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * 处理 OAuth 回调：URL 带 oauth_token / oauth_error 时的收尾处理
+ * 1) 先从地址栏剥离 token，避免泄露
+ * 2) 写入会话并拉取权威用户信息
+ * 3) 通知 UI 更新（返回 true 表示本页确实处理了回调）
+ */
+export async function applyOAuthResult(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('oauth_token');
+  const error = params.get('oauth_error');
+
+  // 无论成败，剥离回调参数（token 不能留在地址栏）
+  window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+
+  if (error) return true;
+  if (!token) return false;
+
+  // 先存 token（/user/info 需要 token）再拉取权威用户信息
+  setStoredSession(token, { userId: 0, username: '', nickname: '', avatar: '', role: 'guest' } as StoredUser);
+  try {
+    const user = await apiRequest<UserInfo>('/user/info');
+    setStoredSession(token, {
+      userId: user.userId,
+      username: user.username,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      role: user.role,
+      email: user.email,
+    });
+  } catch {
+    clearStoredSession();
+    return true;
+  }
+  emit();
+  return true;
 }

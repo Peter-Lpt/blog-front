@@ -36,7 +36,7 @@ async function handleToggle() {
 <style scoped>
 .like-button { width:100%; display:grid; grid-template-columns:46px minmax(0,1fr) 28px; align-items:center; gap:14px; padding:16px 18px; border:1px solid var(--color-fog); border-radius:var(--radius-md); background:var(--color-surface-raised); color:var(--color-text); cursor:pointer; text-align:left; transition:transform var(--motion-base) var(--ease-standard),border-color var(--motion-base),box-shadow var(--motion-base),background var(--motion-base); }
 .like-button:hover:not(:disabled) { transform:translateY(-2px); border-color:var(--color-signal); box-shadow:var(--shadow-soft); }
-.like-button.liked { border-color:rgb(228 155 82 / .5); background:var(--primary-color-light); }
+.like-button.liked { border-color:rgb(228 155 82 / .5); background:var(--color-signal-soft); }
 .icon { display:grid; place-items:center; width:46px; height:46px; border-radius:50%; background:var(--color-ink); color:var(--color-on-ink); font-size:25px; line-height:1; transition:transform var(--motion-base) var(--ease-emphasis); }
 .liked .icon { background:var(--color-signal); transform:scale(1.04); }
 .copy { display:flex; flex-direction:column; gap:4px; min-width:0; }

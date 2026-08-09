@@ -1,10 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-
-// 友链：先写死示例，后续可改为从 md 文件加载（见 ROADMAP）
-const friendLinks: { name: string; url: string; description: string; logo: string }[] = [
-  // { name: '示例博客', url: 'https://example.com', description: '描述', logo: '' },
-];
+import FriendLinkList from '@/components/islands/FriendLinkList.vue';
 ---
 
 <BaseLayout title="友情链接" description="友情链接">
@@ -14,46 +10,14 @@ const friendLinks: { name: string; url: string; description: string; logo: strin
       <p class="page-desc">互相学习，共同成长</p>
     </header>
 
-    {friendLinks.length === 0 ? (
-      <div class="empty">
-        <p>还没有友情链接，敬请期待~</p>
-      </div>
-    ) : (
-      <div class="link-grid">
-        {friendLinks.map((link) => (
-          <a href={link.url} target="_blank" rel="noopener noreferrer" class="link-card">
-            {link.logo && <img src={link.logo} alt={link.name} class="link-logo" loading="lazy" />}
-            <div>
-              <h3>{link.name}</h3>
-              {link.description && <p>{link.description}</p>}
-            </div>
-          </a>
-        ))}
-      </div>
-    )}
+    <!-- 数据来自后端 /user/oauth 之外的公开接口 /friendLink/findList（仅展示审核通过的友链） -->
+    <FriendLinkList client:load />
   </section>
 </BaseLayout>
 
 <style>
   .links-page { padding: 40px 0; }
   .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--text-color); }
-  .page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
-  .empty { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
-  .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-  .link-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: var(--card-bg);
-    border: var(--card-border);
-    border-radius: var(--card-radius);
-    color: inherit;
-    transition: all 0.3s;
-  }
-  .link-card:hover { box-shadow: var(--card-hover-shadow); border-color: var(--primary-color); }
-  .link-logo { width: 40px; height: 40px; border-radius: 8px; }
-  .link-card h3 { margin: 0 0 4px; font-size: 15px; color: var(--text-color); }
-  .link-card p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--color-text); }
+  .page-desc { color: var(--color-text-muted); font-size: 14px; margin: 0; }
 </style>

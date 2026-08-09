@@ -144,8 +144,8 @@ function loginWithGithub() {
 }
 
 .login-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background: var(--color-surface);
+  border: 1px solid var(--color-fog);
   border-radius: 20px;
   padding: 32px;
   width: 380px;
@@ -174,13 +174,13 @@ function loginWithGithub() {
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   border-radius: 50%;
   transition: all 0.2s;
 }
 .ld-close:hover {
   background: var(--glass-bg);
-  color: var(--text-color);
+  color: var(--color-text);
 }
 
 .ld-header {
@@ -191,11 +191,11 @@ function loginWithGithub() {
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 4px;
-  color: var(--text-color);
+  color: var(--color-text);
 }
 .ld-subtitle {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -212,15 +212,15 @@ function loginWithGithub() {
 .ld-label {
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--color-text);
 }
 .ld-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
   border-radius: 10px;
   background: var(--glass-bg);
-  color: var(--text-color);
+  color: var(--color-text);
   font-size: 14px;
   font-family: inherit;
   outline: none;
@@ -228,14 +228,14 @@ function loginWithGithub() {
   box-sizing: border-box;
 }
 .ld-input::placeholder {
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   opacity: 0.7;
 }
 .ld-input:hover {
-  border-color: var(--primary-color);
+  border-color: var(--color-signal);
 }
 .ld-input:focus {
-  border-color: var(--primary-color);
+  border-color: var(--color-signal);
   box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
 }
 
@@ -252,7 +252,7 @@ function loginWithGithub() {
 .ld-submit {
   width: 100%;
   padding: 11px;
-  background: var(--primary-color);
+  background: var(--color-signal);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -275,13 +275,13 @@ function loginWithGithub() {
 
 .ld-divider {
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   font-size: 12px;
   margin: 20px 0 14px;
   position: relative;
 }
 .ld-divider span {
-  background: var(--card-bg);
+  background: var(--color-surface);
   padding: 0 12px;
   position: relative;
   z-index: 1;
@@ -293,7 +293,7 @@ function loginWithGithub() {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--border-color);
+  background: var(--color-fog);
 }
 
 .ld-github {
@@ -323,11 +323,11 @@ function loginWithGithub() {
 .ld-switch {
   text-align: center;
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   margin: 16px 0 0;
 }
 .ld-switch a {
-  color: var(--primary-color);
+  color: var(--color-signal);
   text-decoration: none;
   font-weight: 500;
 }

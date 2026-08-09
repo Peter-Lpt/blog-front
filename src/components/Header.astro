@@ -155,7 +155,7 @@ const current = pathname.replace(/\/$/, '') || '/';
 </style>
 
 <script>
-import { clearSession, getToken, getUser, uploadAvatar } from '@/lib/auth';
+import { applyOAuthResult, clearSession, getToken, getUser, uploadAvatar } from '@/lib/auth';
 import { setStoredSession } from '@/lib/session';
 
 (function () {
@@ -297,6 +297,27 @@ import { setStoredSession } from '@/lib/session';
 
   initAuth();
   updateNavActive();
+
+  // OAuth 回调：URL 带 oauth_token 时写会话 + 刷新头像区域
+  applyOAuthResult().then(function (handled) {
+    if (handled) initAuth();
+  });
+
+  // 跨标签页同步：其他标签页登录/登出/换头像时本页实时跟随
+  window.addEventListener('storage', function () {
+    initAuth();
+  });
+
+  // 401 触发：apiRequest 已清空本地会话，这里同步刷新 UI
+  document.addEventListener('blog-auth-expired', function () {
+    initAuth();
+  });
+
+  // 登录/注册/换头像成功：立即刷新头像区域，无需等待导航
+  window.addEventListener('blog-auth-change', function () {
+    initAuth();
+  });
+
   document.addEventListener('astro:page-load', function () {
     initAuth();
     updateNavActive();

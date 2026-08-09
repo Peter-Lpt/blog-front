@@ -49,33 +49,33 @@ const archives = await getArchives();
   }
   .archive-page { flex: 1; min-width: 0; }
   .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--text-color); }
-  .page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
+  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--color-text); }
+  .page-desc { color: var(--color-text-muted); font-size: 14px; margin: 0; }
   .archive-group { margin-bottom: 32px; }
   .archive-month {
     font-size: 18px;
-    color: var(--text-color);
-    border-bottom: 2px solid var(--primary-color);
+    color: var(--color-text);
+    border-bottom: 2px solid var(--color-signal);
     padding-bottom: 8px;
     margin: 0 0 12px;
   }
-  .count { font-size: 14px; color: var(--text-secondary); font-weight: normal; }
+  .count { font-size: 14px; color: var(--color-text-muted); font-weight: normal; }
   .month-posts { list-style: none; padding: 0; margin: 0; }
   .month-posts li {
     display: flex;
     gap: 16px;
     padding: 8px 0;
-    border-bottom: 1px dashed var(--border-color);
+    border-bottom: 1px dashed var(--color-fog);
   }
   .post-date {
     font-size: 13px;
-    color: var(--text-secondary);
+    color: var(--color-text-muted);
     flex-shrink: 0;
     width: 100px;
   }
-  .post-title { color: var(--text-color); }
-  .post-title:hover { color: var(--primary-color); }
-  .empty { text-align: center; padding: 60px; color: var(--text-secondary); }
+  .post-title { color: var(--color-text); }
+  .post-title:hover { color: var(--color-signal); }
+  .empty { text-align: center; padding: 60px; color: var(--color-text-muted); }
 
   @media (max-width: 768px) {
     .page-layout { flex-direction: column; gap: 24px; padding: 20px 0; }

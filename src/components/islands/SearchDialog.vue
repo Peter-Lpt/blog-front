@@ -140,10 +140,10 @@ onUnmounted(() => {
 .search-input {
   width: 200px;
   padding: 7px 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
   border-radius: 8px;
   background: var(--glass-bg);
-  color: var(--text-color);
+  color: var(--color-text);
   font-size: 14px;
   font-family: inherit;
   outline: none;
@@ -151,21 +151,21 @@ onUnmounted(() => {
 }
 
 .search-input:focus {
-  border-color: var(--primary-color);
+  border-color: var(--color-signal);
   box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
 }
 
 .search-input::placeholder {
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   opacity: 0.7;
 }
 
 .search-kbd {
   padding: 2px 6px;
   font-size: 11px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
   border-radius: 4px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   background: var(--glass-bg);
   cursor: pointer;
   font-family: inherit;

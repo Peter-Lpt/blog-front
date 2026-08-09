@@ -24,7 +24,8 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+              <el-dropdown-item command="front">查看前台博客</el-dropdown-item>
+              <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -53,6 +54,8 @@ function handleCommand(cmd: string) {
   if (cmd === 'logout') {
     authStore.logout()
     router.push('/login')
+  } else if (cmd === 'front') {
+    window.open('/', '_blank')
   }
 }
 </script>

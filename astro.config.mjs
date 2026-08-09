@@ -54,6 +54,11 @@ export default defineConfig({
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        // Dev 环境下头像等用户上传文件直连后端静态资源
+        '/uploads': {
+          target: 'http://localhost:8001',
+          changeOrigin: true,
+        },
       },
     },
   },

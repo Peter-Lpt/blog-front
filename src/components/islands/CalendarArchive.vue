@@ -126,9 +126,9 @@ function nextMonth() {
 
 <style scoped>
 .calendar-archive {
-  background: var(--card-bg);
+  background: var(--color-surface);
   border: var(--card-border);
-  border-radius: var(--card-radius);
+  border-radius: var(--radius-lg);
   padding: 18px 20px;
 }
 
@@ -137,8 +137,8 @@ function nextMonth() {
   font-weight: 600;
   margin: 0 0 14px;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-color);
+  border-bottom: 1px solid var(--color-fog);
+  color: var(--color-text);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -158,10 +158,10 @@ function nextMonth() {
 .nav-btn {
   width: 26px;
   height: 26px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-fog);
   border-radius: 6px;
   background: var(--glass-bg);
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   font-size: 11px;
   cursor: pointer;
   display: flex;
@@ -171,14 +171,14 @@ function nextMonth() {
 }
 
 .nav-btn:hover {
-  color: var(--primary-color);
-  border-color: var(--primary-color);
+  color: var(--color-signal);
+  border-color: var(--color-signal);
 }
 
 .month-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--color-text);
 }
 
 .calendar-weekdays {
@@ -190,7 +190,7 @@ function nextMonth() {
 .weekday-cell {
   text-align: center;
   font-size: 11px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   padding: 3px 0;
   font-weight: 500;
 }
@@ -210,7 +210,7 @@ function nextMonth() {
   justify-content: center;
   border-radius: 4px;
   font-size: 12px;
-  color: var(--text-color);
+  color: var(--color-text);
   transition: background 0.2s;
 }
 
@@ -228,7 +228,7 @@ function nextMonth() {
 }
 
 .date-cell.is-today {
-  border: 1px solid var(--primary-color);
+  border: 1px solid var(--color-signal);
 }
 
 :root[data-theme="dark"] .date-cell.is-today {
@@ -250,7 +250,7 @@ function nextMonth() {
   height: 12px;
   padding: 0 2px;
   border-radius: 6px;
-  background: var(--primary-color);
+  background: var(--color-signal);
   color: #fff;
   font-size: 8px;
   font-weight: 600;
@@ -267,7 +267,7 @@ function nextMonth() {
   display: flex;
   gap: 12px;
   font-size: 11px;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
 }
 
 .legend-item {
@@ -283,8 +283,8 @@ function nextMonth() {
 }
 
 .legend-dot--empty {
-  border: 1px solid var(--border-color);
-  background: var(--card-bg);
+  border: 1px solid var(--color-fog);
+  background: var(--color-surface);
 }
 
 :root[data-theme="dark"] .legend-dot--empty {
