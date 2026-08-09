@@ -2,17 +2,16 @@ name: Deploy Frontend (Astro)
 
 on:
   push:
-    branches: [main, feature/astro-migration]
+    branches: [main]
     paths:
-      - 'blog-front/src/**'
-      - 'blog-front/public/**'
-      - 'blog-front/astro.config.mjs'
-      - 'blog-front/package.json'
-      - 'blog-front/package-lock.json'
+      - 'src/**'
+      - 'public/**'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/deploy-frontend.yml'
   workflow_dispatch:
 
-# 同一时间只跑一个构建（避免新提交覆盖旧构建）
 concurrency:
   group: deploy-frontend
   cancel-in-progress: true
@@ -28,18 +27,15 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: blog-front/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        working-directory: blog-front
         run: npm ci
 
       - name: Set PUBLIC_API_BASE_URL
-        working-directory: blog-front
         run: echo "PUBLIC_API_BASE_URL=${{ secrets.API_BASE_URL || 'https://api.example.com' }}" >> $GITHUB_ENV
 
       - name: Build
-        working-directory: blog-front
         env:
           PUBLIC_API_BASE_URL: ${{ env.PUBLIC_API_BASE_URL }}
         run: npm run build
@@ -47,12 +43,11 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: blog-front/dist
+          path: dist
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    # 仅 main 分支部署，其他分支只构建验证
     if: github.ref == 'refs/heads/main'
     permissions:
       pages: write
