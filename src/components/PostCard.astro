@@ -6,13 +6,14 @@ const slug = getSlug(post);
 const { title, pubDate, description, coverImage } = post.data;
 const tags = resolveTags(post);
 const category = resolveCategory(post);
+const readingMinutes = Math.max(1, Math.ceil(((post.body || '').replace(/\s+/g, '')).length / 500));
 const url = '/blog/' + slug + '/';
 ---
 <article class:list={['article-card', { featured }]} data-reveal>
   <a href={url} class="card-link" aria-label={'阅读：' + title}>
     {coverImage && <div class="card-cover"><img src={coverImage} alt="" loading="lazy" decoding="async" /></div>}
     <div class="card-content">
-      <div class="card-kicker"><span>{category || '随笔'}</span><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></div>
+      <div class="card-kicker"><span>{category || '随笔'}</span><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time><span class="read-min">◷ 阅读 {readingMinutes} 分钟</span></div>
       <h2 class="card-title">{title}</h2>
       {description && <p class="card-summary">{description}</p>}
       <div class="card-footer"><span class="read-link">阅读全文 <span aria-hidden="true">↗</span></span>{tags && tags.length > 0 && <span class="tag-preview">{tags.slice(0, 2).map((tag: string) => '#' + tag).join('  ')}</span>}</div>

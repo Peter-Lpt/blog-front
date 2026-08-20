@@ -4,34 +4,56 @@ import Sidebar from '@/components/Sidebar.astro';
 import { getArchives, formatDate, getSlug } from '@/lib/posts';
 
 const archives = await getArchives();
+const total = Object.values(archives).reduce((n, posts) => n + posts.length, 0);
+
+// 按年份分组（archives 的 key 形如 YYYY-MM，且按时间降序）
+const yearGroups: { year: string; months: { month: string; posts: any[] }[] }[] = [];
+Object.entries(archives).forEach(([month, posts]) => {
+  const year = month.slice(0, 4);
+  const last = yearGroups[yearGroups.length - 1];
+  if (last && last.year === year) last.months.push({ month, posts });
+  else yearGroups.push({ year, months: [{ month, posts }] });
+});
 ---
 
-<BaseLayout title="归档" description="按时间归档的全部文章">
+<BaseLayout title="归档" description="按时间线查看全部文章">
   <div class="page-layout">
     <Sidebar />
     <section class="archive-page">
       <header class="page-header">
+        <p class="breadcrumb"><a href="/">首页</a> / 归档</p>
         <h1>归档</h1>
-        <p class="page-desc">按时间线查看所有文章</p>
+        <p class="page-desc">共 {total} 篇文章 · 按时间线翻阅每一次记录</p>
+        <a class="back-all" href="/">← 返回全部文章</a>
       </header>
 
-      {Object.keys(archives).length === 0 ? (
-        <div class="empty">暂无文章</div>
+      {total === 0 ? (
+        <div class="empty">
+          <p>暂无文章</p>
+          <p>这里还没有公开内容，新的记录正在准备中。</p>
+        </div>
       ) : (
-        <div class="archive-list">
-          {Object.entries(archives).map(([month, posts]) => (
-            <section class="archive-group">
-              <h2 class="archive-month">{month} <span class="count">({posts.length})</span></h2>
-              <ul class="month-posts">
-                {posts.map((post) => (
-                  <li>
-                    <span class="post-date">{formatDate(post.data.pubDate)}</span>
-                    <a href={`/blog/${getSlug(post)}/`} class="post-title">
-                      {post.data.title}
-                    </a>
-                  </li>
+        <div class="archive-timeline">
+          {yearGroups.map((group) => (
+            <section class="archive-year">
+              <h2 class="year-label"><span>{group.year}</span></h2>
+              <div class="year-line">
+                {group.months.map(({ month, posts }) => (
+                  <div class="month-block" id={month}>
+                    <h3 class="month-label">{month.replace(/^\d{4}-/, '')} 月 <span class="count">({posts.length})</span></h3>
+                    <ul class="month-posts">
+                      {posts.map((post) => (
+                        <li>
+                          <span class="post-date">{formatDate(post.data.pubDate)}</span>
+                          <a href={`/blog/${getSlug(post)}/`} class="post-title">
+                            {post.data.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </section>
           ))}
         </div>
@@ -41,43 +63,41 @@ const archives = await getArchives();
 </BaseLayout>
 
 <style>
-  .page-layout {
-    display: flex;
-    gap: 40px;
-    padding: 40px 0;
-    align-items: flex-start;
-  }
-  .archive-page { flex: 1; min-width: 0; }
-  .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--color-text); }
-  .page-desc { color: var(--color-text-muted); font-size: 14px; margin: 0; }
-  .archive-group { margin-bottom: 32px; }
-  .archive-month {
-    font-size: 18px;
-    color: var(--color-text);
-    border-bottom: 2px solid var(--color-signal);
-    padding-bottom: 8px;
-    margin: 0 0 12px;
-  }
-  .count { font-size: 14px; color: var(--color-text-muted); font-weight: normal; }
-  .month-posts { list-style: none; padding: 0; margin: 0; }
-  .month-posts li {
-    display: flex;
-    gap: 16px;
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--color-fog);
-  }
-  .post-date {
-    font-size: 13px;
-    color: var(--color-text-muted);
-    flex-shrink: 0;
-    width: 100px;
-  }
-  .post-title { color: var(--color-text); }
-  .post-title:hover { color: var(--color-signal); }
-  .empty { text-align: center; padding: 60px; color: var(--color-text-muted); }
+  .page-layout { display:flex; gap:40px; padding:40px 0; align-items:flex-start; }
+  .archive-page { flex:1; min-width:0; }
+  .page-header { margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--color-fog); }
+  .breadcrumb { font-size:13px; color:var(--color-text-muted); margin-bottom:10px; }
+  .page-header h1 { font-size:32px; margin:0 0 8px; color:var(--color-ink); font-family:var(--font-display); letter-spacing:-.02em; }
+  :root[data-theme="dark"] .page-header h1 { color:var(--color-text); }
+  .page-desc { color:var(--color-text-muted); font-size:14px; margin:0 0 12px; }
+  .back-all { color:var(--color-text-muted); font-size:13px; }
+  .back-all:hover { color:var(--color-signal); }
 
-  @media (max-width: 768px) {
-    .page-layout { flex-direction: column; gap: 24px; padding: 20px 0; }
+  .archive-timeline { position:relative; }
+  .archive-year { margin-bottom:36px; }
+  .year-label { display:flex; align-items:center; gap:12px; font-size:20px; font-family:var(--font-display); color:var(--color-text); margin:0 0 16px; }
+  .year-label::after { content:''; flex:1; height:1px; background:var(--color-fog); }
+  .year-label span { color:var(--color-signal); padding:2px 10px; border:1px solid rgb(228 155 82 / .35); border-radius:999px; background:var(--color-signal-soft); font-size:14px; }
+
+  .year-line { position:relative; padding-left:22px; }
+  .year-line::before { content:''; position:absolute; left:7px; top:6px; bottom:6px; width:2px; background:var(--color-fog); }
+
+  .month-block { position:relative; margin-bottom:18px; }
+  .month-block::before { content:''; position:absolute; left:-22px; top:8px; width:10px; height:10px; border-radius:50%; background:var(--color-signal); box-shadow:0 0 0 4px var(--color-signal-soft); }
+  .month-label { font-size:15px; font-weight:600; color:var(--color-text); margin:0 0 8px; }
+  .count { font-size:13px; color:var(--color-text-muted); font-weight:400; }
+
+  .month-posts { list-style:none; padding:10px 14px; margin:0; border:1px solid var(--color-fog); border-radius:12px; background:var(--color-surface); }
+  .month-posts li { display:flex; gap:16px; padding:8px 0; border-bottom:1px dashed var(--color-fog); }
+  .month-posts li:last-child { border-bottom:0; }
+  .post-date { font-size:13px; color:var(--color-text-muted); flex-shrink:0; width:92px; font-variant-numeric:tabular-nums; }
+  .post-title { color:var(--color-text); }
+  .post-title:hover { color:var(--color-signal); }
+  .empty { text-align:center; padding:60px 20px; color:var(--color-text-muted); }
+  .empty p { margin:6px 0; }
+
+  @media (max-width:768px) {
+    .page-layout { flex-direction:column; gap:24px; padding:20px 0; }
+    .post-date { width:82px; }
   }
 </style>

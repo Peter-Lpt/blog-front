@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Sidebar from '@/components/Sidebar.astro';
+import { getAllTags } from '@/lib/posts';
+
+const tags = await getAllTags();
+---
+
+<BaseLayout title="标签" description="按标签浏览全部文章">
+  <div class="page-layout">
+    <Sidebar />
+    <section class="tag-index">
+      <header class="page-header">
+        <p class="breadcrumb"><a href="/">首页</a> / 标签</p>
+        <h1>标签</h1>
+        <p class="page-desc">共 {Object.keys(tags).length} 个标签 · 点击进入对应文章</p>
+      </header>
+
+      {Object.keys(tags).length === 0 ? (
+        <div class="empty">
+          <p>暂无标签。</p>
+        </div>
+      ) : (
+        <div class="tag-grid">
+          {Object.entries(tags).map(([name, count]) => (
+            <a href={`/tag/${name}/`} class="tag-chip">
+              <span class="tag-name">#{name}</span>
+              <span class="tag-count">{count}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-layout { display:flex; gap:40px; padding:40px 0; align-items:flex-start; }
+  .tag-index { flex:1; min-width:0; }
+  .page-header { margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--color-fog); }
+  .breadcrumb { font-size:13px; color:var(--color-text-muted); margin-bottom:10px; }
+  .page-header h1 { font-size:32px; margin:0 0 8px; color:var(--color-ink); font-family:var(--font-display); letter-spacing:-.02em; }
+  :root[data-theme="dark"] .page-header h1 { color:var(--color-text); }
+  .page-desc { color:var(--color-text-muted); font-size:14px; margin:0; }
+  .tag-grid { display:flex; flex-wrap:wrap; gap:10px; }
+  .tag-chip {
+    display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
+    border:1px solid var(--color-fog); border-radius:999px;
+    color:var(--color-text); background:var(--color-surface); text-decoration:none;
+    transition:border-color var(--motion-fast),color var(--motion-fast),background var(--motion-fast),transform var(--motion-base);
+  }
+  .tag-chip:hover { border-color:var(--color-signal); color:var(--color-signal); background:var(--color-signal-soft); transform:translateY(-2px); }
+  .tag-name { font:600 var(--text-sm) var(--font-ui); }
+  .tag-count { color:var(--color-text-faint); font:var(--text-xs) var(--font-ui); }
+  .empty { text-align:center; padding:60px 20px; color:var(--color-text-muted); }
+
+  @media (max-width:768px) {
+    .page-layout { flex-direction:column; gap:24px; padding:20px 0; }
+  }
+</style>

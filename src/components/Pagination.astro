@@ -17,8 +17,25 @@ function pageHref(page: number): string {
 const showPrev = currentPage > 1;
 const showNext = currentPage < totalPages;
 
-// 简单展示数字 1..totalPages（文章量不大时够用）
-const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+// 页码折叠：首尾 + 当前 ±1，中间用省略号
+function pageItems(current: number, total: number): Array<number | '…'> {
+  const items: Array<number | '…'> = [];
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) items.push(i);
+    return items;
+  }
+  const set = new Set<number>([1, total, current - 1, current, current + 1]);
+  const sorted = [...set].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  let prev = 0;
+  sorted.forEach((n) => {
+    if (prev && n - prev > 1) items.push('…');
+    items.push(n);
+    prev = n;
+  });
+  return items;
+}
+
+const pages = pageItems(currentPage, totalPages);
 ---
 
 {totalPages > 1 && (
@@ -26,7 +43,9 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     {showPrev && <a href={pageHref(currentPage - 1)} rel="prev">← 上一页</a>}
     <div class="page-numbers">
       {pages.map((p) => (
-        <a href={pageHref(p)} class:list={['page-num', { active: p === currentPage }]}>{p}</a>
+        p === '…'
+          ? <span class="page-ellipsis" aria-hidden="true">…</span>
+          : <a href={pageHref(p)} class:list={['page-num', { active: p === currentPage }]}>{p}</a>
       ))}
     </div>
     {showNext && <a href={pageHref(currentPage + 1)} rel="next">下一页 →</a>}
@@ -59,6 +78,11 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
   .page-num {
     min-width: 32px;
     text-align: center;
+  }
+  .page-ellipsis {
+    min-width: 24px;
+    text-align: center;
+    color: var(--color-text-faint);
   }
   .page-num.active {
     background: var(--color-signal);
