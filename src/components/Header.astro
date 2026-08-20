@@ -37,7 +37,12 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
       }
     </nav>
     <div class="header-actions">
-      <SearchDialog client:idle />
+      <button class="search-trigger" id="search-open-btn" type="button" aria-label="搜索（/ 或 Ctrl+K）" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
 
       <!-- 用户区域：纯 Astro 渲染，inline script 控制显隐 -->
       <div class="auth-slot" aria-live="polite">
@@ -73,10 +78,34 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
 
       </div>
 
-      <ThemeToggle client:load />
+      <ThemeToggle client:idle />
     </div>
+    <!-- 移动端：汉堡按钮（<=680px 显示，唤起抽屉导航） -->
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="mobile-drawer">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+
+<!-- 移动端抽屉导航（覆盖层 + 面板） -->
+<div class="drawer-overlay" id="drawer-overlay" hidden></div>
+<nav class="mobile-drawer" id="mobile-drawer" aria-label="移动端导航" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="drawer-title">导航</span>
+    <button class="drawer-close" id="drawer-close" type="button" aria-label="关闭菜单">✕</button>
+  </div>
+  <ul class="drawer-list">
+    {navItems.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          class="drawer-link nav-item"
+          class:list={['drawer-link', 'nav-item', { 'nav-item-active': item.href === '/' ? (current === '/' || current.startsWith('/blog/') || current.startsWith('/category/') || current.startsWith('/tag/') || current.startsWith('/archives/')) : (current === item.href.replace(/\/$/, '') || current.startsWith(item.href)) }]}
+        >{item.label}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
 
 <script is:inline>
   (() => {
@@ -116,12 +145,65 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
       loginButton.classList.remove('hidden');
     }
   })();
+
+  // 移动端抽屉导航
+  (() => {
+    const toggle = document.getElementById('menu-toggle');
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('drawer-overlay');
+    const closeBtn = document.getElementById('drawer-close');
+    if (!toggle || !drawer || !overlay) return;
+
+    function open() {
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      overlay.hidden = false;
+      document.body.classList.add('drawer-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', '关闭菜单');
+      closeBtn?.focus();
+    }
+    function close() {
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      overlay.hidden = true;
+      document.body.classList.remove('drawer-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', '打开菜单');
+      toggle.focus();
+    }
+    function toggleMenu() {
+      drawer.classList.contains('is-open') ? close() : open();
+    }
+    toggle.addEventListener('click', toggleMenu);
+    closeBtn?.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.classList.contains('is-open')) close();
+    });
+    // 点击抽屉内任意导航后关闭
+    drawer.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', close);
+    });
+  })();
+
+  // 搜索触发按钮 → SearchDialog 岛（经 open-search 事件唤起 Teleport 弹窗）
+  (() => {
+    const btn = document.getElementById('search-open-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      document.dispatchEvent(new CustomEvent('open-search'));
+    });
+  })();
 </script>
 
 <!-- LoginDialog 需要 Vue 岛（Teleport），页面加载时注册事件监听器 -->
 <LoginDialog client:load />
 <!-- 头像选择面板（预设头像 + 自定义上传） -->
-<AvatarPicker client:load />
+<AvatarPicker client:idle />
+<!-- 全局搜索（Teleport 弹窗；触发按钮在 header-actions，经 open-search 事件唤起） -->
+<SearchDialog client:idle />
 
 <style>
   .site-header { position:sticky; top:0; z-index:100; background:rgb(243 240 232 / .82); backdrop-filter:blur(var(--glass-blur)); border-bottom:1px solid rgb(216 222 227 / .82); transition:background-color var(--motion-base) var(--ease-standard),border-color var(--motion-base) var(--ease-standard); } :root[data-theme="dark"] .site-header { background:rgb(20 28 34 / .82); border-color:rgb(52 67 77 / .82); }
@@ -175,7 +257,34 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
   .hidden-input { display:none; }
   .login-trigger { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; padding:0; flex:0 0 34px; box-sizing:border-box; border:1px solid transparent; border-radius:50%; background:transparent; color:var(--color-text-muted); cursor:pointer; line-height:1; transition:border-color var(--motion-fast) var(--ease-standard),background-color var(--motion-base) var(--ease-standard),color var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-emphasis),transform var(--motion-base) var(--ease-emphasis); } .login-trigger:hover { border-color:var(--color-fog); background:var(--color-surface); color:var(--color-signal); box-shadow:0 8px 18px rgb(228 155 82 / .14); transform:translateY(-1px) scale(1.03); } .login-trigger:active { transform:translateY(0) scale(.96); } .login-trigger svg { width:16px; height:16px; }
   .hidden { display:none !important; }
-  @media (max-width:680px) { .header-inner { min-height:62px; gap:12px; } .nav { display:none; } .logo { margin-right:auto; } .header-actions { padding:3px; border-radius:14px; } .dropdown { right:-40px; } }
+
+  /* ---- 搜索触发按钮（触发按钮在 actions，弹窗由 SearchDialog 岛经 Teleport 渲染） ---- */
+  .search-trigger { display:flex; align-items:center; justify-content:center; width:34px; height:34px; padding:0; flex:0 0 34px; box-sizing:border-box; border:1px solid transparent; border-radius:10px; background:transparent; color:var(--color-text-muted); cursor:pointer; line-height:1; transition:border-color var(--motion-fast) var(--ease-standard),background-color var(--motion-base) var(--ease-standard),color var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-emphasis),transform var(--motion-base) var(--ease-emphasis); }
+  .search-trigger:hover { border-color:var(--color-fog); background:var(--color-surface); color:var(--color-signal); box-shadow:0 8px 18px rgb(228 155 82 / .14); transform:translateY(-1px) scale(1.03); }
+  .search-trigger:active { transform:translateY(0) scale(.96); }
+  .search-trigger svg { width:17px; height:17px; }
+
+  /* ---- 移动端抽屉导航 ---- */
+  .menu-toggle { display:none; flex-direction:column; justify-content:center; align-items:center; gap:4px; width:34px; height:34px; padding:0; flex:0 0 34px; border:1px solid transparent; border-radius:10px; background:transparent; cursor:pointer; }
+  .menu-toggle span { display:block; width:16px; height:1.5px; border-radius:2px; background:var(--color-text); transition:transform var(--motion-base) var(--ease-emphasis),opacity var(--motion-base); }
+  .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform:translateY(5.5px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity:0; }
+  .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform:translateY(-5.5px) rotate(-45deg); }
+
+  .drawer-overlay { position:fixed; inset:0; z-index:250; background:rgb(16 24 32 / .4); backdrop-filter:blur(2px); opacity:0; transition:opacity var(--motion-base) var(--ease-standard); }
+  .mobile-drawer { position:fixed; top:0; right:0; bottom:0; z-index:260; width:min(320px,86vw); transform:translateX(100%); transition:transform var(--motion-base) var(--ease-emphasis); background:var(--color-surface); box-shadow:var(--shadow-float); display:flex; flex-direction:column; }
+  .mobile-drawer.is-open { transform:none; }
+  .drawer-head { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid var(--color-fog); }
+  .drawer-title { font:700 .9rem var(--font-ui); letter-spacing:.06em; color:var(--color-text); }
+  .drawer-close { width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:1px solid var(--color-fog); border-radius:8px; background:transparent; color:var(--color-text-muted); cursor:pointer; font-size:.9rem; }
+  .drawer-close:hover { color:var(--color-signal); border-color:var(--color-signal); }
+  .drawer-list { list-style:none; margin:0; padding:10px; display:flex; flex-direction:column; gap:2px; }
+  .drawer-list li { margin:0; }
+  .drawer-link { display:block; padding:13px 14px; border-radius:10px; color:var(--color-text); font:600 1rem var(--font-ui); text-decoration:none; transition:background var(--motion-fast),color var(--motion-fast); }
+  .drawer-link:hover { background:var(--color-signal-soft); color:var(--color-ink); }
+  .drawer-link.nav-item-active { background:var(--color-signal); color:#fff; }
+
+  @media (max-width:680px) { .header-inner { min-height:62px; gap:12px; } .nav { display:none; } .logo { margin-right:auto; } .header-actions { padding:3px; border-radius:14px; } .dropdown { right:-40px; } .menu-toggle { display:flex; } }
 </style>
 
 <script>
@@ -231,7 +340,7 @@ import { applyOAuthResult, clearSession, getToken, getUser } from '@/lib/auth';
       loginBtn.classList.remove('hidden');
     }
 
-    // 点击头像展开下拉
+    // 点击头像展开下拉；点击外部/Escape 关闭
     if (userMenu && userDropdown) {
       userMenu.onclick = function (e) {
         e.stopPropagation();
@@ -244,6 +353,9 @@ import { applyOAuthResult, clearSession, getToken, getUser } from '@/lib/auth';
       };
       document.addEventListener('click', function () {
         userDropdown?.classList.add('hidden');
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') userDropdown?.classList.add('hidden');
       });
     }
 
@@ -274,7 +386,7 @@ import { applyOAuthResult, clearSession, getToken, getUser } from '@/lib/auth';
   function updateNavActive() {
     var pathname = window.location.pathname;
     var current = pathname.replace(/\/$/, '') || '/';
-    var navLinks = document.querySelectorAll('.nav-link.nav-item');
+    var navLinks = document.querySelectorAll('.nav-link.nav-item, .drawer-link.nav-item');
     navLinks.forEach(function (link) {
       var href = link.getAttribute('href') || '';
       var normalizedHref = href.replace(/\/$/, '') || '/';
