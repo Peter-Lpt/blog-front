@@ -14,6 +14,7 @@
         <label class="ld-field">
           <span class="ld-label">用户名</span>
           <input
+            ref="firstInput"
             v-model="form.username"
             type="text"
             class="ld-input"
@@ -77,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { SITE } from '@/lib/config';
 import { login, register } from '@/lib/auth';
 
@@ -87,14 +88,29 @@ onMounted(() => { isClient.value = true; });
 
 // 自管理可见性，通过 document.dispatchEvent(new CustomEvent('open-login')) 触发
 const visible = ref(false);
-function open() { visible.value = true; }
+const firstInput = ref<HTMLInputElement | null>(null);
+function open() {
+  visible.value = true;
+  nextTick(() => firstInput.value?.focus());
+}
 function close() { visible.value = false; }
+
+function onGlobalKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && visible.value) close();
+}
+
+watch(visible, (v) => {
+  document.body.classList.toggle('modal-open', v);
+});
 
 onMounted(() => {
   document.addEventListener('open-login', open);
+  document.addEventListener('keydown', onGlobalKeydown);
 });
 onUnmounted(() => {
   document.removeEventListener('open-login', open);
+  document.removeEventListener('keydown', onGlobalKeydown);
+  document.body.classList.remove('modal-open');
 });
 
 const mode = ref<'login' | 'register'>('login');

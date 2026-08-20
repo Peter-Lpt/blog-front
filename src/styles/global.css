@@ -39,6 +39,8 @@ body::before, body::after { content:""; position:fixed; inset:0; pointer-events:
 body::before { opacity:.55; background-image:linear-gradient(rgb(118 169 184 / .08) 1px, transparent 1px),linear-gradient(90deg,rgb(118 169 184 / .08) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,#000,transparent 72%); }
 body::after { opacity:.3; background:radial-gradient(circle at 85% 8%,rgb(228 155 82 / .16),transparent 22rem),radial-gradient(circle at 12% 45%,rgb(118 169 184 / .12),transparent 20rem); }
 body > main { flex:1; } a { color:var(--color-signal); text-decoration:none; transition:color var(--motion-fast) var(--ease-standard); } a:hover { color:var(--color-text); }
+/* 弹窗/抽屉打开时锁定背景滚动（由 JS 在 body 上切换类） */
+html body.drawer-open, html body.modal-open { overflow:hidden; }
 button,input,textarea { font:inherit; } img { max-width:100%; height:auto; } code,pre { font-family:var(--font-mono); }
 :focus-visible { outline:2px solid var(--color-signal); outline-offset:3px; }
 .container { max-width:var(--shell-width); margin:0 auto; padding:0 32px; width:100%; }
