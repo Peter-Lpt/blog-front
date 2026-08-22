@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate } from '@/lib/posts';
+import { slugOf } from '@/lib/ai';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('prompts', ({ data }) => !data.draft);
+  return docs.map((doc) => ({
+    params: { slug: doc.id.replace(/\.(md|mdx)$/i, '') },
+    props: { doc },
+  }));
+}
+
+interface Props {
+  doc: any;
+}
+
+const { doc } = Astro.props;
+const { Content } = await doc.render();
+const slug = doc.id.replace(/\.(md|mdx)$/i, '');
+
+// 引用了这份提示词的测试记录
+const tests = (await getCollection('lab', ({ data }) => !data.draft))
+  .filter((t) => t.data.prompt === slug)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title={`提示词：${doc.data.title}`} description={`提示词库 · ${doc.data.title}`}>
+  <article class="prompt-doc">
+    <a href="/prompts/" class="text-link back"><span>返回提示词测试</span> <span class="arr" aria-hidden="true">←</span></a>
+
+    <header class="doc-header" data-reveal>
+      <p class="crumb-line">📄 提示词库</p>
+      <h1 class="page-title">{doc.data.title}</h1>
+      <p class="meta-line">{formatDate(doc.data.date)}</p>
+      {doc.data.tags.length > 0 && (
+        <div class="tag-row">{doc.data.tags.map((t: string) => <span class="chip">#{t}</span>)}</div>
+      )}
+    </header>
+
+    <div class="markdown-body doc-body" data-reveal style="--reveal-delay:80ms">
+      <Content />
+    </div>
+
+    {tests.length > 0 && (
+      <section class="used-in" data-reveal>
+        <h2 class="used-title">使用这份提示词的测试（{tests.length}）</h2>
+        <div class="used-list">
+          {tests.map((t) => (
+            <a class="used-item" href={`/prompts/${slugOf(t.id)}/`}>
+              <span class="used-model">{t.data.model}</span>
+              <span class="used-name">{t.data.title}</span>
+              <span class="used-date">{formatDate(t.data.date)}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<script>
+  // 提示词以引用块（blockquote）呈现：随正文排版自动换行；
+  // 每个引用块右上角挂一键复制，方便整段取用。
+  document.querySelectorAll('.doc-body blockquote').forEach((bq) => {
+    const btn = document.createElement('button');
+    btn.className = 'bq-copy-btn';
+    btn.type = 'button';
+    btn.textContent = '复制';
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText((bq.textContent || '').trim()).then(() => {
+        btn.textContent = '已复制 ✓';
+        setTimeout(() => { btn.textContent = '复制'; }, 1600);
+      });
+    });
+    bq.style.position = 'relative';
+    bq.appendChild(btn);
+  });
+</script>
+
+<style>
+  .prompt-doc { max-width: 760px; margin: 0 auto; padding: clamp(36px,5vw,60px) 0 72px; }
+  .back { display: inline-flex; margin-bottom: 22px; }
+  .doc-header { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--color-fog); }
+  .crumb-line { font-size: 12px; color: var(--color-signal); margin: 0 0 8px; letter-spacing: .04em; }
+  .meta-line { font-size: 13px; color: var(--color-text-faint); }
+  .tag-row { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag-row .chip { cursor: default; }
+
+  .doc-body { line-height: 1.8; color: var(--color-text); }
+  /* 提示词引用块：与正文同排版，自动换行，不再用代码框 */
+  .doc-body :global(blockquote) { font-size: 1rem; }
+  .doc-body :global(blockquote p) { margin: 0; white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
+  .doc-body :global(.bq-copy-btn) {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid rgba(128,128,128,.3); background: rgba(255,255,255,.6);
+    color: var(--color-text-muted, #666); cursor: pointer;
+    transition: color .15s, border-color .15s;
+  }
+  .doc-body :global(.bq-copy-btn:hover) { color: var(--color-signal); border-color: var(--color-signal); }
+
+  .used-in { margin-top: 44px; }
+  .used-title { font-size: 16px; margin: 0 0 12px; }
+  .used-list { display: flex; flex-direction: column; gap: 8px; }
+  .used-item {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 16px; background: var(--color-surface); border: var(--card-border);
+    border-radius: var(--radius-lg); color: inherit; text-decoration: none;
+    transition: border-color var(--motion-fast), transform var(--motion-fast) var(--ease-standard);
+  }
+  .used-item:hover { border-color: var(--color-signal); transform: translateX(3px); }
+  .used-model {
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    background: var(--color-signal); color: #fff; font-weight: 600; white-space: nowrap;
+  }
+  .used-name { font-weight: 600; font-size: 14px; }
+  .used-date { margin-left: auto; font-size: 12px; color: var(--color-text-faint); }
+</style>

@@ -1,0 +1,118 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate } from '@/lib/posts';
+import { slugOf } from '@/lib/ai';
+import HtmlArtifact from '@/components/islands/HtmlArtifact.vue';
+
+export async function getStaticPaths() {
+  const tests = await getCollection('lab', ({ data }) => !data.draft);
+  return tests.map((t) => ({
+    params: { slug: t.id.replace(/\.(md|mdx)$/i, '') },
+    props: { test: t },
+  }));
+}
+
+interface Props {
+  test: any;
+}
+
+const { test } = Astro.props;
+const { Content } = await test.render();
+const d = test.data;
+
+// 提示词库条目标题（界面显示标题而非内部 slug）
+const promptDocs = await getCollection('prompts', ({ data }) => !data.draft);
+const promptTitle = new Map(promptDocs.map((p) => [p.id.replace(/\.(md|mdx)$/i, ''), p.data.title]));
+const promptLabel = promptTitle.get(d.prompt) ?? d.prompt;
+
+// 同一提示词、不同模型/批次的兄弟记录（方便横向对比）
+const allTests = await getCollection('lab', ({ data }) => !data.draft);
+const siblings = allTests
+  .filter((t) => t.data.prompt === d.prompt && slugOf(t.id) !== slugOf(test.id))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title={`${d.title} - 提示词测试`} description={`模型 ${d.model} 的提示词测试记录`}>
+  <article class="test-detail">
+    <a href="/prompts/" class="text-link back"><span>返回提示词测试</span> <span class="arr" aria-hidden="true">←</span></a>
+
+    <header class="detail-header" data-reveal>
+      <div class="crumb-row">
+        {d.agent && <a href="/prompts/" class="chip agent-chip">{d.agent}</a>}
+        <a href="/prompts/" class="chip model-chip">{d.model}</a>
+        <a href={`/prompts/library/${d.prompt}/`} class="chip prompt-chip">📄 {promptLabel}</a>
+        <span class="date-line">{formatDate(d.date)}</span>
+      </div>
+      <h1 class="page-title">{d.title}</h1>
+      {d.tags.length > 0 && (
+        <div class="tag-row">{d.tags.map((t: string) => <span class="chip">#{t}</span>)}</div>
+      )}
+    </header>
+
+    {d.artifact && (
+      <div data-reveal>
+        <HtmlArtifact client:visible src={d.artifact} title={d.title} />
+      </div>
+    )}
+
+    <div class="markdown-body detail-body" data-reveal style="--reveal-delay:80ms">
+      <Content />
+    </div>
+
+    {siblings.length > 0 && (
+      <section class="siblings" data-reveal>
+        <h2 class="siblings-title">同提示词的其他测试（{siblings.length}）</h2>
+        <div class="siblings-list">
+          {siblings.map((s) => (
+            <a class="sibling-item" href={`/prompts/${slugOf(s.id)}/`}>
+              <span class="sibling-model">{s.data.model}</span>
+              <span class="sibling-name">{s.data.title}</span>
+              <span class="sibling-date">{formatDate(s.data.date)}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .test-detail { max-width: 760px; margin: 0 auto; padding: clamp(36px,5vw,60px) 0 72px; }
+  .back { display: inline-flex; margin-bottom: 22px; }
+  .detail-header { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--color-fog); }
+  .crumb-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .model-chip {
+    text-decoration: none; background: var(--color-signal); color: #fff; font-weight: 600;
+  }
+  .agent-chip {
+    text-decoration: none; background: #6b7280; color: #fff; font-weight: 600;
+  }
+  .prompt-chip {
+    text-decoration: none; color: var(--color-signal);
+    transition: border-color var(--motion-fast);
+  }
+  .prompt-chip:hover { border-color: var(--color-signal); }
+  .date-line { font-size: 13px; color: var(--color-text-faint); }
+  .tag-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag-row .chip { cursor: default; }
+
+  .detail-body { line-height: 1.8; color: var(--color-text); }
+
+  .siblings { margin-top: 44px; }
+  .siblings-title { font-size: 16px; margin: 0 0 12px; }
+  .siblings-list { display: flex; flex-direction: column; gap: 8px; }
+  .sibling-item {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 16px; background: var(--color-surface); border: var(--card-border);
+    border-radius: var(--radius-lg); color: inherit; text-decoration: none;
+    transition: border-color var(--motion-fast), transform var(--motion-fast) var(--ease-standard);
+  }
+  .sibling-item:hover { border-color: var(--color-signal); transform: translateX(3px); }
+  .sibling-model {
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    background: var(--color-signal); color: #fff; font-weight: 600; white-space: nowrap;
+  }
+  .sibling-name { font-weight: 600; font-size: 14px; }
+  .sibling-date { margin-left: auto; font-size: 12px; color: var(--color-text-faint); }
+</style>

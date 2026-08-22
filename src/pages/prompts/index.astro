@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate } from '@/lib/posts';
+import { slugOf } from '@/lib/ai';
+
+const tests = (await getCollection('lab', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const promptDocs = await getCollection('prompts', ({ data }) => !data.draft);
+const promptTitle = new Map(promptDocs.map((p) => [slugOf(p.id), p.data.title]));
+
+// 三维度交叉：agent × 模型 × 提示词（自由文本，自动聚合）
+const agents = [...new Set(tests.map((t) => t.data.agent).filter(Boolean))];
+const models = [...new Set(tests.map((t) => t.data.model))];
+const promptSlugs = [...new Set(tests.map((t) => t.data.prompt))];
+---
+
+<BaseLayout title="提示词测试" description="我测试过的模型与提示词组合展示区">
+  <section class="lab-page">
+    <header class="page-head" data-reveal>
+      <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>提示词测试</p>
+      <h1 class="page-title">提示词测试<span class="accent">.</span></h1>
+      <p class="page-desc">
+        模型 × 提示词的测试记录与产出物展示，共 {tests.length} 条。
+        两行筛选可叠加（交叉），再点一次取消。
+      </p>
+    </header>
+
+    {tests.length === 0 ? (
+      <div class="empty-state" data-reveal><p>暂无测试记录</p></div>
+    ) : (
+      <>
+        <div class="facet" data-reveal style="--reveal-delay:80ms">
+          {agents.length > 0 && (
+            <div class="facet-row">
+              <span class="facet-label">Agent</span>
+              <button class="chip f-btn is-active" type="button" data-facet="agent" data-val="" aria-pressed="true">全部</button>
+              {agents.map((a) => (
+                <button class="chip f-btn" type="button" data-facet="agent" data-val={a} aria-pressed="false">{a}</button>
+              ))}
+            </div>
+          )}
+          <div class="facet-row">
+            <span class="facet-label">模型</span>
+            <button class="chip f-btn is-active" type="button" data-facet="model" data-val="" aria-pressed="true">全部</button>
+            {models.map((m) => (
+              <button class="chip f-btn" type="button" data-facet="model" data-val={m} aria-pressed="false">{m}</button>
+            ))}
+          </div>
+          <div class="facet-row">
+            <span class="facet-label">提示词</span>
+            <button class="chip f-btn is-active" type="button" data-facet="prompt" data-val="" aria-pressed="true">全部</button>
+            {promptSlugs.map((p) => (
+              <button class="chip f-btn" type="button" data-facet="prompt" data-val={p} aria-pressed="false">{promptTitle.get(p) ?? p}</button>
+            ))}
+          </div>
+        </div>
+
+        <div class="lab-list">
+          {tests.map((t) => (
+            <article
+              class="test-card"
+              data-agent={t.data.agent}
+              data-model={t.data.model}
+              data-prompt={t.data.prompt}
+              data-reveal
+            >
+              <a href={`/prompts/${slugOf(t.id)}/`} class="test-link">
+                <div class="test-head">
+                  <h3 class="test-title">{t.data.title}</h3>
+                  {t.data.artifact && <span class="meta-tag artifact-tag">📦 有产出物</span>}
+                </div>
+                <div class="test-meta">
+                  {t.data.agent && <span class="meta-tag agent-tag">{t.data.agent}</span>}
+                  <span class="meta-tag model-tag">{t.data.model}</span>
+                  <span class="meta-tag prompt-tag">📄 {promptTitle.get(t.data.prompt) ?? t.data.prompt}</span>
+                  {t.data.tags.map((tg: string) => <span class="mini-tag">#{tg}</span>)}
+                </div>
+                <p class="test-date">{formatDate(t.data.date)}</p>
+              </a>
+            </article>
+          ))}
+        </div>
+        <p id="empty-hint" class="empty-hint" hidden>该组合下暂无测试记录。</p>
+      </>
+    )}
+  </section>
+</BaseLayout>
+
+<script>
+  // agent × 模型 × 提示词 交叉筛选：每维度单选，多维度取交集
+  const state: Record<string, string> = { agent: '', model: '', prompt: '' };
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.f-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.test-card');
+  const emptyHint = document.getElementById('empty-hint');
+
+  function apply() {
+    let visible = 0;
+    cards.forEach((card) => {
+      const okA = !state.agent || card.getAttribute('data-agent') === state.agent;
+      const okM = !state.model || card.getAttribute('data-model') === state.model;
+      const okP = !state.prompt || card.getAttribute('data-prompt') === state.prompt;
+      const show = okA && okM && okP;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (emptyHint) emptyHint.hidden = visible > 0;
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const facet = btn.getAttribute('data-facet')!;
+      const val = btn.getAttribute('data-val') ?? '';
+      // 同维度互斥；点已选中项 = 取消
+      if (state[facet] === val) {
+        state[facet] = '';
+      } else {
+        state[facet] = val;
+      }
+      buttons.forEach((b) => {
+        if (b.getAttribute('data-facet') !== facet) return;
+        const active = (b.getAttribute('data-val') ?? '') === state[facet];
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      apply();
+    });
+  });
+</script>
+
+<style>
+  .lab-page { padding: clamp(40px,6vw,76px) 0 72px; }
+  .facet { display: flex; flex-direction: column; gap: 8px; margin-bottom: 26px; }
+  .facet-row { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+  .facet-label { font-size: 12px; color: var(--color-text-faint); min-width: 44px; }
+  .f-btn { padding: 6px 13px; cursor: pointer; font-size: 12px; }
+  .is-active { border-color: var(--color-signal); color: var(--color-signal); }
+
+  .lab-list { display: flex; flex-direction: column; gap: 14px; }
+  .test-card {
+    background: var(--color-surface); border: var(--card-border); border-radius: var(--radius-lg);
+    transition: box-shadow var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard);
+  }
+  .test-card:hover { box-shadow: var(--shadow-soft); border-color: var(--color-signal); transform: translateY(-2px); }
+  .test-link { display: block; padding: 18px 20px; color: inherit; text-decoration: none; }
+  .test-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .test-title { font-size: 16px; margin: 0; flex: 1; min-width: 200px; }
+  .test-card:hover .test-title { color: var(--color-signal); }
+  .test-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+  .meta-tag { font-size: 11px; color: var(--color-text-muted); background: var(--glass-bg); padding: 2px 9px; border-radius: 8px; }
+  .agent-tag { color: #fff; background: #6b7280; font-weight: 600; }
+  .model-tag { color: #fff; background: var(--color-signal); font-weight: 600; }
+  .prompt-tag { color: var(--color-signal); }
+  .artifact-tag { color: var(--color-warning, #e0a83c); }
+  .mini-tag { font-size: 11px; color: var(--color-text-faint); }
+  .test-date { font-size: 12px; color: var(--color-text-faint); margin: 0; }
+  .empty-hint { color: var(--color-text-faint); text-align: center; padding: 30px 0; }
+</style>

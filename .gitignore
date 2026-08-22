@@ -64,7 +64,11 @@ components.d.ts
 # 内容同步生成目录（由 scripts/sync-content.mjs 生成，事实来源是独立内容 Git 仓库）
 src/content/blog/
 src/content/tools/
+src/content/ai/
+src/content/lab/
+src/content/prompts/
 public/images/
+public/artifacts/
 public/admin/
 
 # 内容仓库配置（不提交本地路径）

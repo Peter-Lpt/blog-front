@@ -8,6 +8,8 @@ import AvatarPicker from '@/components/islands/AvatarPicker.vue';
 const navItems = [
   { href: '/', label: '所有文章' },
   { href: '/tools/', label: '工具箱' },
+  { href: '/ai/', label: 'AI 记录' },
+  { href: '/prompts/', label: '提示词测试' },
   { href: '/friend-links/', label: '友情链接' },
   { href: '/about/', label: '关于' },
 ];
@@ -57,6 +59,10 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
               <a id="auth-admin-link" href={adminUrl} class="dropdown-item admin-link hidden" role="menuitem">
                 <span class="dropdown-icon">⚙</span>
                 <span>进入后台</span>
+              </a>
+              <a id="auth-notes-link" href="/notes/" class="dropdown-item admin-link hidden" role="menuitem">
+                <span class="dropdown-icon">⚡</span>
+                <span>随笔速记</span>
               </a>
               <button class="dropdown-item avatar-pick-item" role="menuitem" id="auth-avatar-pick-btn">
                 <span class="dropdown-icon">▣</span>
@@ -354,9 +360,13 @@ import { applyOAuthResult, clearSession, getToken, getUser } from '@/lib/auth';
       if (dropdownName && user) dropdownName.textContent = user.nickname || user.username || '用户';
       userArea.classList.remove('hidden');
       loginBtn.classList.add('hidden');
-      // 管理员显示后台入口
+      // 管理员显示后台入口与速记盒入口
+      var notesLink = document.getElementById('auth-notes-link');
       if (user && user.role === 'admin' && adminLink) {
         adminLink.classList.remove('hidden');
+      }
+      if (user && user.role === 'admin' && notesLink) {
+        notesLink.classList.remove('hidden');
       }
     } else {
       userArea.classList.add('hidden');

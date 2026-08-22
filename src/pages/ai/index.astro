@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { aiCategoryLabel, sortCategories, slugOf, officialList, hasBody } from '@/lib/ai';
+
+const entries = (await getCollection('ai', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const categories = sortCategories([...new Set(entries.map((e) => e.data.category))]);
+---
+
+<BaseLayout title="AI 记录" description="我使用 AI 工具的记录：Agent、MCP、Skill、插件等条目">
+  <section class="ai-page">
+    <header class="page-head" data-reveal>
+      <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>AI 记录</p>
+      <h1 class="page-title">AI 记录<span class="accent">.</span></h1>
+      <p class="page-desc">
+        我使用的 AI 工具清单与使用记录。提示词测试在
+        <a href="/prompts/" class="text-link">提示词测试专栏</a>。
+      </p>
+    </header>
+
+    <div class="cat-filter" id="filter" role="group" aria-label="按分类筛选" data-reveal style="--reveal-delay:80ms">
+      <button class="chip is-active cat-btn" type="button" data-cat="all" aria-pressed="true">全部 <span class="chip-count">{entries.length}</span></button>
+      {categories.map((c) => (
+        <button class="chip cat-btn" type="button" data-cat={c} aria-pressed="false">
+          {aiCategoryLabel(c)} <span class="chip-count">{entries.filter((e) => e.data.category === c).length}</span>
+        </button>
+      ))}
+    </div>
+
+    {categories.length === 0 && <div class="empty-state" data-reveal><p>暂无 AI 记录</p></div>}
+
+    {categories.map((c) => {
+      const catEntries = entries.filter((e) => e.data.category === c);
+      if (catEntries.length === 0) return null;
+      return (
+        <section class="cat-section" data-cat={c} data-reveal>
+          <h2 class="cat-heading">{aiCategoryLabel(c)}</h2>
+          <div class="table-wrap">
+            <table class="entry-table">
+              <thead>
+                <tr><th>名称</th><th>官网</th><th>简介</th></tr>
+              </thead>
+              <tbody>
+                {catEntries.map((e) => {
+                  const clickable = hasBody(e);
+                  return (
+                    <tr>
+                      <td>
+                        {clickable
+                          ? <a href={`/ai/doc/${slugOf(e.id)}/`} class="text-link entry-name">{e.data.title}</a>
+                          : <span class="entry-name">{e.data.title}</span>}
+                      </td>
+                      <td>
+                        {officialList(e.data.official).map((u) => (
+                          <a href={u} target="_blank" rel="noopener noreferrer" class="official-link" aria-label="官网链接">↗</a>
+                        ))}
+                        {officialList(e.data.official).length === 0 && <span class="dim">—</span>}
+                      </td>
+                      <td class="brief-cell">{e.data.brief ?? ''}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      );
+    })}
+  </section>
+</BaseLayout>
+
+<script>
+  // 分类筛选：chips 切换，隐藏不匹配的分节
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
+  const sections = document.querySelectorAll<HTMLElement>('.cat-section');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cat = btn.getAttribute('data-cat');
+      buttons.forEach((b) => {
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      sections.forEach((el) => {
+        el.style.display = cat === 'all' || el.getAttribute('data-cat') === cat ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .ai-page { padding: clamp(40px,6vw,76px) 0 72px; }
+  .page-desc a { color: var(--color-signal); }
+  .cat-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; }
+  .cat-btn { padding: 7px 14px; }
+  .chip-count { margin-left: 4px; opacity: .65; }
+
+  .cat-section { margin-bottom: 38px; }
+  .cat-heading { font-size: 18px; margin: 0 0 12px; }
+  .table-wrap { overflow-x: auto; border: var(--card-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+  .entry-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .entry-table th, .entry-table td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--color-fog); }
+  .entry-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--color-text-faint); }
+  .entry-table tbody tr:last-child td { border-bottom: none; }
+  .entry-table tbody tr:hover { background: var(--glass-bg); }
+  .entry-name { font-weight: 600; }
+  tr:hover .entry-name { color: var(--color-signal); }
+  .brief-cell { color: var(--color-text-muted); font-size: 13px; min-width: 180px; }
+  .official-link {
+    display: inline-block; padding: 2px 9px; margin-right: 4px;
+    border: var(--card-border); border-radius: 999px; text-decoration: none;
+    color: var(--color-text-muted); font-size: 12px;
+    transition: color var(--motion-fast), border-color var(--motion-fast);
+  }
+  .official-link:hover { color: var(--color-signal); border-color: var(--color-signal); }
+  .dim { color: var(--color-text-faint); }
+</style>

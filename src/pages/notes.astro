@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import QuickNotes from '@/components/islands/QuickNotes.vue';
+---
+
+<BaseLayout title="随笔速记" description="私有速记工作台（仅管理员）">
+  <section class="notes-page">
+    <header class="page-head" data-reveal>
+      <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>随笔速记</p>
+      <h1 class="page-title">随笔速记<span class="accent">.</span></h1>
+      <p class="page-desc">想法从 0 到 1 的草稿纸：随手记、快速处置、转研究主题。私有数据，不对外发布。</p>
+    </header>
+    <div data-reveal style="--reveal-delay:80ms">
+      <QuickNotes client:load />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notes-page { padding: clamp(40px,6vw,76px) 0 72px; }
+</style>

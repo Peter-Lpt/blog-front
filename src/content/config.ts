@@ -42,4 +42,55 @@ export const collections = {
       draft: z.boolean().default(false),
     }),
   },
+  /**
+   * AI 记录（板块设计 v3）：扁平目录 blog-content/ai/*.md，slug 即文件名。
+   * category 自由字符串，chips 与分节自动生成；
+   * 正文为空的条目不生成详情页、列表中不可点击（简介即全部信息）。
+   */
+  ai: {
+    type: 'content',
+    schema: z.object({
+      title: z.string(),
+      category: z.string(),
+      // 官网链接（单个或多个）
+      official: z.union([z.string().url(), z.array(z.string().url())]).optional(),
+      brief: z.string().optional(),
+      // 引用的博客文章 slug / 相关记录 slug
+      articles: z.array(z.string()).default([]),
+      related: z.array(z.string()).default([]),
+      date: z.coerce.date(),
+      tags: z.array(z.string()).default([]),
+      draft: z.boolean().default(false),
+    }),
+  },
+  /**
+   * 提示词测试记录（专栏二主体）：每测一次「模型 × 提示词」一条。
+   * model / prompt 都是自由文本或 slug，无任何状态字段。
+   */
+  lab: {
+    type: 'content',
+    schema: z.object({
+      title: z.string(),
+      model: z.string(),
+      // 跑测试用的 agent/cli（如 dsh、claude-code），第三个筛选维度
+      agent: z.string().default(''),
+      // 指向提示词库（prompts 集合）的 slug
+      prompt: z.string(),
+      date: z.coerce.date(),
+      // 产出物入口页（挂载到沙箱 iframe），如 /artifacts/heavy-hole-gargantua/index.html
+      artifact: z.string().optional(),
+      tags: z.array(z.string()).default([]),
+      draft: z.boolean().default(false),
+    }),
+  },
+  /** 提示词库：一份提示词一个 md，多版本用围栏上下叠放写在正文。 */
+  prompts: {
+    type: 'content',
+    schema: z.object({
+      title: z.string(),
+      date: z.coerce.date(),
+      tags: z.array(z.string()).default([]),
+      draft: z.boolean().default(false),
+    }),
+  },
 };

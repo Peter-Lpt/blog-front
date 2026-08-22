@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate } from '@/lib/posts';
+import { aiCategoryLabel, slugOf, officialList, hasBody } from '@/lib/ai';
+
+export async function getStaticPaths() {
+  // 正文为空的条目不生成详情页（列表中不可点击，简介即全部信息）
+  const docs = await getCollection('ai', ({ data }) => !data.draft);
+  return docs.filter((doc) => hasBody(doc)).map((doc) => ({
+    params: { slug: doc.id.replace(/\.(md|mdx)$/i, '') },
+    props: { doc },
+  }));
+}
+
+interface Props {
+  doc: any;
+}
+
+const { doc } = Astro.props;
+const { Content } = await doc.render();
+const d = doc.data;
+---
+
+<BaseLayout title={`${d.title} - AI 记录`} description={`${aiCategoryLabel(d.category)} · ${d.title}`}>
+  <article class="ai-doc">
+    <a href="/ai/" class="text-link back"><span>返回 AI 记录</span> <span class="arr" aria-hidden="true">←</span></a>
+
+    <header class="doc-header" data-reveal>
+      <div class="crumb-row">
+        <span class="cat-badge">{aiCategoryLabel(d.category)}</span>
+        <span class="date-line">{formatDate(d.date)}</span>
+      </div>
+      <div class="title-row">
+        <h1 class="page-title">{d.title}</h1>
+        {officialList(d.official).map((u) => (
+          <a href={u} target="_blank" rel="noopener noreferrer" class="btn-solid visit">官网 <span class="arr">↗</span></a>
+        ))}
+      </div>
+      {d.brief && <p class="brief-line">{d.brief}</p>}
+      {d.tags.length > 0 && (
+        <div class="tag-row">{d.tags.map((t: string) => <span class="chip">#{t}</span>)}</div>
+      )}
+    </header>
+
+    <div class="markdown-body doc-body" data-reveal style="--reveal-delay:80ms">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .ai-doc { max-width: 760px; margin: 0 auto; padding: clamp(36px,5vw,60px) 0 72px; }
+  .back { display: inline-flex; margin-bottom: 22px; }
+  .doc-header { margin-bottom: 30px; padding-bottom: 24px; border-bottom: 1px solid var(--color-fog); }
+  .crumb-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .cat-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    background: var(--glass-bg); color: var(--color-signal);
+  }
+  .date-line { font-size: 13px; color: var(--color-text-muted); }
+  .title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .title-row h1 { flex: 1; min-width: 200px; }
+  .visit { padding: 9px 18px; font-size: var(--text-xs); }
+  .brief-line { margin: 14px 0 0; font-size: 15px; color: var(--color-text-muted); }
+  .tag-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag-row .chip { cursor: default; }
+
+  .doc-body { line-height: 1.8; color: var(--color-text); }
+</style>

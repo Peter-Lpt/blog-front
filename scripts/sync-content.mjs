@@ -30,10 +30,19 @@ const ROOT = resolveContentDir();
 const SRC_BLOG = join(ROOT, 'blog');
 const SRC_TOOLS = join(ROOT, 'tools');
 const SRC_ASSETS = join(ROOT, 'assets');
+// AI 记录 / 提示词测试 / 提示词库 / 产出物挂载件（AI 板块设计 v3）
+const SRC_AI = join(ROOT, 'ai');
+const SRC_LAB = join(ROOT, 'lab');
+const SRC_PROMPTS = join(ROOT, 'prompts');
+const SRC_ARTIFACTS = join(ROOT, 'artifacts');
 
 const DEST_BLOG = resolve(process.cwd(), 'src', 'content', 'blog');
 const DEST_TOOLS = resolve(process.cwd(), 'src', 'content', 'tools');
+const DEST_AI = resolve(process.cwd(), 'src', 'content', 'ai');
+const DEST_LAB = resolve(process.cwd(), 'src', 'content', 'lab');
+const DEST_PROMPTS = resolve(process.cwd(), 'src', 'content', 'prompts');
 const DEST_IMAGES = resolve(process.cwd(), 'public', 'images');
+const DEST_ARTIFACTS = resolve(process.cwd(), 'public', 'artifacts');
 
 const ALLOWED_EXT = /\.(md|mdx)$/i;
 const IMAGE_EXT = /\.(png|jpe?g|gif|webp|svg|avif)$/i;
@@ -124,8 +133,13 @@ console.log(`[content:sync] 内容仓库: ${ROOT}`);
 
 const blogN = syncDir(SRC_BLOG, DEST_BLOG, (n) => ALLOWED_EXT.test(n));
 const toolsN = syncDir(SRC_TOOLS, DEST_TOOLS, (n) => ALLOWED_EXT.test(n));
+const aiN = syncDir(SRC_AI, DEST_AI, (n) => ALLOWED_EXT.test(n));
+const labN = syncDir(SRC_LAB, DEST_LAB, (n) => ALLOWED_EXT.test(n));
+const promptsN = syncDir(SRC_PROMPTS, DEST_PROMPTS, (n) => ALLOWED_EXT.test(n));
 const imgN = syncImages();
+// artifacts 整目录同步（多文件产出物项目：html/css/js 等全类型），供沙箱 iframe 挂载
+const artN = syncDir(SRC_ARTIFACTS, DEST_ARTIFACTS);
 
-console.log(`[content:sync] 同步文章 ${blogN} 篇，工具 ${toolsN} 篇，图片 ${imgN} 张`);
+console.log(`[content:sync] 同步文章 ${blogN} 篇，工具 ${toolsN} 篇，AI 条目 ${aiN} 条，测试记录 ${labN} 条，提示词 ${promptsN} 份，图片 ${imgN} 张，产出物文件 ${artN} 个`);
 console.log('✅ 内容同步完成。');
 process.exit(0);

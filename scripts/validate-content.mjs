@@ -28,6 +28,10 @@ const ROOT = resolveContentDir();
 const BLOG_DIR = join(ROOT, 'blog');
 const TOOLS_DIR = join(ROOT, 'tools');
 const ASSETS_DIR = join(ROOT, 'assets');
+// AI 记录 / 提示词测试 / 提示词库（板块设计 v3）
+const AI_DIR = join(ROOT, 'ai');
+const LAB_DIR = join(ROOT, 'lab');
+const PROMPTS_DIR = join(ROOT, 'prompts');
 
 /** 解析环境变量中的内容仓库根目录，不写死绝对路径 */
 function resolveContentDir() {
@@ -145,6 +149,55 @@ for (const file of collectMarkdown(TOOLS_DIR)) {
     if (prev) errors.push(`slug 重复「${data.slug}」: ${prev} 与 ${rel(file)}`);
     else slugMap.set(data.slug, rel(file));
   }
+}
+
+// ── ai 记录条目 ──
+for (const file of collectMarkdown(AI_DIR)) {
+  fileCount++;
+  const { data, error } = parseFrontmatter(file);
+  if (error) {
+    errors.push(`${rel(file)}: ${error}`);
+    continue;
+  }
+  const slug = rel(file).replace(/^ai\//, '').replace(/\.(md|mdx)$/i, '');
+  if (!data.title) errors.push(`${rel(file)}: 缺少必填字段 title`);
+  if (!data.category || typeof data.category !== 'string') errors.push(`${rel(file)}: 缺少必填字段 category`);
+  if (!data.date) errors.push(`${rel(file)}: 缺少必填字段 date`);
+  else if (isNaN(Date.parse(String(data.date)))) errors.push(`${rel(file)}: date 不是合法日期`);
+  if (typeof data.draft !== 'undefined' && typeof data.draft !== 'boolean') errors.push(`${rel(file)}: draft 必须是布尔值`);
+  if (slugMap.has(slug)) errors.push(`ai slug 重复「${slug}」`);
+}
+
+// ── lab 测试记录 ──
+for (const file of collectMarkdown(LAB_DIR)) {
+  fileCount++;
+  const { data, error } = parseFrontmatter(file);
+  if (error) {
+    errors.push(`${rel(file)}: ${error}`);
+    continue;
+  }
+  if (!data.title) errors.push(`${rel(file)}: 缺少必填字段 title`);
+  if (!data.model) errors.push(`${rel(file)}: 缺少必填字段 model`);
+  if (!data.agent) errors.push(`${rel(file)}: 缺少必填字段 agent`);
+  if (!data.prompt) errors.push(`${rel(file)}: 缺少必填字段 prompt`);
+  if (!data.date) errors.push(`${rel(file)}: 缺少必填字段 date`);
+  else if (isNaN(Date.parse(String(data.date)))) errors.push(`${rel(file)}: date 不是合法日期`);
+  if (typeof data.draft !== 'undefined' && typeof data.draft !== 'boolean') {
+    errors.push(`${rel(file)}: draft 必须是布尔值`);
+  }
+}
+
+// ── prompts 提示词库 ──
+for (const file of collectMarkdown(PROMPTS_DIR)) {
+  fileCount++;
+  const { data, error } = parseFrontmatter(file);
+  if (error) {
+    errors.push(`${rel(file)}: ${error}`);
+    continue;
+  }
+  if (!data.title) errors.push(`${rel(file)}: 缺少必填字段 title`);
+  if (!data.date) errors.push(`${rel(file)}: 缺少必填字段 date`);
+  else if (isNaN(Date.parse(String(data.date)))) errors.push(`${rel(file)}: date 不是合法日期`);
 }
 
 console.log(`[content:check] 内容仓库: ${ROOT}`);
