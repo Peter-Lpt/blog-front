@@ -95,12 +95,12 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
     <button class="drawer-close" id="drawer-close" type="button" aria-label="关闭菜单">✕</button>
   </div>
   <ul class="drawer-list">
-    {navItems.map((item) => (
-      <li>
+    {navItems.map((item, i) => (
+      <li style={`--i:${i}`}>
         <a
           href={item.href}
           class="drawer-link nav-item"
-          class:list={['drawer-link', 'nav-item', { 'nav-item-active': item.href === '/' ? (current === '/' || current.startsWith('/blog/') || current.startsWith('/category/') || current.startsWith('/tag/') || current.startsWith('/archives/')) : (current === item.href.replace(/\/$/, '') || current.startsWith(item.href)) }]}
+          class:list={[{ 'nav-item-active': item.href === '/' ? (current === '/' || current.startsWith('/blog/') || current.startsWith('/category/') || current.startsWith('/tag/') || current.startsWith('/archives/')) : (current === item.href.replace(/\/$/, '') || current.startsWith(item.href)) }]}
         >{item.label}</a>
       </li>
     ))}
@@ -144,6 +144,23 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
       userArea.classList.add('hidden');
       loginButton.classList.remove('hidden');
     }
+  })();
+
+  // 滚动时收紧头部：加深底色 + 轻投影（rAF 节流）
+  (() => {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    let ticking = false;
+    const update = () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 10);
+      ticking = false;
+    };
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+    update();
   })();
 
   // 移动端抽屉导航
@@ -206,7 +223,10 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
 <SearchDialog client:idle />
 
 <style>
-  .site-header { position:sticky; top:0; z-index:100; background:rgb(243 240 232 / .82); backdrop-filter:blur(var(--glass-blur)); border-bottom:1px solid rgb(216 222 227 / .82); transition:background-color var(--motion-base) var(--ease-standard),border-color var(--motion-base) var(--ease-standard); } :root[data-theme="dark"] .site-header { background:rgb(20 28 34 / .82); border-color:rgb(52 67 77 / .82); }
+  /* view-transition-name：跨页过渡时 header 独立成层，不随正文淡出/位移 */
+  .site-header { position:sticky; top:0; z-index:100; view-transition-name:site-header; background:rgb(243 240 232 / .82); backdrop-filter:blur(var(--glass-blur)); border-bottom:1px solid rgb(216 222 227 / .82); transition:background-color var(--motion-base) var(--ease-standard),border-color var(--motion-base) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard); } :root[data-theme="dark"] .site-header { background:rgb(20 28 34 / .82); border-color:rgb(52 67 77 / .82); }
+  .site-header.is-scrolled { background:rgb(243 240 232 / .95); box-shadow:0 12px 32px rgb(16 24 32 / .07); }
+  :root[data-theme="dark"] .site-header.is-scrolled { background:rgb(20 28 34 / .93); box-shadow:0 12px 32px rgb(0 0 0 / .22); }
   .header-inner { display:flex; align-items:center; gap:32px; min-height:72px; }
 
   /* ---- Logo：blog 字样 + 信号点 ---- */
@@ -280,9 +300,12 @@ const adminUrl = import.meta.env.PUBLIC_ADMIN_URL || '/admin/';
   .drawer-close:hover { color:var(--color-signal); border-color:var(--color-signal); }
   .drawer-list { list-style:none; margin:0; padding:10px; display:flex; flex-direction:column; gap:2px; }
   .drawer-list li { margin:0; }
-  .drawer-link { display:block; padding:13px 14px; border-radius:10px; color:var(--color-text); font:600 1rem var(--font-ui); text-decoration:none; transition:background var(--motion-fast),color var(--motion-fast); }
+  .drawer-link { display:block; padding:13px 14px; border-radius:10px; color:var(--color-text); font:600 1rem var(--font-ui); text-decoration:none; transition:background var(--motion-fast),color var(--motion-fast),transform var(--motion-fast) var(--ease-standard); }
   .drawer-link:hover { background:var(--color-signal-soft); color:var(--color-ink); }
+  .drawer-link:active { transform:scale(.985); }
   .drawer-link.nav-item-active { background:var(--color-signal); color:#fff; }
+  .mobile-drawer.is-open .drawer-link { animation:drawer-item-in 420ms var(--ease-emphasis) both; animation-delay:calc(70ms + var(--i, 0) * 45ms); }
+  @keyframes drawer-item-in { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:none; } }
 
   @media (max-width:680px) { .header-inner { min-height:62px; gap:12px; } .nav { display:none; } .logo { margin-right:auto; } .header-actions { padding:3px; border-radius:14px; } .dropdown { right:-40px; } .menu-toggle { display:flex; } }
 </style>

@@ -9,29 +9,33 @@
       </svg>
       日历归档
     </h3>
-    <div class="calendar-header">
-      <button class="nav-btn" @click="prevMonth">◀</button>
-      <span class="month-label">{{ currentYear }}年{{ currentMonth + 1 }}月</span>
-      <button class="nav-btn" @click="nextMonth">▶</button>
-    </div>
-    <div class="calendar-weekdays">
-      <span v-for="day in weekdays" :key="day" class="weekday-cell">{{ day }}</span>
-    </div>
-    <div class="calendar-grid">
-      <div
-        v-for="(cell, index) in calendarCells"
-        :key="index"
-        class="date-cell"
-        :class="{
-          'empty': !cell.day,
-          'has-data': cell.hasData,
-          'is-today': cell.isToday,
-        }"
-      >
-        <span v-if="cell.day" class="date-number">{{ cell.day }}</span>
-        <span v-if="cell.hasData" class="data-badge">{{ cell.dataCount }}</span>
+    <Transition :name="dir > 0 ? 'cal-next' : 'cal-prev'" mode="out-in">
+      <div :key="currentYear + '-' + currentMonth" class="calendar-body">
+        <div class="calendar-header">
+          <button class="nav-btn" aria-label="上一个月" @click="prevMonth">◀</button>
+          <span class="month-label">{{ currentYear }}年{{ currentMonth + 1 }}月</span>
+          <button class="nav-btn" aria-label="下一个月" @click="nextMonth">▶</button>
+        </div>
+        <div class="calendar-weekdays">
+          <span v-for="day in weekdays" :key="day" class="weekday-cell">{{ day }}</span>
+        </div>
+        <div class="calendar-grid">
+          <div
+            v-for="(cell, index) in calendarCells"
+            :key="index"
+            class="date-cell"
+            :class="{
+              'empty': !cell.day,
+              'has-data': cell.hasData,
+              'is-today': cell.isToday,
+            }"
+          >
+            <span v-if="cell.day" class="date-number">{{ cell.day }}</span>
+            <span v-if="cell.hasData" class="data-badge">{{ cell.dataCount }}</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </Transition>
     <div class="calendar-footer">
       <span class="legend-item">
         <span class="legend-dot legend-dot--empty"></span>
@@ -59,6 +63,8 @@ const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
 const today = new Date();
 const currentYear = ref(today.getFullYear());
 const currentMonth = ref(today.getMonth());
+// 月份切换方向：1 = 向后（下一月），-1 = 向前
+const dir = ref(1);
 
 interface CalendarCell {
   day: number | null;
@@ -111,6 +117,7 @@ function formatDate(year: number, month: number, day: number): string {
 }
 
 function prevMonth() {
+  dir.value = -1;
   if (currentMonth.value === 0) {
     currentMonth.value = 11;
     currentYear.value--;
@@ -120,6 +127,7 @@ function prevMonth() {
 }
 
 function nextMonth() {
+  dir.value = 1;
   if (currentMonth.value === 11) {
     currentMonth.value = 0;
     currentYear.value++;
@@ -181,7 +189,9 @@ function nextMonth() {
 .nav-btn:hover {
   color: var(--color-signal);
   border-color: var(--color-signal);
+  background: var(--color-signal-soft);
 }
+.nav-btn:active { transform: scale(.92); }
 
 .month-label {
   font-size: 14px;
@@ -308,5 +318,20 @@ function nextMonth() {
 :root[data-theme="dark"] .legend-dot--has-data {
   background: rgb(230 170 96 / 0.3);
   border-color: var(--color-signal);
+}
+
+/* ---- 月份切换：方向感知的滑动过渡 ---- */
+.cal-next-enter-active,
+.cal-prev-enter-active { transition: opacity 220ms ease, transform 260ms cubic-bezier(.16, 1, .3, 1); }
+.cal-next-leave-active,
+.cal-prev-leave-active { transition: opacity 140ms ease, transform 160ms ease; }
+.cal-next-enter-from { opacity: 0; transform: translateX(16px); }
+.cal-prev-enter-from { opacity: 0; transform: translateX(-16px); }
+.cal-next-leave-to { opacity: 0; transform: translateX(-12px); }
+.cal-prev-leave-to { opacity: 0; transform: translateX(12px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-next-enter-active, .cal-prev-enter-active,
+  .cal-next-leave-active, .cal-prev-leave-active { transition: none; }
 }
 </style>

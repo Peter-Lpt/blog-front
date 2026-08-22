@@ -124,7 +124,8 @@ function host(url: string): string {
 .link-logo img { width: 100%; height: 100%; object-fit: cover; }
 .link-logo.letter { color: var(--color-signal); font-weight: 700; font-size: 18px; }
 .link-info { min-width: 0; }
-.link-info h3 { margin: 0 0 4px; font-size: 15px; color: var(--color-text); }
+.link-info h3 { margin: 0 0 4px; font-size: 15px; color: var(--color-text); transition: color var(--motion-fast) var(--ease-standard); }
+.link-card:hover .link-info h3 { color: var(--color-signal); }
 .link-info p { margin: 0; font-size: 13px; color: var(--color-text-muted); line-height: 1.5; }
 .link-info p.muted { opacity: 0.85; }
 </style>

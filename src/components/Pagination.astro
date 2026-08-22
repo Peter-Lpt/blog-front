@@ -39,16 +39,16 @@ const pages = pageItems(currentPage, totalPages);
 ---
 
 {totalPages > 1 && (
-  <nav class="pagination" aria-label="分页">
-    {showPrev && <a href={pageHref(currentPage - 1)} rel="prev">← 上一页</a>}
+  <nav class="pagination" aria-label="分页" data-reveal>
+    {showPrev && <a href={pageHref(currentPage - 1)} rel="prev" class="page-arrow">← <span>上一页</span></a>}
     <div class="page-numbers">
       {pages.map((p) => (
         p === '…'
           ? <span class="page-ellipsis" aria-hidden="true">…</span>
-          : <a href={pageHref(p)} class:list={['page-num', { active: p === currentPage }]}>{p}</a>
+          : <a href={pageHref(p)} class:list={['page-num', { active: p === currentPage }]} aria-current={p === currentPage ? 'page' : undefined} aria-label={`第 ${p} 页`}>{p}</a>
       ))}
     </div>
-    {showNext && <a href={pageHref(currentPage + 1)} rel="next">下一页 →</a>}
+    {showNext && <a href={pageHref(currentPage + 1)} rel="next" class="page-arrow"><span>下一页</span> →</a>}
   </nav>
 )}
 
@@ -57,35 +57,61 @@ const pages = pageItems(currentPage, totalPages);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 16px;
-    margin-top: 32px;
+    gap: 14px;
+    margin-top: 44px;
+    padding-top: 26px;
+    border-top: 1px solid var(--color-fog);
     flex-wrap: wrap;
   }
-  .pagination a {
+  .page-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 14px;
+    border: 1px solid var(--color-fog);
+    border-radius: 999px;
     color: var(--color-text-muted);
-    padding: 6px 12px;
-    border-radius: 8px;
-    transition: all 0.2s;
+    font: 500 var(--text-xs)/1 var(--font-ui);
+    transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
   }
-  .pagination a:hover {
+  .page-arrow:hover {
     color: var(--color-signal);
+    border-color: var(--color-signal);
     background: var(--color-signal-soft);
+    transform: translateY(-1px);
   }
-  .page-numbers {
-    display: flex;
-    gap: 4px;
-  }
+  .page-numbers { display: flex; gap: 6px; }
   .page-num {
-    min-width: 32px;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--color-text-muted);
+    font: 500 var(--text-sm)/1 var(--font-ui);
+    font-variant-numeric: tabular-nums;
+    transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+  }
+  .page-num:hover {
+    color: var(--color-signal);
+    border-color: var(--color-fog);
+    background: var(--color-surface);
+    transform: translateY(-1px);
   }
   .page-ellipsis {
     min-width: 24px;
     text-align: center;
     color: var(--color-text-faint);
+    font: var(--text-sm)/34px var(--font-ui);
   }
   .page-num.active {
     background: var(--color-signal);
+    border-color: var(--color-signal);
     color: #fff;
+    box-shadow: 0 5px 14px rgb(228 155 82 / .28);
   }
+  .page-num.active:hover { transform: none; }
 </style>

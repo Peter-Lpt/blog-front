@@ -4,25 +4,43 @@ import { SITE } from '@/lib/config';
 ---
 
 <BaseLayout title="关于" description="关于本站">
-  <article class="about-page prose-content">
-    <h1>关于</h1>
+  <article class="about-page">
+    <header class="page-head" data-reveal>
+      <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>关于</p>
+      <h1 class="page-title">关于<span class="accent">.</span></h1>
+      <p class="page-desc">关于 {SITE.title}，以及站在它背后的人。</p>
+    </header>
 
-    <p>欢迎来到 {SITE.title}。这里是我的个人技术博客，记录前端、后端、工程实践方面的思考和笔记。</p>
+    <div class="about-body" data-reveal style="--reveal-delay:100ms">
+      <p>欢迎来到 <strong>{SITE.title}</strong>。这里是我的个人技术博客，记录前端、后端、工程实践方面的思考和笔记。</p>
 
-    <h2>关于内容</h2>
-    <p>本站文章以 Markdown 文件形式管理，基于 Astro 静态站点生成器构建。</p>
+      <h2>关于内容</h2>
+      <p>本站文章以 Markdown 文件形式管理，基于 Astro 静态站点生成器构建。</p>
 
-    <h2>联系方式</h2>
-    <ul>
-      <li>GitHub：<a href={SITE.github} target="_blank" rel="noopener noreferrer">{SITE.github}</a></li>
-      {SITE.email && <li>Email：<a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>}
-    </ul>
+      <h2>联系方式</h2>
+      <ul>
+        <li>GitHub：<a href={SITE.github} target="_blank" rel="noopener noreferrer">{SITE.github}</a></li>
+        {SITE.email && <li>Email：<a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>}
+      </ul>
 
-    <h2>订阅</h2>
-    <p>欢迎通过 <a href="/rss.xml">RSS</a> 订阅本站更新。</p>
+      <h2>订阅</h2>
+      <p>欢迎通过 <a href="/rss.xml">RSS</a> 订阅本站更新。</p>
+    </div>
   </article>
 </BaseLayout>
 
 <style>
-  .about-page { max-width: 720px; margin: 0 auto; padding: 40px 0; color: var(--color-text); }
+  .about-page { max-width: 720px; margin: 0 auto; padding: clamp(40px,6vw,76px) 0 72px; color: var(--color-text); }
+  .about-body :global(h2) {
+    display: flex; align-items: center; gap: 10px;
+    margin: 2.2em 0 .8em; color: var(--color-text);
+    font: 600 1.35rem/1.3 var(--font-display); letter-spacing: -.02em;
+  }
+  .about-body :global(h2)::before { content: ''; width: 16px; height: 2px; border-radius: 999px; background: var(--color-signal); }
+  .about-body :global(p) { margin: 0 0 1em; line-height: 1.85; color: var(--color-text-muted); }
+  .about-body :global(p strong) { color: var(--color-text); }
+  .about-body :global(a) { font-weight: 500; }
+  .about-body :global(a:hover) { text-decoration: underline; text-underline-offset: 3px; }
+  .about-body :global(ul) { margin: 0 0 1em; padding-left: 20px; }
+  .about-body :global(li) { margin-bottom: 6px; color: var(--color-text-muted); line-height: 1.8; }
 </style>

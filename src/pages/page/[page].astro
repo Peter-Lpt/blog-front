@@ -24,25 +24,28 @@ const { page, totalPages, posts } = Astro.props;
 
 <BaseLayout title={page > 1 ? `第 ${page} 页` : undefined}>
   <div class="home-layout">
-    <section class="post-list">
-      <div class="cards">
-        {posts.map((post: any) => <PostCard post={post} />)}
-      </div>
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        baseUrl="/"
-      />
-    </section>
     <Sidebar />
+    <section class="post-list" aria-label="文章列表">
+      <header class="page-head" data-reveal>
+        <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>第 {page} 页</p>
+        <h1 class="page-title">全部文章<span class="accent">.</span></h1>
+        <p class="page-desc">第 {page} 页，共 {totalPages} 页。</p>
+      </header>
+      {posts.length === 0 ? (
+        <div class="empty-state" data-reveal><p>暂无文章</p><p>这一页没有公开内容。</p></div>
+      ) : (
+        <div class="cards">
+          {posts.map((post: any) => <PostCard post={post} />)}
+        </div>
+      )}
+      <Pagination currentPage={page} totalPages={totalPages} baseUrl="/" />
+    </section>
   </div>
 </BaseLayout>
 
 <style>
-  .home-layout { display: flex; gap: 48px; padding: 40px 0; align-items: flex-start; }
-  .post-list { flex: 1; min-width: 0; }
-  .cards { display: flex; flex-direction: column; }
-  @media (max-width: 768px) {
-    .home-layout { flex-direction: column; gap: 24px; padding: 20px 0; }
-  }
+  .home-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:clamp(36px,6vw,88px); padding:clamp(42px,7vw,84px) 0 72px; align-items:start; }
+  .post-list { min-width:0; }
+  @media (max-width:900px) { .home-layout { grid-template-columns:190px minmax(0,1fr); gap:32px; } }
+  @media (max-width:680px) { .home-layout { display:flex; flex-direction:column; gap:28px; padding:28px 0 48px; } }
 </style>

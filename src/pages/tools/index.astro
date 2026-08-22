@@ -15,22 +15,20 @@ tools.forEach((t) => {
 
 <BaseLayout title="工具箱" description="我用过的工具记录">
   <section class="tools-page">
-    <header class="page-header">
-      <h1>🛠️ 工具箱</h1>
-      <p class="page-desc">我正在用 / 用过的工具记录，共 {tools.length} 个</p>
+    <header class="page-head" data-reveal>
+      <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>工具箱</p>
+      <h1 class="page-title">工具箱<span class="accent">.</span></h1>
+      <p class="page-desc">我正在用 / 用过的工具记录，共 {tools.length} 个。</p>
     </header>
 
     {tools.length === 0 ? (
-      <div class="empty">
-        <p>暂无工具记录。</p>
-        <p>工具清单正在整理中，欢迎稍后再来看看。</p>
-      </div>
+      <div class="empty-state" data-reveal><p>暂无工具记录</p><p>工具清单正在整理中，欢迎稍后再来看看。</p></div>
     ) : (
       <>
-        <div class="category-filter" id="filter">
-          <button class="cat-btn active" data-cat="all">全部 ({tools.length})</button>
+        <div class="category-filter" id="filter" role="group" aria-label="按分类筛选" data-reveal style="--reveal-delay:90ms">
+          <button class="chip is-active cat-btn" type="button" data-cat="all" aria-pressed="true">全部 <span class="chip-count">{tools.length}</span></button>
           {categories.map((cat) => (
-            <button class="cat-btn" data-cat={cat}>{cat} ({categoryCounts[cat]})</button>
+            <button class="chip cat-btn" type="button" data-cat={cat} aria-pressed="false">{cat} <span class="chip-count">{categoryCounts[cat]}</span></button>
           ))}
         </div>
 
@@ -39,20 +37,20 @@ tools.forEach((t) => {
             const slug = tool.id.replace(/\.md$/, '');
             const { name, url, category, icon, rating, cost, platform } = tool.data;
             return (
-              <article class="tool-card" data-category={category}>
+              <article class="tool-card" data-category={category} data-reveal>
                 <a href={`/tools/${slug}/`} class="tool-link">
-                  <div class="tool-icon">{icon || '🔧'}</div>
+                  <div class="tool-icon" aria-hidden="true">{icon || '🔧'}</div>
                   <h3 class="tool-name">{name}</h3>
                   <p class="tool-cat">{category}</p>
                   {rating !== undefined && rating > 0 && (
-                    <div class="tool-rating">{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</div>
+                    <div class="tool-rating" aria-label={`评分 ${rating} / 5`}>{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</div>
                   )}
                   <div class="tool-meta">
                     {cost && <span class="meta-tag">{cost}</span>}
                     {platform && platform.length > 0 && <span class="meta-tag">{platform.join('/')}</span>}
                   </div>
                 </a>
-                <a href={url} target="_blank" rel="noopener noreferrer" class="visit-btn">访问 ↗</a>
+                <a href={url} target="_blank" rel="noopener noreferrer" class="visit-btn">访问 <span aria-hidden="true">↗</span></a>
               </article>
             );
           })}
@@ -63,72 +61,65 @@ tools.forEach((t) => {
 </BaseLayout>
 
 <script>
-  // 分类筛选交互（纯客户端，无需 Vue 岛）
-  const buttons = document.querySelectorAll('.cat-btn');
+  // 分类筛选交互（纯客户端，无需 Vue 岛）：切换 chip 状态，隐藏/弹入对应卡片
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
   const cards = document.querySelectorAll<HTMLElement>('.tool-card');
   buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
       const cat = btn.getAttribute('data-cat');
-      buttons.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
+      buttons.forEach((b) => {
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
       cards.forEach((card) => {
         const show = cat === 'all' || card.getAttribute('data-category') === cat;
         card.style.display = show ? '' : 'none';
+        if (show) {
+          card.classList.remove('pop-in');
+          void card.offsetWidth; // 重启动画
+          card.classList.add('pop-in');
+        }
       });
     });
   });
 </script>
 
 <style>
-  .tools-page { padding: 40px 0; }
-  .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--color-text); }
-  .page-desc { color: var(--color-text-muted); font-size: 14px; margin: 0; }
+  .tools-page { padding: clamp(40px,6vw,76px) 0 72px; }
   .category-filter {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     margin-bottom: 24px;
   }
-  .cat-btn {
-    padding: 6px 14px;
-    border: 1px solid var(--color-fog);
-    border-radius: 16px;
-    background: var(--color-surface);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s;
-  }
-  .cat-btn:hover { border-color: var(--color-signal); color: var(--color-signal); }
-  .cat-btn.active {
-    background: var(--color-signal);
-    color: #fff;
-    border-color: var(--color-signal);
-  }
+  .cat-btn { padding: 7px 14px; }
   .tool-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
   }
   .tool-card {
+    position: relative;
     background: var(--color-surface);
     border: var(--card-border);
     border-radius: var(--radius-lg);
     padding: 18px;
-    transition: all 0.3s;
-    position: relative;
+    transition: box-shadow var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard);
   }
   .tool-card:hover {
     box-shadow: var(--shadow-soft);
     border-color: var(--color-signal);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
+  .tool-card.pop-in { animation: tool-pop 260ms var(--ease-emphasis) both; }
+  @keyframes tool-pop { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
   .tool-link { color: inherit; display: block; }
-  .tool-icon { font-size: 28px; margin-bottom: 8px; }
-  .tool-name { font-size: 16px; font-weight: 600; margin: 0 0 4px; color: var(--color-text); }
-  .tool-cat { font-size: 12px; color: var(--color-signal); margin: 0 0 6px; }
-  .tool-rating { font-size: 12px; color: #f5a623; margin-bottom: 6px; }
+  .tool-icon { display:inline-block; font-size: 28px; margin-bottom: 10px; transition: transform var(--motion-base) var(--ease-emphasis); }
+  .tool-card:hover .tool-icon { transform: scale(1.12) rotate(-5deg); }
+  .tool-name { font-size: 16px; font-weight: 600; margin: 0 0 4px; color: var(--color-text); transition: color var(--motion-fast); }
+  .tool-card:hover .tool-name { color: var(--color-signal); }
+  .tool-cat { font-size: 12px; color: var(--color-signal); margin: 0 0 6px; letter-spacing: .04em; }
+  .tool-rating { font-size: 12px; color: var(--color-warning); margin-bottom: 8px; letter-spacing: 1px; }
   .tool-meta { display: flex; gap: 6px; flex-wrap: wrap; }
   .meta-tag {
     font-size: 11px;
@@ -138,15 +129,22 @@ tools.forEach((t) => {
     border-radius: 8px;
   }
   .visit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
     position: absolute;
     top: 14px;
     right: 14px;
     font-size: 11px;
+    font-weight: 500;
     color: var(--color-text-muted);
-    padding: 3px 8px;
-    border-radius: 8px;
+    padding: 4px 9px;
+    border: 1px solid transparent;
+    border-radius: 999px;
     background: var(--glass-bg);
+    transition: color var(--motion-fast), border-color var(--motion-fast), background-color var(--motion-fast), transform var(--motion-fast) var(--ease-standard);
   }
-  .visit-btn:hover { color: var(--color-signal); }
-  .empty { text-align: center; padding: 60px 20px; color: var(--color-text-muted); }
+  .visit-btn span { display:inline-block; transition: transform var(--motion-base) var(--ease-emphasis); }
+  .visit-btn:hover { color: var(--color-signal); border-color: var(--color-signal); background: var(--color-signal-soft); transform: translateY(-1px); }
+  .visit-btn:hover span { transform: translate(2px, -2px); }
 </style>

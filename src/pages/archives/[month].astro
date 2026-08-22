@@ -17,37 +17,25 @@ const { month, posts } = Astro.props;
 ---
 
 <BaseLayout title={`${month} 归档`}>
-  <div class="page-layout">
+  <div class="with-sidebar">
     <Sidebar />
     <section class="archive-month-page">
-      <header class="page-header">
-        <p class="breadcrumb"><a href="/">首页</a> / <a href="/archives/">归档</a></p>
-        <h1>{month}</h1>
-        <p class="page-desc">共 {posts.length} 篇文章</p>
+      <header class="page-head" data-reveal>
+        <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span><a href="/archives/">归档</a></p>
+        <h1 class="page-title">{month}<span class="accent">.</span></h1>
+        <p class="page-desc">共 {posts.length} 篇文章。</p>
       </header>
-      <div class="cards">
-        {posts.map((post: any) => <PostCard post={post} />)}
-      </div>
+      {posts.length === 0 ? (
+        <div class="empty-state" data-reveal><p>该月份没有文章</p><p>去归档页看看其他月份。</p><a href="/archives/" class="text-link"><span>返回归档</span> <span class="arr" aria-hidden="true">→</span></a></div>
+      ) : (
+        <div class="cards">
+          {posts.map((post: any) => <PostCard post={post} />)}
+        </div>
+      )}
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .page-layout {
-    display: flex;
-    gap: 40px;
-    padding: 40px 0;
-    align-items: flex-start;
-  }
-  .archive-month-page { flex: 1; min-width: 0; }
-  .page-header { margin-bottom: 24px; }
-  .breadcrumb { font-size: 13px; color: var(--color-text-muted); margin-bottom: 8px; }
-  .breadcrumb a:hover { color: var(--color-signal); }
-  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--color-text); }
-  .page-desc { color: var(--color-text-muted); font-size: 14px; margin: 0; }
-  .cards { display: flex; flex-direction: column; }
-
-  @media (max-width: 768px) {
-    .page-layout { flex-direction: column; gap: 24px; padding: 20px 0; }
-  }
+  .archive-month-page { flex:1; min-width:0; }
 </style>

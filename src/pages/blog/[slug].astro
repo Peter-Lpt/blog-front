@@ -59,27 +59,30 @@ const jsonLd = {
   <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div class="reading-progress" aria-hidden="true"><span></span></div>
-  <button class="back-top" id="back-top" type="button" aria-label="回到顶部">↑</button>
   <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="图片预览">
     <img id="lightbox-img" src="" alt="" />
   </div>
-  <div class="detail-wrapper" data-reveal>
+  <div class="detail-wrapper">
     <Sidebar tocItems={tocItems} minimal />
 
     <article class="detail-view">
       <header class="detail-header">
         <h1 class="detail-title">{title}</h1>
         <div class="detail-meta">
-          <span>📅 <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></span>
+          <span><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></span>
+          <span class="meta-sep" aria-hidden="true">·</span>
           <span>◷ 阅读 {readingMinutes} 分钟</span>
           {updatedDate && (
-            <span>✏️ 更新于 <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>
+            <span class="meta-sep" aria-hidden="true">·</span>
           )}
-          {category && <span>📂 <a href={`/category/${category}/`}>{category}</a></span>}
+          {updatedDate && (
+            <span>更新于 <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>
+          )}
+          {category && <a href={`/category/${category}/`} class="meta-cat">{category}</a>}
         </div>
         {tags.length > 0 && (
           <div class="detail-tags">
-            {tags.map((t: string) => <a href={`/tag/${t}/`} class="tag">{t}</a>)}
+            {tags.map((t: string) => <a href={`/tag/${t}/`} class="chip tag">{t}</a>)}
           </div>
         )}
       </header>
@@ -106,13 +109,13 @@ const jsonLd = {
         <nav class="detail-pager" aria-label="相邻文章">
           {olderPost && (
             <a href={postUrl(olderPost)} class="pager-link pager-older">
-              <span class="pager-label">更早的一篇</span>
+              <span class="pager-label"><span class="pager-arr" aria-hidden="true">←</span> 更早的一篇</span>
               <span class="pager-title">{olderPost.data.title}</span>
             </a>
           )}
           {newerPost && (
             <a href={postUrl(newerPost)} class="pager-link pager-newer">
-              <span class="pager-label">更新的一篇</span>
+              <span class="pager-label">更新的一篇 <span class="pager-arr" aria-hidden="true">→</span></span>
               <span class="pager-title">{newerPost.data.title}</span>
             </a>
           )}
@@ -126,44 +129,50 @@ const jsonLd = {
 
 <style>
   .reading-progress { position:fixed; left:0; right:0; top:72px; z-index:90; height:3px; background:transparent; pointer-events:none; } .reading-progress span { display:block; width:0; height:100%; background:linear-gradient(90deg,var(--color-signal),var(--color-signal-cool)); transform-origin:left; transition:width 80ms linear; }
-  .detail-wrapper { display:grid; grid-template-columns:190px minmax(0,930px); gap:clamp(24px,4vw,48px); max-width:var(--shell-width); margin:0 auto; padding:clamp(42px,6vw,76px) 0 90px; align-items:start; justify-content:center; }
+  .detail-wrapper { display:grid; grid-template-columns:210px minmax(0,930px); gap:clamp(24px,4vw,48px); max-width:var(--shell-width); margin:0 auto; padding:clamp(42px,6vw,76px) 0 90px; align-items:start; justify-content:center; }
   .detail-view { min-width:0; overflow:hidden; border:1px solid rgb(16 24 32 / .09); border-radius:24px; background:var(--color-surface); box-shadow:0 32px 90px rgb(16 24 32 / .11); }
   :root[data-theme="dark"] .detail-view { border-color:var(--color-fog); }
   .detail-header { position:relative; margin:0; padding:clamp(38px,7vw,72px) clamp(28px,7vw,70px) 38px; border-bottom:1px solid var(--color-fog); background:linear-gradient(145deg,var(--color-surface) 55%,var(--color-surface-raised)); }
   .detail-header::after { content:''; position:absolute; right:-65px; top:-70px; width:220px; height:220px; border:1px solid rgb(228 155 82 / .18); border-radius:50%; box-shadow:0 0 0 32px rgb(228 155 82 / .05),0 0 0 64px rgb(118 169 184 / .04); pointer-events:none; }
   .detail-title { position:relative; z-index:1; max-width:680px; margin:0 0 20px; color:var(--color-ink); font:600 clamp(2.25rem,4.4vw,3.9rem)/1.08 var(--font-display); letter-spacing:-.065em; text-wrap:balance; } :root[data-theme="dark"] .detail-title { color:var(--color-text); }
   .detail-lead { position:relative; z-index:1; max-width:610px; margin:0 0 26px; color:var(--color-text-muted); font-size:var(--text-lg); line-height:1.75; }
-  .detail-meta { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:9px 18px; color:var(--color-text-faint); font:var(--text-xs) var(--font-ui); } .detail-meta span { display:inline-flex; align-items:center; gap:5px; } .detail-meta a { color:var(--color-text-muted); } .detail-meta a:hover { color:var(--color-signal); }
-  .detail-tags { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:7px; margin-top:18px; } .tag { padding:5px 10px; border:1px solid var(--color-fog); border-radius:999px; color:var(--color-text-muted); font:var(--text-xs) var(--font-ui); } .tag:hover { border-color:var(--color-signal); color:var(--color-signal); background:var(--color-signal-soft); }
-  .detail-cover { margin:0; max-height:460px; min-height:220px; overflow:hidden; border-bottom:1px solid var(--color-fog); } .detail-cover img { display:block; width:100%; height:100%; object-fit:cover; cursor:zoom-in; }
+  .detail-meta { position:relative; z-index:1; display:flex; flex-wrap:wrap; align-items:center; gap:9px 12px; color:var(--color-text-faint); font:var(--text-xs) var(--font-ui); font-variant-numeric:tabular-nums; } .detail-meta span { display:inline-flex; align-items:center; gap:5px; } .detail-meta .meta-sep { color:var(--color-fog-strong); } .detail-meta a { color:var(--color-text-muted); transition:color var(--motion-fast); } .detail-meta a:hover { color:var(--color-signal); }
+  .meta-cat { display:inline-flex; align-items:center; padding:3px 10px; border:1px solid var(--color-fog); border-radius:999px; font-weight:500; transition:border-color var(--motion-fast),color var(--motion-fast),background-color var(--motion-fast); }
+  .detail-meta .meta-cat, .detail-meta .meta-cat:hover { color:var(--color-text-muted); }
+  .detail-meta .meta-cat:hover { border-color:var(--color-signal); background:var(--color-signal-soft); color:var(--color-signal); }
+  .detail-tags { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:7px; margin-top:18px; } .tag:hover { transform:translateY(-1px); }
+  .detail-cover { margin:0; max-height:460px; min-height:220px; overflow:hidden; border-bottom:1px solid var(--color-fog); } .detail-cover img { display:block; width:100%; height:100%; object-fit:cover; cursor:zoom-in; transition:transform var(--motion-slow) var(--ease-emphasis); }
+  .detail-cover img:hover { transform:scale(1.015); }
   .detail-content { padding:42px clamp(28px,7vw,70px) 16px; }
   .detail-actions { padding:24px clamp(28px,7vw,70px) 0; display:flex; flex-direction:column; gap:14px; }
   .detail-actions > * { width:100%; }
   .share-button { display:grid; grid-template-columns:46px minmax(0,1fr) 28px; align-items:center; gap:14px; padding:16px 18px; border:1px solid var(--color-fog); border-radius:var(--radius-md); background:var(--color-surface-raised); color:var(--color-text); cursor:pointer; text-align:left; transition:transform var(--motion-base) var(--ease-standard),border-color var(--motion-base),box-shadow var(--motion-base),background var(--motion-base); }
   .share-button:hover { transform:translateY(-2px); border-color:var(--color-signal-cool); box-shadow:var(--shadow-soft); }
-  .share-icon { display:grid; place-items:center; width:46px; height:46px; border-radius:50%; background:var(--color-signal-cool); color:#fff; font-size:1.2rem; line-height:1; }
+  .share-icon { display:grid; place-items:center; width:46px; height:46px; border-radius:50%; background:var(--color-signal-cool); color:#fff; font-size:1.2rem; line-height:1; transition:transform var(--motion-base) var(--ease-emphasis); }
+  .share-button:hover .share-icon { transform:rotate(-8deg) scale(1.06); }
   .share-copy { display:flex; flex-direction:column; gap:4px; min-width:0; }
   .share-copy strong { font:600 var(--text-sm)/1.2 var(--font-ui); }
   .share-copy small { color:var(--color-text-muted); font:var(--text-xs)/1.2 var(--font-ui); }
   @media (max-width:680px) { .share-button { padding:14px; } .share-icon { width:40px; height:40px; } }
   .detail-view :global(.comment-section) { margin-left:clamp(28px,7vw,70px); margin-right:clamp(28px,7vw,70px); margin-bottom:54px; }
 
-  .back-top { position:fixed; right:22px; bottom:26px; z-index:150; width:42px; height:42px; border:1px solid var(--color-fog); border-radius:12px; background:var(--color-surface); box-shadow:var(--shadow-soft); color:var(--color-text); font-size:1.1rem; line-height:1; cursor:pointer; opacity:0; pointer-events:none; transform:translateY(8px); transition:opacity var(--motion-base) var(--ease-standard),transform var(--motion-base) var(--ease-standard),color var(--motion-fast),border-color var(--motion-fast),background var(--motion-fast); }
-  .back-top.is-visible { opacity:1; pointer-events:auto; transform:none; }
-  .back-top:hover { color:var(--color-signal); border-color:var(--color-signal); background:var(--color-signal-soft); }
-
   .lightbox { position:fixed; inset:0; z-index:400; display:flex; align-items:center; justify-content:center; padding:32px; background:rgb(8 12 16 / .82); backdrop-filter:blur(6px); animation:fade-in var(--motion-base) var(--ease-standard); }
   .lightbox[hidden] { display:none; }
-  .lightbox img { max-width:92vw; max-height:88vh; border-radius:10px; box-shadow:var(--shadow-float); cursor:zoom-out; }
+  .lightbox img { max-width:92vw; max-height:88vh; border-radius:10px; box-shadow:var(--shadow-float); cursor:zoom-out; animation:zoom-in var(--motion-base) var(--ease-emphasis); }
   @keyframes fade-in { from { opacity:0; } to { opacity:1; } }
+  @keyframes zoom-in { from { opacity:0; transform:scale(.965); } to { opacity:1; transform:none; } }
 
   .detail-pager { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:30px clamp(28px,7vw,70px) 0; }
   .pager-link { display:flex; flex-direction:column; gap:6px; padding:16px 18px; border:1px solid var(--color-fog); border-radius:14px; background:var(--color-surface-raised); text-decoration:none; transition:border-color var(--motion-fast) var(--ease-standard),transform var(--motion-base) var(--ease-standard),box-shadow var(--motion-base); }
   .pager-link:hover { border-color:var(--color-signal); transform:translateY(-2px); box-shadow:var(--shadow-soft); }
-  .pager-label { color:var(--color-text-faint); font:600 var(--text-xs) var(--font-ui); letter-spacing:.06em; }
-  .pager-title { color:var(--color-text); font:600 .95rem/1.4 var(--font-display); }
+  .pager-label { display:inline-flex; align-items:center; gap:5px; color:var(--color-text-faint); font:600 var(--text-xs) var(--font-ui); letter-spacing:.06em; }
+  .pager-arr { display:inline-block; color:var(--color-signal); transition:transform var(--motion-base) var(--ease-emphasis); }
+  .pager-older:hover .pager-arr { transform:translateX(-3px); }
+  .pager-newer:hover .pager-arr { transform:translateX(3px); }
+  .pager-title { color:var(--color-text); font:600 .95rem/1.4 var(--font-display); transition:color var(--motion-fast); }
+  .pager-link:hover .pager-title { color:var(--color-signal); }
   .pager-newer { text-align:right; }
-  @media (max-width:680px) { .back-top { right:14px; bottom:16px; } .detail-pager { grid-template-columns:1fr; } }
+  @media (max-width:680px) { .detail-pager { grid-template-columns:1fr; } }
   @media (max-width:980px) { .detail-wrapper { grid-template-columns:180px minmax(0,1fr); gap:24px; } }
   @media (max-width:760px) { .reading-progress { top:62px; } .detail-wrapper { display:block; padding:20px 0 48px; } .detail-wrapper > .sidebar { position:static; margin-bottom:14px; } .detail-view { border-radius:18px; } .detail-header { padding:34px 24px 28px; } .detail-title { font-size:clamp(2.15rem,11vw,3.25rem); } .detail-lead { font-size:1rem; } .detail-content { padding:28px 24px 8px; } .detail-actions { padding:20px 24px 0; } .detail-view :global(.comment-section) { margin-left:24px; margin-right:24px; margin-bottom:34px; } }
 </style>
@@ -207,17 +216,6 @@ const jsonLd = {
 
 <script is:inline>
 (() => { const bar = document.querySelector('.reading-progress span'); const article = document.querySelector('.detail-view'); if (!bar || !article) return; const update = () => { const max = document.documentElement.scrollHeight - window.innerHeight; bar.style.width = (max > 0 ? Math.min(100, Math.max(0, window.scrollY / max * 100)) : 0) + '%'; }; window.addEventListener('scroll', update, { passive: true }); update(); })();
-</script>
-
-<script is:inline>
-(() => {
-  const btn = document.getElementById('back-top');
-  if (!btn) return;
-  const onScroll = () => { btn.classList.toggle('is-visible', window.scrollY > 420); };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  onScroll();
-})();
 </script>
 
 <script is:inline>

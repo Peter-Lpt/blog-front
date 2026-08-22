@@ -5,9 +5,10 @@ import FriendLinkList from '@/components/islands/FriendLinkList.vue';
 
 <BaseLayout title="友情链接" description="友情链接">
   <section class="links-page">
-    <header class="page-header">
-      <h1>🔗 友情链接</h1>
-      <p class="page-desc">互相学习，共同成长</p>
+    <header class="page-head" data-reveal>
+      <p class="page-breadcrumb"><a href="/">首页</a><span class="crumb-sep">/</span>友情链接</p>
+      <h1 class="page-title">友情链接<span class="accent">.</span></h1>
+      <p class="page-desc">互相学习，共同成长。</p>
     </header>
 
     <!-- 数据来自后端 /user/oauth 之外的公开接口 /friendLink/findList（仅展示审核通过的友链） -->
@@ -16,8 +17,5 @@ import FriendLinkList from '@/components/islands/FriendLinkList.vue';
 </BaseLayout>
 
 <style>
-  .links-page { padding: 40px 0; }
-  .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 28px; margin: 0 0 8px; color: var(--color-text); }
-  .page-desc { color: var(--color-text-muted); font-size: 14px; margin: 0; }
+  .links-page { padding: clamp(40px,6vw,76px) 0 72px; }
 </style>

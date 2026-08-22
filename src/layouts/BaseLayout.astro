@@ -43,6 +43,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
 
     <script is:inline>
+      // js 门控：仅在有 JS 时启用进场揭示（无 JS 环境内容始终可见）
+      document.documentElement.classList.add('js');
       (function () {
         var saved = localStorage.getItem('theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -56,10 +58,85 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     </script>
   </head>
   <body>
+    <!-- 氛围背景：网格 + 斜向色洗 + 漂移光晕 + 颗粒（纯装饰，合成器线程动画） -->
+    <div class="bg-scene" aria-hidden="true">
+      <div class="bg-grid"></div>
+      <div class="bg-wash"></div>
+      <div class="bg-blob bg-blob-a"></div>
+      <div class="bg-blob bg-blob-b"></div>
+      <div class="bg-blob bg-blob-c"></div>
+    </div>
     <Header />
     <main class="container">
       <slot />
     </main>
     <Footer />
+
+    <button class="back-top" id="back-top" type="button" aria-label="回到顶部">↑</button>
+
+    <script is:inline>
+      (function () {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* ---- 进场揭示：同组兄弟自动级联（--reveal-delay 可被内联覆盖） ---- */
+        var els = [].slice.call(document.querySelectorAll('[data-reveal]'));
+        if (els.length) {
+          els.forEach(function (el) {
+            if (el.style.getPropertyValue('--reveal-delay')) return;
+            var parent = el.parentElement;
+            var sibs = parent ? [].filter.call(parent.children, function (c) { return c.hasAttribute('data-reveal'); }) : [];
+            var i = sibs.indexOf(el);
+            if (i > 0) el.style.setProperty('--reveal-delay', Math.min(i * 70, 350) + 'ms');
+          });
+          if (reduce || !('IntersectionObserver' in window)) {
+            els.forEach(function (el) { el.classList.add('is-visible'); });
+          } else {
+            // threshold:0 —— 只要有一个像素进入就触发（超长元素按比例阈值会永远无法达标）
+            var io = new IntersectionObserver(function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              });
+            }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+            els.forEach(function (el) { io.observe(el); });
+            // 同步兜底：首屏内的元素立即揭示（防观察时序/几何边界情况漏网）
+            els.forEach(function (el) {
+              var r = el.getBoundingClientRect();
+              if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-visible');
+            });
+          }
+        }
+
+        /* ---- 图片加载淡入：初始未完成的图片挂过渡类 ---- */
+        [].slice.call(document.querySelectorAll('img')).forEach(function (img) {
+          if (img.complete || img.classList.contains('img-pending')) return;
+          img.classList.add('img-pending');
+          var done = function () { img.classList.add('img-loaded'); };
+          if (img.readyState === 'loading' && !img.src) return;
+          img.addEventListener('load', done, { once: true });
+          img.addEventListener('error', function () { img.classList.remove('img-pending'); }, { once: true });
+        });
+
+        /* ---- 回到顶部：全站统一 ---- */
+        var btn = document.getElementById('back-top');
+        if (btn) {
+          var ticking = false;
+          var onScroll = function () {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () {
+              btn.classList.toggle('is-visible', window.scrollY > 480);
+              ticking = false;
+            });
+          };
+          window.addEventListener('scroll', onScroll, { passive: true });
+          btn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+          });
+          onScroll();
+        }
+      })();
+    </script>
   </body>
 </html>

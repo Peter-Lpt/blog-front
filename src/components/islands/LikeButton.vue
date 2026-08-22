@@ -1,6 +1,6 @@
 <template>
   <button class="like-button" :class="{ liked, loading }" :disabled="loading" :aria-pressed="liked" @click="handleToggle">
-    <span class="icon" aria-hidden="true">{{ liked ? '♥' : '♡' }}</span>
+    <span class="icon" aria-hidden="true"><span class="heart-pop">{{ liked ? '♥' : '♡' }}</span></span>
     <span class="copy"><strong>{{ liked ? '已加入喜欢' : '喜欢这篇文章' }}</strong><small>{{ Math.max(0, likeCount) }} 次读者反馈</small></span>
     <span class="arrow" aria-hidden="true">{{ loading ? '…' : '↗' }}</span>
   </button>
@@ -37,12 +37,16 @@ async function handleToggle() {
 .like-button { width:100%; display:grid; grid-template-columns:46px minmax(0,1fr) 28px; align-items:center; gap:14px; padding:16px 18px; border:1px solid var(--color-fog); border-radius:var(--radius-md); background:var(--color-surface-raised); color:var(--color-text); cursor:pointer; text-align:left; transition:transform var(--motion-base) var(--ease-standard),border-color var(--motion-base),box-shadow var(--motion-base),background var(--motion-base); }
 .like-button:hover:not(:disabled) { transform:translateY(-2px); border-color:var(--color-signal); box-shadow:var(--shadow-soft); }
 .like-button.liked { border-color:rgb(228 155 82 / .5); background:var(--color-signal-soft); }
-.icon { display:grid; place-items:center; width:46px; height:46px; border-radius:50%; background:var(--color-ink); color:var(--color-on-ink); font-size:25px; line-height:1; transition:transform var(--motion-base) var(--ease-emphasis); }
+.icon { display:grid; place-items:center; width:46px; height:46px; border-radius:50%; background:var(--color-ink); color:var(--color-on-ink); font-size:25px; line-height:1; transition:transform var(--motion-base) var(--ease-emphasis),background-color var(--motion-base) var(--ease-standard); }
 .liked .icon { background:var(--color-signal); transform:scale(1.04); }
+.liked .icon .heart-pop { display:inline-block; animation:heart-pop 460ms cubic-bezier(.34,1.56,.64,1); }
+@keyframes heart-pop { 0% { transform:scale(.6); } 55% { transform:scale(1.35); } 100% { transform:scale(1); } }
+@media (prefers-reduced-motion: reduce) { .liked .icon .heart-pop { animation:none; } }
 .copy { display:flex; flex-direction:column; gap:4px; min-width:0; }
 .copy strong { font:600 var(--text-sm)/1.2 var(--font-ui); }
 .copy small { color:var(--color-text-muted); font:var(--text-xs)/1.2 var(--font-ui); }
-.arrow { color:var(--color-signal); font-size:1.15rem; text-align:center; }
+.arrow { color:var(--color-signal); font-size:1.15rem; text-align:center; transition:transform var(--motion-base) var(--ease-emphasis); }
+.like-button:hover:not(:disabled) .arrow { transform:translate(3px,-3px); }
 .like-button:disabled { cursor:wait; opacity:.72; }
 @media (max-width:680px) { .like-button { padding:14px; } .icon { width:40px; height:40px; } }
 </style>

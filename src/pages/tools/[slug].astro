@@ -22,16 +22,16 @@ const { name, url, category, icon, tags, rating, cost, platform, addedDate, upda
 
 <BaseLayout title={`${name} - 工具记录`} description={`${name}：${category}`}>
   <article class="tool-detail">
-    <a href="/tools/" class="back">← 返回工具箱</a>
+    <a href="/tools/" class="text-link back"><span>返回工具箱</span> <span class="arr" aria-hidden="true">←</span></a>
 
-    <header class="tool-header">
+    <header class="tool-header" data-reveal>
       <div class="tool-title-row">
-        <span class="big-icon">{icon || '🔧'}</span>
-        <h1>{name}</h1>
-        <a href={url} target="_blank" rel="noopener noreferrer" class="visit">访问官网 ↗</a>
+        <span class="big-icon" aria-hidden="true">{icon || '🔧'}</span>
+        <h1 class="page-title">{name}</h1>
+        <a href={url} target="_blank" rel="noopener noreferrer" class="btn-solid visit">访问官网 <span class="arr" aria-hidden="true">↗</span></a>
       </div>
       <div class="tool-info">
-        <span class="info-item">📂 {category}</span>
+        <span class="chip">{category}</span>
         {rating !== undefined && rating > 0 && (
           <span class="info-item rating">{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</span>
         )}
@@ -42,42 +42,35 @@ const { name, url, category, icon, tags, rating, cost, platform, addedDate, upda
       </div>
       {tags && tags.length > 0 && (
         <div class="tool-tags">
-          {tags.map((t: string) => <span class="tag">#{t}</span>)}
+          {tags.map((t: string) => <span class="chip">#{t}</span>)}
         </div>
       )}
     </header>
 
-    <div class="tool-body prose-content">
+    <div class="tool-body prose-content" data-reveal style="--reveal-delay:100ms">
       <Content />
     </div>
 
-    <footer class="tool-footer">
+    <footer class="tool-footer" data-reveal>
       <p class="meta-line">添加于 {formatDate(addedDate)}{updatedDate && ` · 更新于 ${formatDate(updatedDate)}`}</p>
     </footer>
   </article>
 </BaseLayout>
 
 <style>
-  .tool-detail { max-width: 760px; margin: 0 auto; padding: 40px 0; }
-  .back { font-size: 13px; color: var(--color-text-muted); display: inline-block; margin-bottom: 16px; }
-  .back:hover { color: var(--color-signal); }
-  .tool-header { margin-bottom: 32px; }
-  .tool-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .big-icon { font-size: 36px; }
-  .tool-title-row h1 { font-size: 28px; margin: 0; flex: 1; color: var(--color-text); }
-  .visit {
-    padding: 8px 16px;
-    background: var(--color-signal);
-    color: #fff;
-    border-radius: 8px;
-    font-size: 14px;
-  }
-  .visit:hover { opacity: 0.9; color: #fff; }
-  .tool-info { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 14px; color: var(--color-text-muted); }
-  .rating { color: #f5a623; }
-  .tool-tags { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .tag { font-size: 13px; color: var(--color-signal); }
+  .tool-detail { max-width: 760px; margin: 0 auto; padding: clamp(36px,5vw,60px) 0 72px; }
+  .back { display: inline-flex; margin-bottom: 22px; }
+  .tool-header { margin-bottom: 34px; padding-bottom: 24px; border-bottom: 1px solid var(--color-fog); }
+  .tool-title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .big-icon { display:inline-block; font-size: 34px; transition: transform var(--motion-base) var(--ease-emphasis); }
+  .big-icon:hover { transform: scale(1.12) rotate(-6deg); }
+  .tool-title-row h1 { flex: 1; min-width: 200px; }
+  .visit { padding: 9px 18px; font-size: var(--text-xs); }
+  .tool-info { display: flex; gap: 10px 16px; align-items: center; flex-wrap: wrap; margin-top: 16px; font-size: 14px; color: var(--color-text-muted); }
+  .rating { color: var(--color-warning); letter-spacing: 1px; }
+  .tool-tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .tool-tags .chip { cursor: default; }
   .tool-body { color: var(--color-text); line-height: 1.8; }
-  .tool-footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--color-fog); }
-  .meta-line { font-size: 13px; color: var(--color-text-muted); margin: 0; }
+  .tool-footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--color-fog); }
+  .meta-line { font-size: 13px; color: var(--color-text-faint); margin: 0; }
 </style>
